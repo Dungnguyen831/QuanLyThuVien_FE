@@ -1,0 +1,171 @@
+/* Nhúng font chữ Inter siêu đẹp dành cho Dashboard */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8f9fc !important;
+}
+
+/* =========================================
+   1. BỐ CỤC (LAYOUT) & THANH CUỘN (SCROLLBAR)
+========================================= */
+#wrapper {
+    overflow-x: hidden; 
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1; 
+}
+::-webkit-scrollbar-thumb {
+    background: #c1c1c1; 
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8; 
+}
+
+/* =========================================
+   2. SIDEBAR CHUNG & HIỆU ỨNG TỰ ĐỘNG THU/MỞ
+========================================= */
+#sidebar-wrapper {
+    width: 80px; /* ĐỔI THÀNH 80PX: Mặc định là luôn thu nhỏ */
+    z-index: 1000;
+    transition: width 0.3s ease-in-out; 
+    overflow: hidden; 
+    white-space: nowrap; 
+}
+
+/* Định hình phần chữ (Mặc định sẽ ẩn) */
+.sidebar-text {
+    transition: opacity 0.2s ease, visibility 0.2s;
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* KHI ĐƯA CHUỘT VÀO SIDEBAR -> Tự động bung rộng ra 250px */
+#sidebar-wrapper:hover {
+    width: 250px;
+    box-shadow: 4px 0 15px rgba(0,0,0,0.05); 
+}
+
+/* KHI ĐƯA CHUỘT VÀO SIDEBAR -> Chữ hiện rõ lên */
+#sidebar-wrapper:hover .sidebar-text {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Lớp che mờ khi mở Sidebar trên Mobile */
+.sidebar-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 999;
+    display: none;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+/* =========================================
+   3. MENU SIDEBAR (HOVER & ACTIVE STATE)
+========================================= */
+.list-group {
+    padding: 0 12px; 
+}
+
+/* SỬA: Xóa margin hai bên của từng nút đi */
+.list-group-item {
+    transition: all 0.3s ease; 
+    border-radius: 8px !important; /* Bắt buộc bo góc vì Bootstrap có thể ghi đè */
+    margin-bottom: 8px; /* Chỉ giữ lại khoảng cách từ trên xuống dưới */
+    color: #6c757d;
+    position: relative; 
+    border: none; /* Xóa viền xám mặc định của Bootstrap */
+}
+
+/* Di chuột vào Menu */
+.list-group-item:hover {
+    background-color: #f0f4ff;
+    color: #0d6efd !important;
+    transform: translateX(5px); 
+}
+
+/* TẠO DẢI MÀU BÊN TRÁI (Ban đầu thu nhỏ tàng hình) */
+.list-group-item::before {
+    content: "";
+    position: absolute;
+    left: 0; top: 0;
+    height: 100%; width: 4px;
+    background-color: #0d6efd;
+    transform: scaleY(0); 
+    transition: transform 0.3s ease;
+    border-radius: 4px 0 0 4px;
+}
+
+/* Kéo dài dải màu khi Hover */
+.list-group-item:hover::before {
+    transform: scaleY(1);
+}
+
+/* Menu đang được chọn (Active) */
+.list-group-item.active {
+    background-color: #e6f0ff !important;
+    color: #0d6efd !important;
+    font-weight: 600;
+}
+.list-group-item.active::before {
+    transform: scaleY(1); 
+}
+
+/* =========================================
+   4. THẺ CARD & WIDGET THỐNG KÊ
+========================================= */
+.card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.08) !important;
+}
+
+/* =========================================
+   5. CUSTOM DASHBOARD WIDGETS
+========================================= */
+/* Huy hiệu (Badge) màu nhạt */
+.badge-soft-success { background-color: rgba(25, 135, 84, 0.1); color: #198754; }
+.badge-soft-danger { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
+.badge-soft-warning { background-color: rgba(255, 193, 7, 0.15); color: #d39e00; }
+.badge-soft-secondary { background-color: rgba(108, 117, 125, 0.1); color: #6c757d; }
+
+/* Icon Box trong thẻ Card */
+.icon-box {
+    width: 48px; height: 48px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 12px; font-size: 20px;
+}
+.icon-box-primary { background-color: rgba(13, 110, 253, 0.1); color: #0d6efd; }
+.icon-box-purple { background-color: rgba(111, 66, 193, 0.1); color: #6f42c1; }
+.icon-box-info { background-color: rgba(13, 202, 240, 0.1); color: #0dcaf0; }
+.icon-box-danger { background-color: rgba(220, 53, 69, 0.1); color: #dc3545; }
+
+/* Avatar hình tròn có chữ ở giữa cho Bảng */
+.avatar-circle {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+}
+
+/* Tùy chỉnh Table mượt mà hơn */
+.table-custom th {
+    font-size: 12px; font-weight: 600; color: #8a92a6;
+    text-transform: uppercase; border-bottom: 1px solid #f1f5f9;
+}
+.table-custom td {
+    vertical-align: middle; border-bottom: 1px solid #f8f9fa; color: #495057;
+}
