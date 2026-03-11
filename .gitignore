@@ -1,0 +1,24 @@
+# 1. Các file rác của hệ điều hành
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# 2. Các file cấu hình của trình soạn thảo code (VS Code, IntelliJ...)
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+# 3. Thư mục thư viện (Dự phòng sau này bạn dùng npm tải thư viện)
+node_modules/
+dist/
+
+# 4. Các file log lỗi
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# 5. [TÙY CHỌN] File Database (Cơ sở dữ liệu)
+# *.sql
