@@ -1,0 +1,45 @@
+/* =========================================
+   CSS DÀNH RIÊNG CHO TRANG QUẢN LÝ MƯỢN TRẢ
+========================================= */
+
+/* Huy hiệu trạng thái có dấu chấm tròn */
+.status-badge {
+    display: inline-flex; align-items: center;
+    padding: 6px 12px; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+}
+.status-indicator {
+    display: inline-block; width: 6px; height: 6px;
+    border-radius: 50%; margin-right: 8px;
+}
+
+/* Đang mượn */
+.status-active { background-color: #f0f7ff; color: #0d6efd; }
+.status-active .status-indicator { background-color: #0d6efd; }
+
+/* Đã trả */
+.status-returned { background-color: #eaf8f1; color: #198754; }
+.status-returned .status-indicator { background-color: #198754; }
+
+/* Quá hạn */
+.status-overdue { background-color: #fdf2f2; color: #dc3545; }
+.status-overdue .status-indicator { background-color: #dc3545; }
+
+/* Nút Nhắc nhở màu đỏ */
+.btn-remind {
+    color: #dc3545; background-color: white;
+    border: 1px solid #f5c2c7; border-radius: 6px;
+    font-size: 13px; padding: 4px 10px; font-weight: 500;
+    transition: all 0.2s;
+}
+.btn-remind:hover { background-color: #fdf2f2; color: #dc3545; }
+
+/* Bộ lọc (Tabs) */
+.filter-tabs { display: flex; gap: 20px; }
+.filter-tab {
+    color: #6c757d; cursor: pointer; padding: 8px 4px; 
+    font-weight: 500; font-size: 14px;
+    border-bottom: 2px solid transparent; transition: all 0.2s;
+}
+.filter-tab:hover { color: #0d6efd; }
+.filter-tab.active { color: #0d6efd; border-bottom: 2px solid #0d6efd; }
