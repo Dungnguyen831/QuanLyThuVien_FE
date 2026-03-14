@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý kho sách chi tiết</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        /* Tùy chỉnh màu sắc và bo góc để giống ảnh nhất */
+        body { background-color: #f8f9fc; }
+        .card { border-radius: 12px; }
+        .form-control, .btn { border-radius: 8px; }
+        
+        /* Badge thể loại (bo tròn) */
+        .category-badge {
+            padding: 5px 10px;
+            font-size: 12px;
+            border-radius: 20px;
+            color: #fff; /* Chữ trắng */
+        }
+        
+        /* Màu badge trạng thái (Dùng Utility Class của Bootstrap) */
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 5px; }
+
+        /* Đảm bảo table hàng đầu tiên có padding trên */
+        .table > :not(caption) > * > * { padding: 1rem 0.75rem; vertical-align: middle;}
+    </style>
+</head>
+<body>
+
+    <div class="container-fluid pt-4 px-4">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <div>
+                <h2 class="mb-1 fw-bold">Quản lý kho sách chi tiết</h2>
+                <p class="text-muted mb-0">Theo dõi và cập nhật tình trạng kho sách thư viện</p>
+            </div>
+            <button class="btn btn-primary px-4 py-2">
+                <i class="fas fa-plus me-2"></i>Thêm sách mới
+            </button>
+        </div>
+    </div>
+
+    <div class="container-fluid px-4">
+        <div class="card shadow-sm border-0 mb-4">
+            <div class="card-body p-4">
+                
+                <div class="row g-3 mb-4">
+                    <div class="col-md-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0 text-muted"><i class="fas fa-search"></i></span>
+                            <input type="text" class="form-control border-start-0 bg-white" placeholder="Tìm kiếm theo mã sách, tên sách hoặc tác giả...">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select bg-light border-0">
+                            <option selected>Tất cả thể loại</option>
+                            <option value="1">Kỹ năng sống</option>
+                            <option value="2">Văn học VN</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-select bg-light border-0">
+                            <option selected>Nhà xuất bản</option>
+                            <option value="1">Nhã Nam</option>
+                            <option value="2">NXB Trẻ</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-select bg-light border-0">
+                            <option selected>Tình trạng kho</option>
+                            <option value="1">Sẵn sàng</option>
+                            <option value="2">Sắp hết</option>
+                            <option value="3">Hết hàng</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped-columns align-middle">
+                        <thead class="table-light">
+                            <tr class="text-muted" style="font-size: 13px;">
+                                <th>MÃ SÁCH</th>
+                                <th>TÊN SÁCH</th>
+                                <th>TÁC GIẢ</th>
+                                <th>THỂ LOẠI</th>
+                                <th>VỊ TRÍ</th>
+                                <th>TỔNG SL</th>
+                                <th>HIỆN CÓ</th>
+                                <th>TÌNH TRẠNG</th>
+                                <th class="text-center">THAO TÁC</th>
+                            </tr>
+                        </thead>
+                        <tbody style="font-size: 14px;">
+                            <tr>
+                                <td>B001</td>
+                                <td>
+                                    <strong>Đắc Nhân Tâm</strong><br>
+                                    <small class="text-muted">First News - Tri Việt</small>
+                                </td>
+                                <td>Dale Carnegie</td>
+                                <td><span class="category-badge bg-primary bg-opacity-75">Kỹ năng sống</span></td>
+                                <td>Kệ A1</td>
+                                <td><strong class="fs-6">50</strong></td>
+                                <td><strong class="fs-6">42</strong></td>
+                                <td>
+                                    <span class="status-dot bg-success"></span>
+                                    <span class="text-success fw-medium">Sẵn sàng</span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light text-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>B002</td>
+                                <td>
+                                    <strong>Nhà Giả Kim</strong><br>
+                                    <small class="text-muted">Nhã Nam</small>
+                                </td>
+                                <td>Paulo Coelho</td>
+                                <td><span class="category-badge bg-info bg-opacity-75">Tiểu thuyết</span></td>
+                                <td>Kệ B3</td>
+                                <td><strong class="fs-6">30</strong></td>
+                                <td><strong class="fs-6">0</strong></td>
+                                <td>
+                                    <span class="status-dot bg-danger"></span>
+                                    <span class="text-danger fw-medium">Hết hàng</span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light text-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                <td>B005</td>
+                                <td>
+                                    <strong>Dế Mèn Phiêu Lưu Ký</strong><br>
+                                    <small class="text-muted">Kim Đồng</small>
+                                </td>
+                                <td>Tô Hoài</td>
+                                <td><span class="category-badge bg-warning bg-opacity-75 text-dark">Văn học VN</span></td>
+                                <td>Kệ D4</td>
+                                <td><strong class="fs-6">60</strong></td>
+                                <td><strong class="fs-6">58</strong></td>
+                                <td>
+                                    <span class="status-dot bg-warning"></span>
+                                    <span class="text-warning fw-medium text-dark">Sẵn sàng</span>
+                                </td>
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-light text-primary"><i class="fas fa-edit"></i></button>
+                                    <button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mt-4">
+                    <p class="text-muted mb-0" style="font-size: 13px;">Hiển thị 1 đến 10 trong số 97 kết quả</p>
+                    <nav>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-left"></i></a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">3</a></li>
+                            <li class="page-item disabled"><a class="page-link" href="#">...</a></li>
+                            <li class="page-item"><a class="page-link" href="#">10</a></li>
+                            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-angle-right"></i></a></li>
+                        </ul>
+                    </nav>
+                </div>
+
+            </div> </div> </div> <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.bundle.min.min.js"></script>
+</body>
+</html>
