@@ -120,7 +120,59 @@ body {
 .list-group-item.active::before {
     transform: scaleY(1); 
 }
+/* 1. Hiệu ứng dải màu xanh cho nút cha khi trang con được chọn */
+.list-group-item.active-parent {
+    background-color: #f0f7ff !important;
+    color: #0d6efd !important;
+    position: relative;
+    border: none !important;
+}
 
+.list-group-item.active-parent::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100%;
+    width: 4px;
+    background-color: #0d6efd;
+    border-radius: 0 4px 4px 0;
+}
+
+/* 2. Định dạng các nhánh con (nav-link-sub) */
+.nav-link-sub {
+    display: block;
+    padding: 10px 15px 10px 45px; /* Thụt lề sâu để tạo phân cấp */
+    text-decoration: none;
+    color: #6c757d;
+    font-size: 13.5px;
+    border-radius: 8px;
+    margin: 4px 8px;
+    transition: all 0.2s ease;
+}
+
+.nav-link-sub:hover, 
+.nav-link-sub.active {
+    background-color: #ffffff;
+    color: #0d6efd !important;
+    font-weight: 500;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+/* 3. Hiệu ứng xoay mũi tên Chevron */
+.transition-icon {
+    transition: transform 0.3s ease;
+}
+
+[aria-expanded="true"] .transition-icon {
+    transform: rotate(180deg);
+}
+
+/* 4. Tùy chỉnh vùng chứa màu xám nhạt cho menu con */
+#inventorySubmenu .bg-light {
+    background-color: #f8f9fa !important;
+    border: 1px solid #eee;
+}
 /* =========================================
    4. THẺ CARD & WIDGET THỐNG KÊ
 ========================================= */
