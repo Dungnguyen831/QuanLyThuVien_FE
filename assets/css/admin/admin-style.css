@@ -120,14 +120,16 @@ body {
 .list-group-item.active::before {
     transform: scaleY(1); 
 }
-/* 1. Hiệu ứng dải màu xanh cho nút cha khi trang con được chọn */
+/* 1. Hiệu ứng dải màu xanh cho nút cha (Kho sách) - ĐÃ ĐỒNG NHẤT VỚI .ACTIVE */
 .list-group-item.active-parent {
-    background-color: #f0f7ff !important;
+    background-color: #e6f0ff !important; /* Cùng màu nền với Trang chủ/Mượn trả */
     color: #0d6efd !important;
+    font-weight: 600;
     position: relative;
     border: none !important;
 }
 
+/* Tạo dải xanh bên trái khớp hoàn toàn với các nút đơn */
 .list-group-item.active-parent::before {
     content: "";
     position: absolute;
@@ -136,7 +138,9 @@ body {
     height: 100%;
     width: 4px;
     background-color: #0d6efd;
-    border-radius: 0 4px 4px 0;
+    transform: scaleY(1); /* Hiển thị dải màu ngay lập tức */
+    border-radius: 4px 0 0 4px; /* Bo góc khớp dải xanh của Trang chủ */
+    transition: transform 0.3s ease;
 }
 
 /* 2. Định dạng các nhánh con (nav-link-sub) */

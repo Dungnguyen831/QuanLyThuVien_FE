@@ -122,6 +122,8 @@
                 headerDisplay.textContent = 'Quản lý kho sách';
             }
 
+            document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
+
             // 3. Logic Sidebar: Tự động mở menu cha và active nhánh hiện tại
             const submenuEl = document.getElementById('inventorySubmenu');
             const parentNode = document.getElementById('inventoryParent');
