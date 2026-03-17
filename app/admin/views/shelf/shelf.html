@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý kệ sách - LibraryPro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/admin/author.css">
+    <link rel="stylesheet" href="../../../../assets/css/admin/shelf.css">
+</head>
+<body>
+
+<div class="app">
+    <aside class="sidebar">
+        <div class="sidebar__brand">
+            <span class="logo"></span>
+            <span>Thư viện ĐH</span>
+        </div>
+
+        <nav class="sidebar__nav">
+            <a href="#">Dashboard</a>
+            <a href="#">Quản lý sách</a>
+            <a href="#">Quản lý tác giả</a>
+            <a href="#">Quản lý nhà xuất bản</a>
+            <a href="#">Quản lý thể loại</a>
+            <a href="#" class="active">Quản lý kệ sách</a>
+            <a href="#">Mượn trả</a>
+            <a href="#">Báo cáo</a>
+        </nav>
+
+        <div class="sidebar__settings">
+            <a href="#">Hệ thống</a>
+            <a href="#">Phân quyền</a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <h1>Danh sách kệ sách</h1>
+            <div class="topbar__actions">
+                <button id="btnToggleShelfTable" class="btn-secondary" type="button">Hiển thị bảng</button>
+                <button id="btnAddShelf" class="btn-primary" type="button">+ Thêm kệ mới</button>
+            </div>
+        </header>
+
+        <section class="panel" id="shelfPanel">
+            <div class="panel__controls">
+                <div class="search">
+                    <span class="icon">🔍</span>
+                    <input id="shelfSearch" type="text" placeholder="Tìm kiếm theo tên hoặc ID (VD: KE001)..." />
+                </div>
+
+                <div class="filters">
+                    <div class="select">
+                        <label>Trạng thái:</label>
+                        <select>
+                            <option>Tất cả</option>
+                            <option>Hoạt động</option>
+                            <option>Ngưng hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Tên kệ</th>
+                            <th>Vị trí</th>
+                            <th>Sức chứa</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shelfTableBody">
+                        <tr data-id="KE001">
+                            <td>KE001</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="avatar">A1</div>
+                                    <div class="meta">
+                                        <div class="name">Kệ A1</div>
+                                        <div class="role">Tầng 1 - Khu A</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Tầng 1, gần cửa chính</td>
+                            <td>120</td>
+                            <td><span class="badge badge--active">Hoạt động</span></td>
+                            <td>
+                                <button class="btn-action btn-edit" data-id="KE001">Sửa</button>
+                                <button class="btn-action btn-delete" data-id="KE001">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr data-id="KE002">
+                            <td>KE002</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="avatar" style="background: linear-gradient(135deg, #38bdf8, #a855f7);">B2</div>
+                                    <div class="meta">
+                                        <div class="name">Kệ B2</div>
+                                        <div class="role">Tầng 2 - Khu B</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Tầng 2, cạnh thang máy</td>
+                            <td>98</td>
+                            <td><span class="badge badge--active">Hoạt động</span></td>
+                            <td>
+                                <button class="btn-action btn-edit" data-id="KE002">Sửa</button>
+                                <button class="btn-action btn-delete" data-id="KE002">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr data-id="KE003">
+                            <td>KE003</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="avatar" style="background: linear-gradient(135deg, #f97316, #facc15);">C3</div>
+                                    <div class="meta">
+                                        <div class="name">Kệ C3</div>
+                                        <div class="role">Tầng 3 - Khu C</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Tầng 3, góc phải</td>
+                            <td>75</td>
+                            <td><span class="badge badge--locked">Ngưng hoạt động</span></td>
+                            <td>
+                                <button class="btn-action btn-edit" data-id="KE003">Sửa</button>
+                                <button class="btn-action btn-delete" data-id="KE003">Xóa</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span id="shelfSummary">Hiển thị 1 đến 3 của 3 kết quả</span>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="shelfModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Thêm kệ sách</h2>
+                <button class="modal-close" type="button" aria-label="Đóng">✕</button>
+            </div>
+            <form class="modal-form">
+                <div class="form-row">
+                    <label for="shelfName">Tên kệ</label>
+                    <input id="shelfName" type="text" placeholder="Nhập tên kệ" required />
+                </div>
+                <div class="form-row">
+                    <label for="shelfLocation">Vị trí</label>
+                    <input id="shelfLocation" type="text" placeholder="Nhập vị trí" />
+                </div>
+                <div class="form-row">
+                    <label for="shelfCapacity">Sức chứa</label>
+                    <input id="shelfCapacity" type="number" min="0" placeholder="0" />
+                </div>
+                <div class="form-row">
+                    <label for="shelfStatus">Trạng thái</label>
+                    <select id="shelfStatus">
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Ngưng hoạt động</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelShelf">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnAdd = document.getElementById('btnAddShelf');
+        const modal = document.getElementById('shelfModal');
+        const modalTitle = modal.querySelector('h2');
+        const form = modal.querySelector('.modal-form');
+        const toggleTableBtn = document.getElementById('btnToggleShelfTable');
+        const shelfPanel = document.getElementById('shelfPanel');
+
+        const inputName = form.querySelector('#shelfName');
+        const inputLocation = form.querySelector('#shelfLocation');
+        const inputCapacity = form.querySelector('#shelfCapacity');
+        const inputStatus = form.querySelector('#shelfStatus');
+
+        let editingRow = null;
+
+        const openModal = ({ mode = 'add', row = null } = {}) => {
+            editingRow = row;
+            modalTitle.textContent = mode === 'edit' ? 'Sửa kệ sách' : 'Thêm kệ sách';
+
+            if (mode === 'edit' && row) {
+                const name = row.querySelector('.user-info .name')?.textContent?.trim() || '';
+                const location = row.querySelector('.user-info .role')?.textContent?.trim() || '';
+                const capacity = row.querySelector('td:nth-child(4)')?.textContent?.trim() || '';
+                const status = row.querySelector('.badge')?.textContent?.trim() || 'Hoạt động';
+
+                inputName.value = name;
+                inputLocation.value = location;
+                inputCapacity.value = capacity;
+                inputStatus.value = status === 'Hoạt động' ? 'active' : 'inactive';
+            } else {
+                form.reset();
+                inputStatus.value = 'active';
+            }
+
+            modal.style.display = 'grid';
+            inputName.focus();
+        };
+
+        const closeModal = () => {
+            modal.style.display = 'none';
+            editingRow = null;
+            form.reset();
+        };
+
+        const setPanelVisible = (visible) => {
+            if (visible) {
+                shelfPanel.style.display = 'block';
+                toggleTableBtn.textContent = 'Ẩn bảng';
+            } else {
+                shelfPanel.style.display = 'none';
+                toggleTableBtn.textContent = 'Hiển thị bảng';
+            }
+        };
+
+        setPanelVisible(false);
+        closeModal();
+
+        btnAdd.addEventListener('click', () => {
+            setPanelVisible(true);
+            openModal({ mode: 'add' });
+        });
+
+        toggleTableBtn.addEventListener('click', () => {
+            setPanelVisible(shelfPanel.style.display === 'none');
+        });
+
+        const tableBody = document.getElementById('shelfTableBody');
+        const summaryText = document.getElementById('shelfSummary');
+        const searchInput = document.getElementById('shelfSearch');
+
+        const filterRows = (query) => {
+            const text = query.trim().toLowerCase();
+            tableBody.querySelectorAll('tr').forEach((row) => {
+                const id = row.querySelector('td:first-child')?.textContent?.toLowerCase() || '';
+                const name = row.querySelector('.user-info .name')?.textContent?.toLowerCase() || '';
+                const visible = !text || id.includes(text) || name.includes(text);
+                row.style.display = visible ? '' : 'none';
+            });
+        };
+
+        const updateSummary = () => {
+            const total = tableBody.querySelectorAll('tr').length;
+            summaryText.textContent = `Hiển thị 1 đến ${total} của ${total} kết quả`;
+        };
+
+        const createRowHtml = (id, name, location, capacity, status) => {
+            const badgeClass = status === 'Hoạt động' ? 'badge--active' : 'badge--locked';
+            const initials = name
+                .split(' ')
+                .filter(Boolean)
+                .slice(-2)
+                .map((x) => x[0].toUpperCase())
+                .join('');
+
+            return `
+                <tr data-id="${id}">
+                    <td>${id}</td>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #0ea5e9);">${initials}</div>
+                            <div class="meta">
+                                <div class="name">${name}</div>
+                                <div class="role">${location}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${location}</td>
+                    <td>${capacity}</td>
+                    <td><span class="badge ${badgeClass}">${status}</span></td>
+                    <td>
+                        <button class="btn-action btn-edit" data-id="${id}">Sửa</button>
+                        <button class="btn-action btn-delete" data-id="${id}">Xóa</button>
+                    </td>
+                </tr>
+            `;
+        };
+
+        const deleteRow = (row) => {
+            if (window.confirm('Bạn có chắc muốn xóa kệ sách này không?')) {
+                row.remove();
+                updateSummary();
+            }
+        };
+
+        document.addEventListener('click', (event) => {
+            const editBtn = event.target.closest('.btn-edit');
+            const deleteBtn = event.target.closest('.btn-delete');
+            const closeBtn = event.target.closest('.modal-close');
+            const cancelBtn = event.target.closest('#btnCancelShelf');
+
+            if (editBtn) {
+                const row = editBtn.closest('tr');
+                openModal({ mode: 'edit', row });
+            }
+
+            if (deleteBtn) {
+                const row = deleteBtn.closest('tr');
+                deleteRow(row);
+            }
+
+            if (closeBtn || cancelBtn) {
+                event.preventDefault();
+                closeModal();
+            }
+
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.style.display !== 'none') {
+                closeModal();
+            }
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (event) => {
+                filterRows(event.target.value);
+            });
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = inputName.value.trim();
+            const location = inputLocation.value.trim() || '-';
+            const capacity = inputCapacity.value.trim() || '0';
+            const status = inputStatus.value === 'active' ? 'Hoạt động' : 'Ngưng hoạt động';
+
+            if (!name) {
+                window.alert('Vui lòng nhập tên kệ.');
+                inputName.focus();
+                return;
+            }
+
+            const id = editingRow
+                ? editingRow.getAttribute('data-id')
+                : `KE${String(tableBody.querySelectorAll('tr').length + 1).padStart(3, '0')}`;
+
+            const newRow = new DOMParser().parseFromString(
+                createRowHtml(id, name, location, capacity, status),
+                'text/html'
+            ).querySelector('tr');
+
+            if (editingRow) {
+                editingRow.replaceWith(newRow);
+            } else {
+                tableBody.appendChild(newRow);
+            }
+
+            updateSummary();
+            closeModal();
+        });
+
+        updateSummary();
+    });
+</script>
+
+</body>
+</html>

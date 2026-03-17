@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý thể loại sách - LibraryPro</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../../../assets/css/admin/author.css">
+    <link rel="stylesheet" href="../../../../assets/css/admin/category.css">
+</head>
+<body>
+
+<div class="app">
+    <aside class="sidebar">
+        <div class="sidebar__brand">
+            <span class="logo"></span>
+            <span>Thư viện ĐH</span>
+        </div>
+
+        <nav class="sidebar__nav">
+            <a href="#">Dashboard</a>
+            <a href="#">Quản lý sách</a>
+            <a href="#">Quản lý tác giả</a>
+            <a href="#">Quản lý nhà xuất bản</a>
+            <a href="#" class="active">Quản lý thể loại</a>
+            <a href="#">Mượn trả</a>
+            <a href="#">Báo cáo</a>
+        </nav>
+
+        <div class="sidebar__settings">
+            <a href="#">Hệ thống</a>
+            <a href="#">Phân quyền</a>
+        </div>
+    </aside>
+
+    <main class="main">
+        <header class="topbar">
+            <h1>Danh sách thể loại sách</h1>
+            <div class="topbar__actions">
+                <button id="btnToggleCategoryTable" class="btn-secondary" type="button">Hiển thị bảng</button>
+                <button id="btnAddCategory" class="btn-primary" type="button">+ Thêm thể loại mới</button>
+            </div>
+        </header>
+
+        <section class="panel" id="categoryPanel">
+            <div class="panel__controls">
+                <div class="search">
+                    <span class="icon">🔍</span>
+                    <input id="categorySearch" type="text" placeholder="Tìm kiếm theo tên hoặc ID (VD: TL001)..." />
+                </div>
+
+                <div class="filters">
+                    <div class="select">
+                        <label>Trạng thái:</label>
+                        <select>
+                            <option>Tất cả</option>
+                            <option>Hoạt động</option>
+                            <option>Ngưng hoạt động</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Thể loại</th>
+                            <th>Mô tả</th>
+                            <th>Số lượng sách</th>
+                            <th>Trạng thái</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody id="categoryTableBody">
+                        <tr data-id="TL001">
+                            <td>TL001</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="avatar">VH</div>
+                                    <div class="meta">
+                                        <div class="name">Văn học</div>
+                                        <div class="role">Tiểu thuyết, truyện ngắn</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Thể loại dành cho các tác phẩm hư cấu.</td>
+                            <td>218</td>
+                            <td><span class="badge badge--active">Hoạt động</span></td>
+                            <td>
+                                <button class="btn-action btn-edit" data-id="TL001">Sửa</button>
+                                <button class="btn-action btn-delete" data-id="TL001">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr data-id="TL002">
+                            <td>TL002</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="avatar" style="background: linear-gradient(135deg, #38bdf8, #a855f7);">KH</div>
+                                    <div class="meta">
+                                        <div class="name">Khoa học</div>
+                                        <div class="role">Khoa học tự nhiên, kỹ thuật</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Sách tham khảo, nghiên cứu và sách giáo khoa.</td>
+                            <td>143</td>
+                            <td><span class="badge badge--active">Hoạt động</span></td>
+                            <td>
+                                <button class="btn-action btn-edit" data-id="TL002">Sửa</button>
+                                <button class="btn-action btn-delete" data-id="TL002">Xóa</button>
+                            </td>
+                        </tr>
+                        <tr data-id="TL003">
+                            <td>TL003</td>
+                            <td>
+                                <div class="user-info">
+                                    <div class="avatar" style="background: linear-gradient(135deg, #f97316, #facc15);">GD</div>
+                                    <div class="meta">
+                                        <div class="name">Giáo dục</div>
+                                        <div class="role">Sách giáo trình, kỹ năng</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>Sách dành cho học sinh, sinh viên, nâng cao kỹ năng.</td>
+                            <td>87</td>
+                            <td><span class="badge badge--locked">Ngưng hoạt động</span></td>
+                            <td>
+                                <button class="btn-action btn-edit" data-id="TL003">Sửa</button>
+                                <button class="btn-action btn-delete" data-id="TL003">Xóa</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <span id="categorySummary">Hiển thị 1 đến 3 của 3 kết quả</span>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal-overlay" id="categoryModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2>Thêm thể loại sách</h2>
+                <button class="modal-close" type="button" aria-label="Đóng">✕</button>
+            </div>
+            <form class="modal-form">
+                <div class="form-row">
+                    <label for="catName">Tên thể loại</label>
+                    <input id="catName" type="text" placeholder="Nhập tên thể loại" required />
+                </div>
+                <div class="form-row">
+                    <label for="catDesc">Mô tả</label>
+                    <input id="catDesc" type="text" placeholder="Nhập mô tả" />
+                </div>
+                <div class="form-row">
+                    <label for="catCount">Số lượng sách</label>
+                    <input id="catCount" type="number" min="0" placeholder="0" />
+                </div>
+                <div class="form-row">
+                    <label for="catStatus">Trạng thái</label>
+                    <select id="catStatus">
+                        <option value="active">Hoạt động</option>
+                        <option value="inactive">Ngưng hoạt động</option>
+                    </select>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn-secondary" id="btnCancelCategory">Hủy</button>
+                    <button type="submit" class="btn-primary">Lưu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const btnAdd = document.getElementById('btnAddCategory');
+        const modal = document.getElementById('categoryModal');
+        const modalTitle = modal.querySelector('h2');
+        const form = modal.querySelector('.modal-form');
+        const toggleTableBtn = document.getElementById('btnToggleCategoryTable');
+        const categoryPanel = document.getElementById('categoryPanel');
+
+        const inputName = form.querySelector('#catName');
+        const inputDesc = form.querySelector('#catDesc');
+        const inputCount = form.querySelector('#catCount');
+        const inputStatus = form.querySelector('#catStatus');
+
+        let editingRow = null;
+
+        const openModal = ({ mode = 'add', row = null } = {}) => {
+            editingRow = row;
+            modalTitle.textContent = mode === 'edit' ? 'Sửa thể loại sách' : 'Thêm thể loại sách';
+
+            if (mode === 'edit' && row) {
+                const name = row.querySelector('.user-info .name')?.textContent?.trim() || '';
+                const desc = row.querySelector('.user-info .role')?.textContent?.trim() || '';
+                const count = row.querySelector('td:nth-child(4)')?.textContent?.trim() || '';
+                const status = row.querySelector('.badge')?.textContent?.trim() || 'Hoạt động';
+
+                inputName.value = name;
+                inputDesc.value = desc;
+                inputCount.value = count;
+                inputStatus.value = status === 'Hoạt động' ? 'active' : 'inactive';
+            } else {
+                form.reset();
+                inputStatus.value = 'active';
+            }
+
+            modal.style.display = 'grid';
+            inputName.focus();
+        };
+
+        const closeModal = () => {
+            modal.style.display = 'none';
+            editingRow = null;
+            form.reset();
+        };
+
+        const setPanelVisible = (visible) => {
+            if (visible) {
+                categoryPanel.style.display = 'block';
+                toggleTableBtn.textContent = 'Ẩn bảng';
+            } else {
+                categoryPanel.style.display = 'none';
+                toggleTableBtn.textContent = 'Hiển thị bảng';
+            }
+        };
+
+        setPanelVisible(false);
+        closeModal();
+
+        btnAdd.addEventListener('click', () => {
+            setPanelVisible(true);
+            openModal({ mode: 'add' });
+        });
+
+        toggleTableBtn.addEventListener('click', () => {
+            setPanelVisible(categoryPanel.style.display === 'none');
+        });
+
+        const tableBody = document.getElementById('categoryTableBody');
+        const summaryText = document.getElementById('categorySummary');
+        const searchInput = document.getElementById('categorySearch');
+
+        const filterRows = (query) => {
+            const text = query.trim().toLowerCase();
+            tableBody.querySelectorAll('tr').forEach((row) => {
+                const id = row.querySelector('td:first-child')?.textContent?.toLowerCase() || '';
+                const name = row.querySelector('.user-info .name')?.textContent?.toLowerCase() || '';
+                const visible = !text || id.includes(text) || name.includes(text);
+                row.style.display = visible ? '' : 'none';
+            });
+        };
+
+        const updateSummary = () => {
+            const total = tableBody.querySelectorAll('tr').length;
+            summaryText.textContent = `Hiển thị 1 đến ${total} của ${total} kết quả`;
+        };
+
+        const createRowHtml = (id, name, desc, count, status) => {
+            const badgeClass = status === 'Hoạt động' ? 'badge--active' : 'badge--locked';
+            const initials = name
+                .split(' ')
+                .filter(Boolean)
+                .slice(-2)
+                .map((x) => x[0].toUpperCase())
+                .join('');
+
+            return `
+                <tr data-id="${id}">
+                    <td>${id}</td>
+                    <td>
+                        <div class="user-info">
+                            <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #0ea5e9);">${initials}</div>
+                            <div class="meta">
+                                <div class="name">${name}</div>
+                                <div class="role">${desc}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${desc}</td>
+                    <td>${count}</td>
+                    <td><span class="badge ${badgeClass}">${status}</span></td>
+                    <td>
+                        <button class="btn-action btn-edit" data-id="${id}">Sửa</button>
+                        <button class="btn-action btn-delete" data-id="${id}">Xóa</button>
+                    </td>
+                </tr>
+            `;
+        };
+
+        const deleteRow = (row) => {
+            if (window.confirm('Bạn có chắc muốn xóa thể loại này không?')) {
+                row.remove();
+                updateSummary();
+            }
+        };
+
+        document.addEventListener('click', (event) => {
+            const editBtn = event.target.closest('.btn-edit');
+            const deleteBtn = event.target.closest('.btn-delete');
+            const closeBtn = event.target.closest('.modal-close');
+            const cancelBtn = event.target.closest('#btnCancelCategory');
+
+            if (editBtn) {
+                const row = editBtn.closest('tr');
+                openModal({ mode: 'edit', row });
+            }
+
+            if (deleteBtn) {
+                const row = deleteBtn.closest('tr');
+                deleteRow(row);
+            }
+
+            if (closeBtn || cancelBtn) {
+                event.preventDefault();
+                closeModal();
+            }
+
+            if (event.target === modal) {
+                closeModal();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape' && modal.style.display !== 'none') {
+                closeModal();
+            }
+        });
+
+        if (searchInput) {
+            searchInput.addEventListener('input', (event) => {
+                filterRows(event.target.value);
+            });
+        }
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const name = inputName.value.trim();
+            const desc = inputDesc.value.trim() || '-';
+            const count = inputCount.value.trim() || '0';
+            const status = inputStatus.value === 'active' ? 'Hoạt động' : 'Ngưng hoạt động';
+
+            if (!name) {
+                window.alert('Vui lòng nhập tên thể loại.');
+                inputName.focus();
+                return;
+            }
+
+            const id = editingRow
+                ? editingRow.getAttribute('data-id')
+                : `TL${String(tableBody.querySelectorAll('tr').length + 1).padStart(3, '0')}`;
+
+            const newRow = new DOMParser().parseFromString(
+                createRowHtml(id, name, desc, count, status),
+                'text/html'
+            ).querySelector('tr');
+
+            if (editingRow) {
+                editingRow.replaceWith(newRow);
+            } else {
+                tableBody.appendChild(newRow);
+            }
+
+            updateSummary();
+            closeModal();
+        });
+
+        updateSummary();
+    });
+</script>
+
+</body>
+</html>

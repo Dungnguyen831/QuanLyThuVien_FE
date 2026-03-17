@@ -1,0 +1,20 @@
+/* Publisher page specific styles */
+
+/* Hide panel / modal by default; controlled by JS */
+#publisherPanel {
+  display: none;
+}
+
+#publisherModal {
+  display: none;
+}
+
+.topbar__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.hidden {
+  display: none !important;
+}

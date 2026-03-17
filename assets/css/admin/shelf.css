@@ -1,0 +1,19 @@
+/* Shelf page specific styles */
+
+#shelfPanel {
+  display: none;
+}
+
+#shelfModal {
+  display: none;
+}
+
+.topbar__actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.hidden {
+  display: none !important;
+}

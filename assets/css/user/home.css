@@ -1,0 +1,244 @@
+/* ==========================================================================
+   1. CẤU HÌNH BIẾN & CÀI ĐẶT GỐC (Variables & Reset)
+   ========================================================================== */
+:root {
+  --bg: #f6f7fb;
+  --card: #fff;
+  --muted: #6b7280;
+  --accent: #2b6df6;
+  --pill: #eef2ff;
+  --container: 1200px;
+  --transition: all 0.3s ease; /* Thêm biến hiệu ứng mượt */
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  margin: 0;
+  background: var(--bg);
+  color: #0b1220;
+  line-height: 1.5;
+}
+
+.wrap {
+  max-width: var(--container);
+  margin: 32px auto;
+  padding: 0 20px;
+}
+
+/* ==========================================================================
+   2. THANH ĐIỀU HƯỚNG (Header & Navigation)
+   ========================================================================== */
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 0;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  font-size: 1.2rem;
+}
+
+.brand .logo {
+  background: linear-gradient(90deg, #2b6df6, #6b46ff);
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: inline-block;
+}
+
+nav ul {
+  display: flex;
+  gap: 24px; /* Tăng khoảng cách cho thoáng */
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   3. THÀNH PHẦN TƯƠNG TÁC (Buttons & Auth)
+   ========================================================================== */
+.auth {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: 10px;
+  border: 0;
+  cursor: pointer;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.btn:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 6px 18px rgba(43, 109, 246, 0.18);
+}
+
+.btn.ghost {
+  background: #fff;
+  border: 1px solid #e6e9f2;
+  color: #111;
+}
+
+/* ==========================================================================
+   4. KHU VỰC NỔI BẬT (Hero Section)
+   ========================================================================== */
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 420px;
+  gap: 40px;
+  align-items: center;
+  padding: 40px 0;
+}
+
+.hero h1 {
+  font-size: 48px; /* Tăng size để nổi bật hơn */
+  margin: 0 0 16px;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.hero p {
+  color: var(--muted);
+  font-size: 1.1rem;
+  margin: 0 0 24px;
+}
+
+.card-hero {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 12px;
+  box-shadow: 0 12px 40px rgba(11, 18, 32, 0.08);
+}
+
+.hero-img {
+  width: 100%;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+/* ==========================================================================
+   5. DANH MỤC & THẺ SÁCH (Sections & Books)
+   ========================================================================== */
+.section {
+  margin-top: 48px;
+}
+
+.section .title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Thanh cuộn ngang cho danh sách sách */
+.cards {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding: 10px 4px 20px;
+  scrollbar-width: thin; /* Cho Firefox */
+}
+
+/* Tùy chỉnh thanh cuộn cho Chrome/Safari */
+.cards::-webkit-scrollbar { height: 6px; }
+.cards::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+.book {
+  background: var(--card);
+  width: 180px;
+  border-radius: 14px;
+  padding: 14px;
+  box-shadow: 0 4px 15px rgba(11, 18, 32, 0.04);
+  flex: 0 0 auto;
+  transition: var(--transition);
+}
+
+.book:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 25px rgba(11, 18, 32, 0.1);
+}
+
+.book img {
+  width: 100%;
+  height: 240px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+.book h4 {
+  font-size: 15px;
+  margin: 12px 0 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.book p {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* ==========================================================================
+   6. LỜI GỌI HÀNH ĐỘNG & CHÂN TRANG (CTA & Footer)
+   ========================================================================== */
+.cta {
+  margin: 48px 0;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: #fff;
+  padding: 40px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.cta .left h3 {
+  font-size: 24px;
+  margin: 0 0 10px;
+}
+
+footer {
+  padding: 40px 0;
+  border-top: 1px solid #e6e9f2;
+  color: var(--muted);
+  font-size: 14px;
+  text-align: center;
+}
+
+/* ==========================================================================
+   7. PHẢN HỒI THIẾT BỊ (Responsive Design)
+   ========================================================================== */
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; text-align: center; }
+  .hero h1 { font-size: 36px; }
+  .hero-img { height: 250px; }
+  .cta { flex-direction: column; text-align: center; gap: 20px; }
+}
+
+@media (max-width: 520px) {
+  nav ul { display: none; }
+  .book { width: 150px; }
+}
