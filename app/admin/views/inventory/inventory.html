@@ -132,7 +132,7 @@
 
 
             if (typeof BookController !== 'undefined') {
-                const bookController = new BookController();
+                const bookController = new BookController(new BookModel(), new BookView());
                 bookController.init();
             }
         });
