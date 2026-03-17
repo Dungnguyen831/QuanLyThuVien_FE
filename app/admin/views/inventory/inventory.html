@@ -107,6 +107,10 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../../../assets/js/ComponentLoader.js"></script>
+
+    <script src="/app/admin/controllers/BookController.js"></script>
+    <script src="/app/admin/models/BookModel.js"></script>
+    <script src="/app/admin/views/inventory/BookView.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -116,30 +120,20 @@
                 ComponentLoader.load('header-container', '../../components/header.html')
             ]);
 
-            // 2. Ép Header hiển thị tên module cha: "Quản lý kho sách"
-            const headerDisplay = document.getElementById('page-title');
-            if (headerDisplay) {
-                headerDisplay.textContent = 'Quản lý kho sách';
-            }
-
-            document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
-
-            // 3. Logic Sidebar: Tự động mở menu cha và active nhánh hiện tại
-            const submenuEl = document.getElementById('inventorySubmenu');
-            const parentNode = document.getElementById('inventoryParent');
-            const detailLink = document.getElementById('link-inventory');
-
-            if (submenuEl && typeof bootstrap !== 'undefined') {
-                const bsCollapse = new bootstrap.Collapse(submenuEl, { toggle: false });
-                bsCollapse.show(); // Luôn xổ menu xuống
+            setTimeout(() => {
+                document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
+                // Cập nhật lại đường dẫn thẻ a cho đúng
+                const loanMenu = document.querySelector('#sidebar-wrapper a[href="../inventory/inventory.html"]');
+                if (loanMenu) loanMenu.classList.add('active');
                 
-                if (parentNode) {
-                    parentNode.classList.add('active-parent'); // Hiện dải xanh bên trái
-                    parentNode.setAttribute('aria-expanded', 'true');
-                }
-                if (detailLink) {
-                    detailLink.classList.add('active'); // Thắp sáng chữ "Sách chi tiết"
-                }
+                const pageTitle = document.getElementById('page-title');
+                if(pageTitle) pageTitle.textContent = 'Quản lý kho sách';
+            }, 100); 
+
+
+            if (typeof BookController !== 'undefined') {
+                const bookController = new BookController();
+                bookController.init();
             }
         });
         
