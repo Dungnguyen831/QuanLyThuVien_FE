@@ -19,4 +19,21 @@ class LoanModel {
             ];
         }
     }
+
+    async createLoan(loanData) {
+        try {
+            const response = await fetch('http://localhost:8080/api/v1/loans', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(loanData)
+            });
+
+            if (!response.ok) throw new Error('Lỗi khi tạo phiếu mượn');
+            return await response.json();
+        } catch (error) {
+            console.error("Lỗi khi tạo phiếu mượn:", error);
+            throw error;
+        }
+
+    }
 }
