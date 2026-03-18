@@ -3,24 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý tác giả - LMS Admin</title>
+    <title>Quản lý Tác giả - LMS Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../../../../assets/css/admin/admin-style.css">
-    <link rel="stylesheet" href="../../../../assets/css/admin/author-style.css">
-    <style>
-        .btn-filter {
-            background: #fff;
-            border: 1px solid #e9ecef;
-            padding: 0.6rem 1.25rem;
-            border-radius: 12px;
-            font-weight: 500;
-            color: #495057;
-        }
-        .dropdown-menu { border: none; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); border-radius: 12px; }
-        /* Vô hiệu hóa click cho các nút chức năng nhưng vẫn giữ màu sắc */
-        .btn-edit, .btn-delete { pointer-events: none; opacity: 0.8; }
-    </style>
+    <link rel="stylesheet" href="../../../../assets/css/admin/author.css">
 </head>
 <body class="bg-light">
 
@@ -35,78 +22,63 @@
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
                         <h3 class="fw-bold mb-1">Quản lý tác giả</h3>
-                        <p class="text-muted mb-0">Quản lý thông tin chi tiết và danh mục tác giả trong hệ thống</p>
+                        <p class="text-muted mb-0">Theo dõi và cập nhật thông tin tác giả trong hệ thống</p>
                     </div>
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-primary shadow-sm fw-medium">
-                            <i class="fas fa-plus me-2"></i>Thêm tác giả mới
-                        </button>
-                    </div>
+                    <button class="btn btn-primary shadow-sm fw-medium px-4">
+                        <i class="fas fa-plus me-2"></i>Thêm tác giả mới
+                    </button>
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4">
-                    <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <div class="input-group" style="width: 320px;">
-                            <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" class="form-control bg-light border-0" placeholder="Tìm theo tên hoặc ID...">
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <div class="dropdown">
-                                <button class="btn btn-filter dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    Tất cả thể loại
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Văn học</a></li>
-                                    <li><a class="dropdown-item" href="#">Kinh tế</a></li>
-                                </ul>
+                    
+                    <div class="p-4 border-bottom">
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                                    <input type="text" id="searchInput" class="form-control bg-light border-0" placeholder="Tìm kiếm theo mã, tên tác giả...">
+                                </div>
                             </div>
-
-                            <div class="dropdown">
-                                <button class="btn btn-filter dropdown-toggle" type="button" data-bs-toggle="dropdown">
-                                    Tất cả trạng thái
-                                </button>
-                                <ul class="dropdown-menu">
-                                    <li><a class="dropdown-item" href="#">Đang hoạt động</a></li>
-                                    <li><a class="dropdown-item" href="#">Tạm dừng</a></li>
-                                </ul>
+                            <div class="col-md-7 d-flex gap-2 justify-content-end">
+                                <select class="form-select bg-light border-0" style="width: 180px;">
+                                    <option selected disabled>Quốc tịch</option>
+                                    <option>Việt Nam</option>
+                                    <option>Nước ngoài</option>
+                                </select>
+                                <select class="form-select bg-light border-0" style="width: 180px;">
+                                    <option selected disabled>Trạng thái</option>
+                                    <option>Đang hợp tác</option>
+                                    <option>Ngừng hợp tác</option>
+                                </select>
                             </div>
                         </div>
                     </div>
 
                     <div class="table-responsive">
-                        <table class="table table-hover table-custom align-middle mb-0">
-                            <thead class="bg-light">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead>
                                 <tr>
-                                    <th class="ps-4 py-3">ID</th>
-                                    <th class="py-3">THÔNG TIN TÁC GIẢ</th>
-                                    <th class="py-3">EMAIL & SĐT</th>
-                                    <th class="py-3">SỐ SÁCH</th>
-                                    <th class="py-3">TRẠNG THÁI</th>
-                                    <th class="text-end pe-4 py-3">HÀNH ĐỘNG</th>
+                                    <th class="ps-4 py-3">MÃ TG</th>
+                                    <th>TÊN TÁC GIẢ</th>
+                                    <th>QUỐC TỊCH</th>
+                                    <th>SỐ LƯỢNG SÁCH</th>
+                                    <th>TRẠNG THÁI</th>
+                                    <th class="text-end pe-4">THAO TÁC</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="author-table-body">
                                 <tr>
-                                    <td class="ps-4">TG001</td>
+                                    <td class="ps-4 fw-bold text-dark">TG001</td>
+                                    <td><div class="fw-bold">Dale Carnegie</div></td>
+                                    <td>Hoa Kỳ</td>
+                                    <td class="fw-bold">12</td>
                                     <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-3" style="background: linear-gradient(135deg, #6366f1, #0ea5e9); color: white; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 600;">NH</div>
-                                            <div>
-                                                <div class="fw-bold text-dark">Nguyễn Minh Hùng</div>
-                                                <small class="text-muted">Văn học</small>
-                                            </div>
-                                        </div>
+                                        <span class="status-indicator bg-success"></span>
+                                        <span class="text-success fw-medium">Đang hợp tác</span>
                                     </td>
-                                    <td>
-                                        <div>hung.nm@uni.edu.vn</div>
-                                        <small class="text-muted">0987 654 321</small>
-                                    </td>
-                                    <td><span class="badge rounded-pill bg-light text-dark border px-3">32</span></td>
-                                    <td><span class="badge bg-success-subtle text-success">Đang hoạt động</span></td>
                                     <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-light border btn-edit me-1"><i class="fas fa-edit text-primary"></i></button>
-                                        <button class="btn btn-sm btn-light border btn-delete"><i class="fas fa-trash text-danger"></i></button>
+                                        <button class="btn btn-sm btn-light-primary me-1" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-light-danger" title="Xóa"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -114,14 +86,12 @@
                     </div>
 
                     <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
-                        <small>Hiển thị <b class="text-dark">1</b> kết quả</small>
+                        <small>Hiển thị <b class="text-dark">1</b> tác giả</small>
                         <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
                             <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
                         </ul>
                     </div>
-                </div>
+                </div> 
             </div>
         </div>
     </div>
@@ -130,15 +100,20 @@
     <script src="../../../../assets/js/ComponentLoader.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
-            ComponentLoader.load('header-container', '../../components/header.html');
-            
-            // Chỉ giữ lại hiệu ứng menu bên trái cho đẹp
+        document.addEventListener('DOMContentLoaded', async () => {
+            await Promise.all([
+                ComponentLoader.load('sidebar-container', '../../components/sidebar.html'),
+                ComponentLoader.load('header-container', '../../components/header.html')
+            ]);
+
             setTimeout(() => {
-                const authorMenu = document.querySelector('#sidebar-wrapper a[href*="author"]');
+                document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
+                const authorMenu = document.querySelector('#sidebar-wrapper a[href*="author.html"]');
                 if (authorMenu) authorMenu.classList.add('active');
-            }, 150);
+                
+                const pageTitle = document.getElementById('page-title');
+                if(pageTitle) pageTitle.textContent = 'Quản lý tác giả';
+            }, 100); 
         });
     </script>
 </body>

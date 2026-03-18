@@ -1,20 +1,98 @@
-/* Publisher page specific styles */
-
-/* Hide panel / modal by default; controlled by JS */
-#publisherPanel {
-  display: none;
+/* Layout chính */
+#wrapper {
+    overflow-x: hidden;
+    background-color: #f8f9fc;
 }
 
-#publisherModal {
-  display: none;
+#sidebar-container {
+    background: #fff;
+    min-height: 100vh;
 }
 
-.topbar__actions {
-  display: flex;
-  gap: 12px;
-  align-items: center;
+/* Tùy chỉnh bảng */
+.table thead th {
+    background-color: #f8f9fa;
+    font-size: 11px;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid #ebedef;
+    color: #8a929a;
 }
 
-.hidden {
-  display: none !important;
+.table tbody td {
+    padding: 1rem 0.75rem;
+    border-bottom: 1px solid #f1f2f4;
+    vertical-align: middle;
+}
+
+/* Thanh tiến trình sức chứa (Capacity bar) */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+    margin-bottom: 4px;
+}
+
+/* Trạng thái */
+.status-indicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+}
+
+/* Nút thao tác */
+.btn-light-primary {
+    background-color: #e7f1ff;
+    color: #0d6efd;
+    border: none;
+    transition: all 0.2s ease;
+}
+.btn-light-primary:hover { 
+    background-color: #0d6efd; 
+    color: #fff; 
+    transform: translateY(-2px);
+}
+
+.btn-light-danger {
+    background-color: #ffe5e5;
+    color: #dc3545;
+    border: none;
+    transition: all 0.2s ease;
+}
+.btn-light-danger:hover { 
+    background-color: #dc3545; 
+    color: #fff; 
+    transform: translateY(-2px);
+}
+
+/* Thanh Lọc (Filter Bar) */
+.form-select.bg-light {
+    border: 1px solid transparent !important;
+    font-size: 14px;
+    color: #495057;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.form-select.bg-light:hover { background-color: #eef1f6 !important; }
+.form-select.bg-light:focus {
+    background-color: #fff !important;
+    border-color: #0d6efd !important;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    outline: none;
+}
+
+/* Pagination */
+.pagination .page-link {
+    border: none;
+    margin: 0 3px;
+    border-radius: 6px;
+    color: #6c757d;
+}
+
+.pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    color: #fff;
 }

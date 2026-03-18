@@ -3,40 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý thể loại - LMS Admin</title>
+    <title>Quản lý Thể loại - LMS Admin</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../../../../assets/css/admin/admin-style.css">
-    <link rel="stylesheet" href="../../../../assets/css/admin/category-style.css">
-    <style>
-        .btn-filter {
-            background: #fff;
-            border: 1px solid #e9ecef;
-            padding: 0.6rem 1.25rem;
-            border-radius: 12px;
-            font-weight: 500;
-            color: #495057;
-        }
-        /* Vô hiệu hóa nút nhưng giữ nguyên màu sắc để demo */
-        .btn-edit, .btn-delete, .btn-primary, .btn-filter, .pagination .page-link { 
-            pointer-events: none; 
-            user-select: none;
-        }
-        .btn-edit { opacity: 0.8; }
-        .btn-delete { opacity: 0.8; }
-        
-        .avatar-circle {
-            width: 38px;
-            height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            font-weight: 600;
-            color: white;
-            font-size: 0.85rem;
-        }
-    </style>
+    <link rel="stylesheet" href="../../../../assets/css/admin/category.css">
 </head>
 <body class="bg-light">
 
@@ -50,79 +21,61 @@
                 
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
-                        <h3 class="fw-bold mb-1">Quản lý thể loại sách</h3>
-                        <p class="text-muted mb-0">Phân loại và tổ chức danh mục sách trong thư viện</p>
+                        <h3 class="fw-bold mb-1">Quản lý thể loại</h3>
+                        <p class="text-muted mb-0">Phân loại sách theo các chủ đề khoa học và đời sống</p>
                     </div>
-                    <div class="d-flex gap-3">
-                        <button class="btn btn-primary shadow-sm fw-medium">
-                            <i class="fas fa-plus me-2"></i>Thêm thể loại mới
-                        </button>
-                    </div>
+                    <button class="btn btn-primary shadow-sm fw-medium px-4">
+                        <i class="fas fa-plus me-2"></i>Thêm thể loại
+                    </button>
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4">
-                    <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
-                        <div class="input-group" style="width: 320px;">
-                            <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" class="form-control bg-light border-0" placeholder="Tìm kiếm thể loại..." readonly>
-                        </div>
-                        
-                        <div class="d-flex gap-2">
-                            <button class="btn btn-filter">
-                                <i class="fas fa-filter me-2 text-muted"></i>Tất cả trạng thái
-                            </button>
+                    
+                    <div class="p-4 border-bottom">
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                                    <input type="text" id="searchInput" class="form-control bg-light border-0" placeholder="Tìm tên thể loại, mã...">
+                                </div>
+                            </div>
+                            <div class="col-md-7 d-flex gap-2 justify-content-end">
+                                <select class="form-select bg-light border-0" style="width: 180px;">
+                                    <option selected disabled>Trạng thái</option>
+                                    <option>Hiển thị</option>
+                                    <option>Đang ẩn</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 
                     <div class="table-responsive">
                         <table class="table table-hover align-middle mb-0">
-                            <thead class="bg-light">
+                            <thead>
                                 <tr>
-                                    <th class="ps-4 py-3">ID</th>
-                                    <th class="py-3">THỂ LOẠI</th>
-                                    <th class="py-3">MÔ TẢ CHI TIẾT</th>
-                                    <th class="py-3">SỐ LƯỢNG</th>
-                                    <th class="py-3">TRẠNG THÁI</th>
-                                    <th class="text-end pe-4 py-3">HÀNH ĐỘNG</th>
+                                    <th class="ps-4 py-3 text-uppercase">MÃ LOẠI</th>
+                                    <th class="text-uppercase">TÊN THỂ LOẠI</th>
+                                    <th class="text-uppercase">MÔ TẢ</th>
+                                    <th class="text-uppercase">SỐ LƯỢNG SÁCH</th>
+                                    <th class="text-uppercase">TRẠNG THÁI</th>
+                                    <th class="text-end pe-4 text-uppercase">THAO TÁC</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="category-table-body">
                                 <tr>
-                                    <td class="ps-4">TL001</td>
+                                    <td class="ps-4 fw-bold text-dark">CAT01</td>
                                     <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-3" style="background: linear-gradient(135deg, #6366f1, #a855f7);">VH</div>
-                                            <div>
-                                                <div class="fw-bold text-dark">Văn học</div>
-                                                <small class="text-muted">Tiểu thuyết, truyện ngắn</small>
-                                            </div>
-                                        </div>
+                                        <span class="badge-category bg-primary-subtle text-primary">Kỹ năng sống</span>
                                     </td>
-                                    <td><span class="text-truncate d-inline-block" style="max-width: 250px;">Dành cho các tác phẩm hư cấu, nghệ thuật ngôn từ.</span></td>
-                                    <td><span class="badge rounded-pill bg-light text-dark border px-3">218</span></td>
-                                    <td><span class="badge bg-success-subtle text-success">Hoạt động</span></td>
-                                    <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-light border btn-edit me-1"><i class="fas fa-edit text-primary"></i></button>
-                                        <button class="btn btn-sm btn-light border btn-delete"><i class="fas fa-trash text-danger"></i></button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="ps-4">TL002</td>
+                                    <td><small class="text-muted">Các sách về tư duy, giao tiếp và phát triển bản thân</small></td>
+                                    <td class="fw-bold">45</td>
                                     <td>
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle me-3" style="background: linear-gradient(135deg, #0ea5e9, #22c55e);">KH</div>
-                                            <div>
-                                                <div class="fw-bold text-dark">Khoa học</div>
-                                                <small class="text-muted">Kỹ thuật, công nghệ</small>
-                                            </div>
-                                        </div>
+                                        <span class="status-indicator bg-success"></span>
+                                        <span class="text-success fw-medium">Hiển thị</span>
                                     </td>
-                                    <td><span class="text-truncate d-inline-block" style="max-width: 250px;">Sách tham khảo, nghiên cứu và giáo trình kỹ thuật.</span></td>
-                                    <td><span class="badge rounded-pill bg-light text-dark border px-3">143</span></td>
-                                    <td><span class="badge bg-success-subtle text-success">Hoạt động</span></td>
                                     <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-light border btn-edit me-1"><i class="fas fa-edit text-primary"></i></button>
-                                        <button class="btn btn-sm btn-light border btn-delete"><i class="fas fa-trash text-danger"></i></button>
+                                        <button class="btn btn-sm btn-light-primary me-1" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
+                                        <button class="btn btn-sm btn-light-danger" title="Xóa"><i class="fas fa-trash"></i></button>
                                     </td>
                                 </tr>
                             </tbody>
@@ -130,14 +83,12 @@
                     </div>
 
                     <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
-                        <small>Hiển thị <b class="text-dark">2</b> kết quả</small>
+                        <small>Hiển thị <b class="text-dark">1</b> thể loại</small>
                         <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
                             <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
                         </ul>
                     </div>
-                </div>
+                </div> 
             </div>
         </div>
     </div>
@@ -146,12 +97,21 @@
     <script src="../../../../assets/js/ComponentLoader.js"></script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Load components nếu có
-            if(typeof ComponentLoader !== 'undefined'){
-                ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
-                ComponentLoader.load('header-container', '../../components/header.html');
-            }
+        document.addEventListener('DOMContentLoaded', async () => {
+            await Promise.all([
+                ComponentLoader.load('sidebar-container', '../../components/sidebar.html'),
+                ComponentLoader.load('header-container', '../../components/header.html')
+            ]);
+
+            setTimeout(() => {
+                document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
+                // Active menu Thể loại
+                const catMenu = document.querySelector('#sidebar-wrapper a[href*="category.html"]');
+                if (catMenu) catMenu.classList.add('active');
+                
+                const pageTitle = document.getElementById('page-title');
+                if(pageTitle) pageTitle.textContent = 'Quản lý thể loại';
+            }, 100); 
         });
     </script>
 </body>
