@@ -3,473 +3,142 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quản lý tác giả - LibraryPro</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../../assets/css/admin/author.css">
+    <title>Quản lý tác giả - LMS Admin</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../../../../assets/css/admin/admin-style.css">
+    <link rel="stylesheet" href="../../../../assets/css/admin/author-style.css">
+    <style>
+        .btn-filter {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .dropdown-menu { border: none; box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1); border-radius: 12px; }
+        /* Vô hiệu hóa click cho các nút chức năng nhưng vẫn giữ màu sắc */
+        .btn-edit, .btn-delete { pointer-events: none; opacity: 0.8; }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
-<div class="app">
-    <aside class="sidebar">
-        <div class="sidebar__brand">
-            <span class="logo"></span>
-            <span>Thư viện ĐH</span>
-        </div>
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-container"></div>
 
-        <nav class="sidebar__nav">
-            <a href="#" class="active">Dashboard</a>
-            <a href="#">Quản lý sách</a>
-            <a href="#">Quản lý tác giả</a>
-            <a href="#">Mượn trả</a>
-            <a href="#">Báo cáo</a>
-        </nav>
+        <div id="page-content-wrapper" class="flex-grow-1">
+            <div id="header-container"></div>
 
-        <div class="sidebar__settings">
-            <a href="#">Hệ thống</a>
-            <a href="#">Phân quyền</a>
-        </div>
-    </aside>
-
-    <main class="main">
-        <header class="topbar">
-            <h1>Danh sách tác giả</h1>
-            <button id="btnAddAuthor" class="btn-primary" type="button">+ Thêm tác giả mới</button>
-        </header>
-
-        <section class="panel">
-            <div class="panel__controls">
-                <div class="search">
-                    <span class="icon">🔍</span>
-                    <input id="authorSearch" type="text" placeholder="Tìm kiếm theo tên hoặc ID (VD: TG001)..." />
-                </div>
-
-                <div class="filters">
-                    <div class="select">
-                        <label>Lọc theo:</label>
-                        <select>
-                            <option>Tất cả thể loại</option>
-                            <option>Văn học</option>
-                            <option>Khoa học</option>
-                            <option>Giáo dục</option>
-                        </select>
+            <div class="container-fluid px-4 py-4" id="main-content">
+                
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-1">Quản lý tác giả</h3>
+                        <p class="text-muted mb-0">Quản lý thông tin chi tiết và danh mục tác giả trong hệ thống</p>
                     </div>
-
-                    <div class="select">
-                        <select>
-                            <option>Tất cả trạng thái</option>
-                            <option>Đang hoạt động</option>
-                            <option>Ngừng hoạt động</option>
-                            <option>Đã nghỉ</option>
-                        </select>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-primary shadow-sm fw-medium">
+                            <i class="fas fa-plus me-2"></i>Thêm tác giả mới
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Thông tin tác giả</th>
-                            <th>Email</th>
-                            <th>Số sách</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="authorTableBody">
-                        <tr>
-                            <td>TG001</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar">NH</div>
-                                    <div class="meta">
-                                        <div class="name">Nguyễn Minh Hùng</div>
-                                        <div class="role">Văn học</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>hung.nm@uni.edu.vn</div>
-                                    <div class="text-muted">0987 654 321</div>
-                                </div>
-                            </td>
-                            <td><span class="badge badge--student">32</span></td>
-                            <td><span class="badge badge--active">Đang hoạt động</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="TG001">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="TG001">Xóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>TG002</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar" style="background: linear-gradient(135deg, #38bdf8, #a855f7);">TT</div>
-                                    <div class="meta">
-                                        <div class="name">Trần Thị Thu</div>
-                                        <div class="role">Khoa học xã hội</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>thu.tt@uni.edu.vn</div>
-                                    <div class="text-muted">0912 345 678</div>
-                                </div>
-                            </td>
-                            <td><span class="badge badge--faculty">18</span></td>
-                            <td><span class="badge badge--locked">Tạm dừng</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="TG002">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="TG002">Xóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>TG003</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar" style="background: linear-gradient(135deg, #f97316, #facc15);">LA</div>
-                                    <div class="meta">
-                                        <div class="name">Lê An</div>
-                                        <div class="role">Kỹ năng sống</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>an.le@uni.edu.vn</div>
-                                    <div class="text-muted">0909 123 456</div>
-                                </div>
-                            </td>
-                            <td><span class="badge badge--student">27</span></td>
-                            <td><span class="badge badge--expired">Đã nghỉ</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="TG003">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="TG003">Xóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>TG004</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #14b8a6);">PT</div>
-                                    <div class="meta">
-                                        <div class="name">Phạm Thị Tâm</div>
-                                        <div class="role">Kinh tế</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>tam.pt@uni.edu.vn</div>
-                                    <div class="text-muted">0933 888 999</div>
-                                </div>
-                            </td>
-                            <td><span class="badge badge--faculty">12</span></td>
-                            <td><span class="badge badge--active">Đang hoạt động</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="TG004">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="TG004">Xóa</button>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>TG005</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar" style="background: linear-gradient(135deg, #6366f1, #0ea5e9);">QH</div>
-                                    <div class="meta">
-                                        <div class="name">Quách Huy</div>
-                                        <div class="role">Luật</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>huy.q@uni.edu.vn</div>
-                                    <div class="text-muted">0911 222 333</div>
-                                </div>
-                            </td>
-                            <td><span class="badge badge--student">9</span></td>
-                            <td><span class="badge badge--active">Đang hoạt động</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="TG005">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="TG005">Xóa</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="input-group" style="width: 320px;">
+                            <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" class="form-control bg-light border-0" placeholder="Tìm theo tên hoặc ID...">
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <div class="dropdown">
+                                <button class="btn btn-filter dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Tất cả thể loại
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Văn học</a></li>
+                                    <li><a class="dropdown-item" href="#">Kinh tế</a></li>
+                                </ul>
+                            </div>
 
-            <div class="pagination">
-                <span id="authorSummary">Hiển thị 1 đến 5 của 128 kết quả</span>
-                <button class="page-btn">‹</button>
-                <button class="page-btn active">1</button>
-                <button class="page-btn">2</button>
-                <button class="page-btn">3</button>
-                <span>…</span>
-                <button class="page-btn">10</button>
-                <button class="page-btn">›</button>
-            </div>
-        </section>
+                            <div class="dropdown">
+                                <button class="btn btn-filter dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Tất cả trạng thái
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#">Đang hoạt động</a></li>
+                                    <li><a class="dropdown-item" href="#">Tạm dừng</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
 
-        <!-- Modal thêm/sửa tác giả -->
-        <div class="modal-overlay" id="authorModal" style="display:none;">
-            <div class="modal">
-                <div class="modal-header">
-                    <h2 id="authorModalTitle">Thêm tác giả</h2>
-                    <button class="modal-close" type="button" aria-label="Đóng">✕</button>
+                    <div class="table-responsive">
+                        <table class="table table-hover table-custom align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3">ID</th>
+                                    <th class="py-3">THÔNG TIN TÁC GIẢ</th>
+                                    <th class="py-3">EMAIL & SĐT</th>
+                                    <th class="py-3">SỐ SÁCH</th>
+                                    <th class="py-3">TRẠNG THÁI</th>
+                                    <th class="text-end pe-4 py-3">HÀNH ĐỘNG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-4">TG001</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3" style="background: linear-gradient(135deg, #6366f1, #0ea5e9); color: white; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 50%; font-weight: 600;">NH</div>
+                                            <div>
+                                                <div class="fw-bold text-dark">Nguyễn Minh Hùng</div>
+                                                <small class="text-muted">Văn học</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>hung.nm@uni.edu.vn</div>
+                                        <small class="text-muted">0987 654 321</small>
+                                    </td>
+                                    <td><span class="badge rounded-pill bg-light text-dark border px-3">32</span></td>
+                                    <td><span class="badge bg-success-subtle text-success">Đang hoạt động</span></td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-light border btn-edit me-1"><i class="fas fa-edit text-primary"></i></button>
+                                        <button class="btn btn-sm btn-light border btn-delete"><i class="fas fa-trash text-danger"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
+                        <small>Hiển thị <b class="text-dark">1</b> kết quả</small>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                        </ul>
+                    </div>
                 </div>
-                <form class="modal-form" id="authorForm">
-                    <div class="form-row">
-                        <label for="authorName">Tên tác giả</label>
-                        <input id="authorName" type="text" placeholder="Nhập tên tác giả" required />
-                    </div>
-                    <div class="form-row">
-                        <label for="authorRole">Thể loại / chuyên ngành</label>
-                        <input id="authorRole" type="text" placeholder="Nhập thể loại" />
-                    </div>
-                    <div class="form-row">
-                        <label for="authorEmail">Email</label>
-                        <input id="authorEmail" type="email" placeholder="Nhập email" />
-                    </div>
-                    <div class="form-row">
-                        <label for="authorPhone">Số điện thoại</label>
-                        <input id="authorPhone" type="tel" placeholder="Nhập số điện thoại" />
-                    </div>
-                    <div class="form-row">
-                        <label for="authorBooks">Số sách</label>
-                        <input id="authorBooks" type="number" min="0" placeholder="0" />
-                    </div>
-                    <div class="form-row">
-                        <label for="authorStatus">Trạng thái</label>
-                        <select id="authorStatus">
-                            <option value="Đang hoạt động">Đang hoạt động</option>
-                            <option value="Tạm dừng">Tạm dừng</option>
-                            <option value="Đã nghỉ">Đã nghỉ</option>
-                        </select>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="btn-secondary" id="btnCancelAuthor">Hủy</button>
-                        <button type="submit" class="btn-primary" id="btnSaveAuthor">Lưu</button>
-                    </div>
-                </form>
             </div>
         </div>
-    </main>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../../../assets/js/ComponentLoader.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const btnAddAuthor = document.getElementById('btnAddAuthor');
-            const searchInput = document.getElementById('authorSearch');
-            const tableBody = document.getElementById('authorTableBody');
-            const summaryEl = document.getElementById('authorSummary');
-
-            const modalOverlay = document.getElementById('authorModal');
-            const modalTitle = document.getElementById('authorModalTitle');
-            const authorForm = document.getElementById('authorForm');
-            const btnCancelAuthor = document.getElementById('btnCancelAuthor');
-
-            const inputName = document.getElementById('authorName');
-            const inputRole = document.getElementById('authorRole');
-            const inputEmail = document.getElementById('authorEmail');
-            const inputPhone = document.getElementById('authorPhone');
-            const inputBooks = document.getElementById('authorBooks');
-            const inputStatus = document.getElementById('authorStatus');
-
-            let editingRow = null;
-
-            const createRow = (id, name, role, email, phone, books, status) => {
-                const badgeClass =
-                    status === 'Đang hoạt động'
-                        ? 'badge--active'
-                        : status === 'Tạm dừng'
-                        ? 'badge--locked'
-                        : 'badge--expired';
-                const initials = name
-                    .split(' ')
-                    .filter(Boolean)
-                    .slice(-2)
-                    .map((x) => x[0].toUpperCase())
-                    .join('');
-
-                return `
-                    <tr data-id="${id}">
-                        <td>${id}</td>
-                        <td>
-                            <div class="user-info">
-                                <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #0ea5e9);">${initials}</div>
-                                <div class="meta">
-                                    <div class="name">${name}</div>
-                                    <div class="role">${role}</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div style="line-height:1.3">
-                                <div>${email}</div>
-                                <div class="text-muted">${phone}</div>
-                            </div>
-                        </td>
-                        <td><span class="badge badge--student">${books}</span></td>
-                        <td><span class="badge ${badgeClass}">${status}</span></td>
-                        <td>
-                            <button class="btn-action btn-edit" data-id="${id}">Sửa</button>
-                            <button class="btn-action btn-delete" data-id="${id}">Xóa</button>
-                        </td>
-                    </tr>
-                `;
-            };
-
-            const updateSummary = () => {
-                const total = tableBody.querySelectorAll('tr').length;
-                if (summaryEl) {
-                    summaryEl.textContent = `Hiển thị 1 đến ${total} của ${total} kết quả`;
-                }
-            };
-
-            const filterRows = (query) => {
-                const text = query.trim().toLowerCase();
-                tableBody.querySelectorAll('tr').forEach((row) => {
-                    const id = row.querySelector('td:first-child')?.textContent?.toLowerCase() || '';
-                    const name = row.querySelector('.user-info .name')?.textContent?.toLowerCase() || '';
-                    const visible = !text || id.includes(text) || name.includes(text);
-                    row.style.display = visible ? '' : 'none';
-                });
-            };
-
-            const collectRowData = (row) => {
-                const id = row.querySelector('td:first-child')?.textContent?.trim();
-                const name = row.querySelector('.user-info .name')?.textContent?.trim();
-                const role = row.querySelector('.user-info .role')?.textContent?.trim();
-                const email = row.querySelector('td:nth-child(3) div:first-child')?.textContent?.trim();
-                const phone = row.querySelector('td:nth-child(3) div.text-muted')?.textContent?.trim();
-                const books = row.querySelector('td:nth-child(4)')?.textContent?.trim();
-                const status = row.querySelector('td:nth-child(5) .badge')?.textContent?.trim();
-                return { id, name, role, email, phone, books, status };
-            };
-
-            const openModal = ({ mode, row } = {}) => {
-                editingRow = row || null;
-                modalTitle.textContent = mode === 'edit' ? 'Sửa thông tin tác giả' : 'Thêm tác giả mới';
-
-                if (mode === 'edit' && row) {
-                    const data = collectRowData(row);
-                    inputName.value = data.name;
-                    inputRole.value = data.role;
-                    inputEmail.value = data.email;
-                    inputPhone.value = data.phone;
-                    inputBooks.value = data.books;
-                    inputStatus.value = data.status;
-                } else {
-                    authorForm.reset();
-                    inputStatus.value = 'Đang hoạt động';
-                }
-
-                modalOverlay.style.display = 'flex';
-                inputName.focus();
-            };
-
-            const closeModal = () => {
-                modalOverlay.style.display = 'none';
-                editingRow = null;
-                authorForm.reset();
-            };
-
-            const deleteRow = (row) => {
-                if (window.confirm('Bạn có chắc muốn xóa tác giả này không?')) {
-                    row.remove();
-                    updateSummary();
-                }
-            };
-
-            document.addEventListener('click', (event) => {
-                const editBtn = event.target.closest('.btn-edit');
-                const deleteBtn = event.target.closest('.btn-delete');
-                const closeModalBtn = event.target.closest('.modal-close');
-
-                if (editBtn) {
-                    const row = editBtn.closest('tr');
-                    openModal({ mode: 'edit', row });
-                }
-
-                if (deleteBtn) {
-                    const row = deleteBtn.closest('tr');
-                    deleteRow(row);
-                }
-
-                if (closeModalBtn) {
-                    closeModal();
-                }
-
-                if (event.target === modalOverlay) {
-                    closeModal();
-                }
-            });
-
-            document.addEventListener('keydown', (event) => {
-                if (event.key === 'Escape') {
-                    closeModal();
-                }
-            });
-
-            if (btnAddAuthor) {
-                btnAddAuthor.addEventListener('click', () => {
-                    openModal({ mode: 'add' });
-                });
-            }
-
-            if (btnCancelAuthor) {
-                btnCancelAuthor.addEventListener('click', () => {
-                    closeModal();
-                });
-            }
-
-            authorForm.addEventListener('submit', (event) => {
-                event.preventDefault();
-
-                const id = editingRow
-                    ? editingRow.getAttribute('data-id')
-                    : `TG${String(tableBody.querySelectorAll('tr').length + 1).padStart(3, '0')}`;
-
-                const name = inputName.value.trim();
-                const role = inputRole.value.trim();
-                const email = inputEmail.value.trim();
-                const phone = inputPhone.value.trim();
-                const books = inputBooks.value.trim() || '0';
-                const status = inputStatus.value;
-
-                if (!name) {
-                    inputName.focus();
-                    return;
-                }
-
-                const newRow = new DOMParser().parseFromString(
-                    createRow(id, name, role, email, phone, books, status),
-                    'text/html'
-                ).querySelector('tr');
-
-                if (editingRow) {
-                    editingRow.replaceWith(newRow);
-                } else {
-                    tableBody.appendChild(newRow);
-                }
-
-                updateSummary();
-                closeModal();
-            });
-
-            if (searchInput) {
-                searchInput.addEventListener('input', (event) => {
-                    filterRows(event.target.value);
-                });
-            }
-
-            updateSummary();
+            ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
+            ComponentLoader.load('header-container', '../../components/header.html');
+            
+            // Chỉ giữ lại hiệu ứng menu bên trái cho đẹp
+            setTimeout(() => {
+                const authorMenu = document.querySelector('#sidebar-wrapper a[href*="author"]');
+                if (authorMenu) authorMenu.classList.add('active');
+            }, 150);
         });
     </script>
 </body>

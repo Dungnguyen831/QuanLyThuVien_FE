@@ -4,412 +4,153 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý nhà xuất bản - LibraryPro</title>
-
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="../../../../assets/css/admin/author.css">
-    <link rel="stylesheet" href="../../../../assets/css/admin/publisher.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link rel="stylesheet" href="../../../../assets/css/admin/admin-style.css">
+    <link rel="stylesheet" href="../../../../assets/css/admin/publisher-style.css">
+    <style>
+        .btn-filter {
+            background: #fff;
+            border: 1px solid #e9ecef;
+            padding: 0.6rem 1.25rem;
+            border-radius: 12px;
+            font-weight: 500;
+            color: #495057;
+        }
+        .btn-edit, .btn-delete, .btn-primary, .btn-filter, .pagination .page-link { 
+            pointer-events: none; 
+            user-select: none;
+        }
+        .btn-edit { opacity: 0.8; }
+        .btn-delete { opacity: 0.8; }
+        
+        .avatar-circle {
+            width: 38px;
+            height: 38px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: 600;
+            color: white;
+            font-size: 0.85rem;
+        }
+    </style>
 </head>
-<body>
+<body class="bg-light">
 
-<div class="app">
-    <aside class="sidebar">
-        <div class="sidebar__brand">
-            <span class="logo"></span>
-            <span>Thư viện ĐH</span>
-        </div>
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-container"></div>
 
-        <nav class="sidebar__nav">
-            <a href="#">Dashboard</a>
-            <a href="#">Quản lý sách</a>
-            <a href="#">Quản lý tác giả</a>
-            <a href="#" class="active">Quản lý nhà xuất bản</a>
-            <a href="#">Mượn trả</a>
-            <a href="#">Báo cáo</a>
-        </nav>
+        <div id="page-content-wrapper" class="flex-grow-1">
+            <div id="header-container"></div>
 
-        <div class="sidebar__settings">
-            <a href="#">Hệ thống</a>
-            <a href="#">Phân quyền</a>
-        </div>
-    </aside>
-
-    <main class="main">
-        <header class="topbar">
-            <h1>Danh sách nhà xuất bản</h1>
-            <div class="topbar__actions">
-                <button id="btnTogglePublisherTable" class="btn-secondary" type="button">Hiển thị bảng</button>
-                <button id="btnAddPublisher" class="btn-primary" type="button">+ Thêm nhà xuất bản mới</button>
-            </div>
-        </header>
-
-        <section class="panel" id="publisherPanel">
-            <div class="panel__controls">
-                <div class="search">
-                    <span class="icon">🔍</span>
-                    <input id="publisherSearch" type="text" placeholder="Tìm kiếm theo tên hoặc ID (VD: NXB001)..." />
-                </div>
-
-                <div class="filters">
-                    <div class="select">
-                        <label>Thể loại:</label>
-                        <select>
-                            <option>Tất cả</option>
-                            <option>Giáo dục</option>
-                            <option>Văn học</option>
-                            <option>Khoa học</option>
-                        </select>
+            <div class="container-fluid px-4 py-4" id="main-content">
+                
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-1">Quản lý nhà xuất bản</h3>
+                        <p class="text-muted mb-0">Quản lý đối tác và đơn vị phát hành sách trong hệ thống</p>
                     </div>
-
-                    <div class="select">
-                        <select>
-                            <option>Tất cả trạng thái</option>
-                            <option>Hoạt động</option>
-                            <option>Ngưng hoạt động</option>
-                        </select>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-primary shadow-sm fw-medium">
+                            <i class="fas fa-plus me-2"></i>Thêm nhà xuất bản mới
+                        </button>
                     </div>
                 </div>
-            </div>
 
-            <div class="table-wrapper">
-                <table>
-                    <thead>
-                        <tr>
-                            <th>ID</th>
-                            <th>Tên nhà xuất bản</th>
-                            <th>Địa chỉ</th>
-                            <th>Số điện thoại</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
-                        </tr>
-                    </thead>
-                    <tbody id="publisherTableBody">
-                        <tr data-id="NXB001">
-                            <td>NXB001</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar">NX</div>
-                                    <div class="meta">
-                                        <div class="name">NXB Trẻ</div>
-                                        <div class="role">Văn học & thiếu nhi</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>123 Nguyễn Trãi, Quận 1</div>
-                                    <div class="text-muted">TP. HCM</div>
-                                </div>
-                            </td>
-                            <td>028 3923 1234</td>
-                            <td><span class="badge badge--active">Hoạt động</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="NXB001">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="NXB001">Xóa</button>
-                            </td>
-                        </tr>
-                        <tr data-id="NXB002">
-                            <td>NXB002</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar" style="background: linear-gradient(135deg, #38bdf8, #a855f7);">KN</div>
-                                    <div class="meta">
-                                        <div class="name">NXB Kim Đồng</div>
-                                        <div class="role">Thiếu nhi</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>55A Nguyễn Du, Quận 1</div>
-                                    <div class="text-muted">TP. HCM</div>
-                                </div>
-                            </td>
-                            <td>028 3910 1234</td>
-                            <td><span class="badge badge--locked">Ngưng hoạt động</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="NXB002">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="NXB002">Xóa</button>
-                            </td>
-                        </tr>
-                        <tr data-id="NXB003">
-                            <td>NXB003</td>
-                            <td>
-                                <div class="user-info">
-                                    <div class="avatar" style="background: linear-gradient(135deg, #f97316, #facc15);">TH</div>
-                                    <div class="meta">
-                                        <div class="name">NXB Thái Hà</div>
-                                        <div class="role">Tôn giáo & triết học</div>
-                                    </div>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="line-height:1.3">
-                                    <div>22 Hoàng Sa, Quận 3</div>
-                                    <div class="text-muted">TP. HCM</div>
-                                </div>
-                            </td>
-                            <td>028 3930 4567</td>
-                            <td><span class="badge badge--active">Hoạt động</span></td>
-                            <td>
-                                <button class="btn-action btn-edit" data-id="NXB003">Sửa</button>
-                                <button class="btn-action btn-delete" data-id="NXB003">Xóa</button>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
+                <div class="card border-0 shadow-sm rounded-4">
+                    <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
+                        <div class="input-group" style="width: 320px;">
+                            <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" class="form-control bg-light border-0" placeholder="Tìm kiếm NXB..." readonly>
+                        </div>
+                        
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-filter">
+                                <i class="fas fa-filter me-2 text-muted"></i>Tất cả trạng thái
+                            </button>
+                        </div>
+                    </div>
 
-            <div class="pagination">
-                <span id="publisherSummary">Hiển thị 1 đến 3 của 3 kết quả</span>
-            </div>
-        </section>
-    </main>
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3">ID</th>
+                                    <th class="py-3">NHÀ XUẤT BẢN</th>
+                                    <th class="py-3">ĐỊA CHỈ</th>
+                                    <th class="py-3">SỐ ĐIỆN THOẠI</th>
+                                    <th class="py-3">TRẠNG THÁI</th>
+                                    <th class="text-end pe-4 py-3">HÀNH ĐỘNG</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="ps-4">NXB001</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3" style="background: linear-gradient(135deg, #6366f1, #a855f7);">TR</div>
+                                            <div>
+                                                <div class="fw-bold text-dark">NXB Trẻ</div>
+                                                <small class="text-muted">Văn học & Thiếu nhi</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-truncate d-inline-block" style="max-width: 250px;">161B Lý Chính Thắng, Quận 3, TP. HCM</span></td>
+                                    <td><span class="badge rounded-pill bg-light text-dark border px-3">028 3931 6289</span></td>
+                                    <td><span class="badge bg-success-subtle text-success">Hoạt động</span></td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-light border btn-edit me-1"><i class="fas fa-edit text-primary"></i></button>
+                                        <button class="btn btn-sm btn-light border btn-delete"><i class="fas fa-trash text-danger"></i></button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4">NXB002</td>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="avatar-circle me-3" style="background: linear-gradient(135deg, #0ea5e9, #22c55e);">KD</div>
+                                            <div>
+                                                <div class="fw-bold text-dark">NXB Kim Đồng</div>
+                                                <small class="text-muted">Truyện tranh, Manga</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td><span class="text-truncate d-inline-block" style="max-width: 250px;">55 Quang Trung, Hai Bà Trưng, Hà Nội</span></td>
+                                    <td><span class="badge rounded-pill bg-light text-dark border px-3">1900 571595</span></td>
+                                    <td><span class="badge bg-success-subtle text-success">Hoạt động</span></td>
+                                    <td class="text-end pe-4">
+                                        <button class="btn btn-sm btn-light border btn-edit me-1"><i class="fas fa-edit text-primary"></i></button>
+                                        <button class="btn btn-sm btn-light border btn-delete"><i class="fas fa-trash text-danger"></i></button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-    <div class="modal-overlay" id="publisherModal">
-        <div class="modal">
-            <div class="modal-header">
-                <h2>Thêm nhà xuất bản</h2>
-                <button class="modal-close" type="button" aria-label="Đóng">✕</button>
+                    <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
+                        <small>Hiển thị <b class="text-dark">2</b> kết quả</small>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                        </ul>
+                    </div>
+                </div>
             </div>
-            <form class="modal-form">
-                <div class="form-row">
-                    <label for="pubName">Tên nhà xuất bản</label>
-                    <input id="pubName" type="text" placeholder="Nhập tên nhà xuất bản" required />
-                </div>
-                <div class="form-row">
-                    <label for="pubAddress">Địa chỉ</label>
-                    <input id="pubAddress" type="text" placeholder="Nhập địa chỉ" />
-                </div>
-                <div class="form-row">
-                    <label for="pubPhone">Số điện thoại</label>
-                    <input id="pubPhone" type="tel" placeholder="Nhập số điện thoại" />
-                </div>
-                <div class="form-row">
-                    <label for="pubStatus">Trạng thái</label>
-                    <select id="pubStatus">
-                        <option value="active">Hoạt động</option>
-                        <option value="inactive">Ngưng hoạt động</option>
-                    </select>
-                </div>
-
-                <div class="modal-footer">
-                    <button type="button" class="btn-secondary" id="btnCancelPublisher">Hủy</button>
-                    <button type="submit" class="btn-primary">Lưu</button>
-                </div>
-            </form>
         </div>
     </div>
-</div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const btnAdd = document.getElementById('btnAddPublisher');
-        const modal = document.getElementById('publisherModal');
-        const modalTitle = modal.querySelector('h2');
-        const form = modal.querySelector('.modal-form');
-        const toggleTableBtn = document.getElementById('btnTogglePublisherTable');
-        const publisherPanel = document.getElementById('publisherPanel');
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../../../assets/js/ComponentLoader.js"></script>
 
-        const inputName = form.querySelector('#pubName');
-        const inputAddress = form.querySelector('#pubAddress');
-        const inputPhone = form.querySelector('#pubPhone');
-        const inputStatus = form.querySelector('#pubStatus');
-
-        let editingRow = null;
-
-        const openModal = ({ mode = 'add', row = null } = {}) => {
-            editingRow = row;
-            modalTitle.textContent = mode === 'edit' ? 'Sửa nhà xuất bản' : 'Thêm nhà xuất bản';
-
-            if (mode === 'edit' && row) {
-                const id = row.getAttribute('data-id');
-                const cells = row.querySelectorAll('td');
-                const name = row.querySelector('.user-info .name')?.textContent?.trim() || '';
-                const address = row.querySelector('.user-info .role')?.textContent?.trim() || '';
-                const phone = cells[3]?.textContent?.trim() || '';
-                const status = row.querySelector('.badge')?.textContent?.trim() || 'Hoạt động';
-
-                inputName.value = name;
-                inputAddress.value = address;
-                inputPhone.value = phone;
-                inputStatus.value = status === 'Hoạt động' ? 'active' : 'inactive';
-            } else {
-                form.reset();
-                inputStatus.value = 'active';
-            }
-
-            modal.style.display = 'grid';
-            inputName.focus();
-        };
-
-        const closeModal = () => {
-            modal.style.display = 'none';
-            editingRow = null;
-            form.reset();
-        };
-
-        const setPanelVisible = (visible) => {
-            if (visible) {
-                publisherPanel.style.display = 'block';
-                toggleTableBtn.textContent = 'Ẩn bảng';
-            } else {
-                publisherPanel.style.display = 'none';
-                toggleTableBtn.textContent = 'Hiển thị bảng';
-            }
-        };
-
-        // Bắt đầu ẩn ngay, tránh hiện không mong muốn
-        setPanelVisible(false);
-        closeModal();
-
-        btnAdd.addEventListener('click', () => {
-            setPanelVisible(true);
-            openModal({ mode: 'add' });
-        });
-
-        toggleTableBtn.addEventListener('click', () => {
-            setPanelVisible(publisherPanel.style.display === 'none');
-        });
-
-        const tableBody = document.getElementById('publisherTableBody');
-        const summaryText = document.getElementById('publisherSummary');
-        const searchInput = document.getElementById('publisherSearch');
-
-        const filterRows = (query) => {
-            const text = query.trim().toLowerCase();
-            tableBody.querySelectorAll('tr').forEach((row) => {
-                const id = row.querySelector('td:first-child')?.textContent?.toLowerCase() || '';
-                const name = row.querySelector('.user-info .name')?.textContent?.toLowerCase() || '';
-                const visible = !text || id.includes(text) || name.includes(text);
-                row.style.display = visible ? '' : 'none';
-            });
-        };
-
-        const updateSummary = () => {
-            const total = tableBody.querySelectorAll('tr').length;
-            summaryText.textContent = `Hiển thị 1 đến ${total} của ${total} kết quả`;
-        };
-
-        const createRowHtml = (id, name, address, phone, status) => {
-            const badgeClass = status === 'Hoạt động' ? 'badge--active' : 'badge--locked';
-            const initials = name
-                .split(' ')
-                .filter(Boolean)
-                .slice(-2)
-                .map((x) => x[0].toUpperCase())
-                .join('');
-
-            return `
-                <tr data-id="${id}">
-                    <td>${id}</td>
-                    <td>
-                        <div class="user-info">
-                            <div class="avatar" style="background: linear-gradient(135deg, #22c55e, #0ea5e9);">${initials}</div>
-                            <div class="meta">
-                                <div class="name">${name}</div>
-                                <div class="role">${address}</div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <div style="line-height:1.3">
-                            <div>${address}</div>
-                            <div class="text-muted">${phone}</div>
-                        </div>
-                    </td>
-                    <td>${phone}</td>
-                    <td><span class="badge ${badgeClass}">${status}</span></td>
-                    <td>
-                        <button class="btn-action btn-edit" data-id="${id}">Sửa</button>
-                        <button class="btn-action btn-delete" data-id="${id}">Xóa</button>
-                    </td>
-                </tr>
-            `;
-        };
-
-        const deleteRow = (row) => {
-            if (window.confirm('Bạn có chắc muốn xóa nhà xuất bản này không?')) {
-                row.remove();
-                updateSummary();
-            }
-        };
-
-        document.addEventListener('click', (event) => {
-            const editBtn = event.target.closest('.btn-edit');
-            const deleteBtn = event.target.closest('.btn-delete');
-            const closeBtn = event.target.closest('.modal-close');
-            const cancelBtn = event.target.closest('#btnCancelPublisher');
-
-            if (editBtn) {
-                const row = editBtn.closest('tr');
-                openModal({ mode: 'edit', row });
-            }
-
-            if (deleteBtn) {
-                const row = deleteBtn.closest('tr');
-                deleteRow(row);
-            }
-
-            if (closeBtn || cancelBtn) {
-                event.preventDefault();
-                closeModal();
-            }
-
-            if (event.target === modal) {
-                closeModal();
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if(typeof ComponentLoader !== 'undefined'){
+                ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
+                ComponentLoader.load('header-container', '../../components/header.html');
             }
         });
-
-        // Đóng modal khi nhấn Esc
-        document.addEventListener('keydown', (event) => {
-            if (event.key === 'Escape' && modal.style.display !== 'none') {
-                closeModal();
-            }
-        });
-
-        if (searchInput) {
-            searchInput.addEventListener('input', (event) => {
-                filterRows(event.target.value);
-            });
-        }
-
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-
-            const name = inputName.value.trim();
-            const address = inputAddress.value.trim();
-            const phone = inputPhone.value.trim();
-            const status = inputStatus.value === 'active' ? 'Hoạt động' : 'Ngưng hoạt động';
-
-            if (!name) {
-                window.alert('Vui lòng nhập tên nhà xuất bản.');
-                inputName.focus();
-                return;
-            }
-
-            const id = editingRow
-                ? editingRow.getAttribute('data-id')
-                : `NXB${String(tableBody.querySelectorAll('tr').length + 1).padStart(3, '0')}`;
-
-            const newRow = new DOMParser().parseFromString(
-                createRowHtml(id, name, address || '-', phone || '-', status),
-                'text/html'
-            ).querySelector('tr');
-
-            if (editingRow) {
-                editingRow.replaceWith(newRow);
-            } else {
-                tableBody.appendChild(newRow);
-            }
-
-            updateSummary();
-            closeModal();
-        });
-
-        // Cập nhật ban đầu
-        updateSummary();
-    });
-</script>
-
+    </script>
 </body>
 </html>

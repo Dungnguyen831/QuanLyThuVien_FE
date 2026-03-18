@@ -31,7 +31,7 @@ body {
   min-height: 100vh;
 }
 
-.sidebar {
+.sidebar-container {
   width: 260px;
   background: var(--surface);
   border-right: 1px solid var(--border);
@@ -513,4 +513,114 @@ tbody td {
   .table-wrapper {
     overflow-x: auto;
   }
+}
+#header-container {
+    width: 100%;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    position: sticky; /* Cuộn trang thì header vẫn dính ở trên */
+    top: 0;
+    z-index: 10;
+    height: 70px; /* Độ cao này tùy vào file header.html của ông */
+    display: flex;
+    align-items: center;
+}
+/* Hỗ trợ Sidebar dùng chung (Bootstrap style) */
+#sidebar-wrapper {
+    width: 260px;
+    flex-shrink: 0;
+    transition: all 0.3s;
+    z-index: 1000;
+}
+
+/* Fix lỗi nội dung bị dính sát vào Sidebar */
+.main {
+    flex: 1;
+    min-width: 0;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+}
+
+/* Làm đẹp các link trong submenu của Sidebar dùng chung */
+.nav-link-sub {
+    display: block;
+    padding: 8px 15px 8px 45px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.9rem;
+    transition: all 0.2s;
+    border-radius: 8px;
+}
+
+.nav-link-sub:hover {
+    background: var(--pill);
+    color: var(--accent);
+}
+
+/* Khi mục nào được chọn (Active) */
+.list-group-item.active {
+    background-color: rgba(67, 56, 202, 0.1) !important;
+    color: var(--accent) !important;
+    border: none !important;
+    border-left: 4px solid var(--accent) !important;
+}
+/* Nút bấm màu trắng, đổ bóng nhẹ giống giao diện mẫu */
+.btn-white {
+    background-color: #fff;
+    border-color: #f1f3f5 !important;
+    color: #495057;
+    padding: 0.5rem 1rem;
+    border-radius: 10px; /* Bo góc mượt */
+}
+
+.btn-filter {
+    background: #fff;
+    border: 1px solid #e9ecef;
+    padding: 0.6rem 1.25rem;
+    border-radius: 12px; /* Bo góc lớn cho sang */
+    font-weight: 500;
+    color: #495057;
+    transition: all 0.2s;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+}
+
+.btn-filter:hover, .btn-filter:focus {
+    background: #f8f9fa;
+    border-color: #dee2e6;
+    color: #212529;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+}
+
+.btn-filter::after {
+    margin-left: 10px;
+    vertical-align: middle;
+    color: #adb5bd;
+}
+
+/* Tùy chỉnh cái bảng chọn hiện ra */
+.dropdown-menu {
+    padding: 0.5rem;
+    min-width: 200px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.dropdown-item {
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+}
+
+.dropdown-item:hover {
+    background-color: #f0f2ff;
+    color: #4e73df;
+}
+
+.dropdown-item.active {
+    background-color: #4e73df;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
