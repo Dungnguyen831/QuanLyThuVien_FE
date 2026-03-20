@@ -10,31 +10,7 @@
 
 <body>
     <!-- Navigation Bar -->
-    <nav class="navbar">
-        <div class="navbar-container">
-            <div class="navbar-logo">
-                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <rect x="2" y="2" width="8" height="8" fill="#6366F1" />
-                    <rect x="14" y="2" width="8" height="8" fill="#6366F1" />
-                    <rect x="14" y="14" width="8" height="8" fill="#6366F1" />
-                </svg>
-                <span class="logo-text">LibrarySaaS</span>
-            </div>
-            <div class="navbar-search">
-                <input type="text" class="search-input" placeholder="Search for titles, authors, or ISBN...">
-            </div>
-            <ul class="navbar-menu">
-                <li><a href="#" class="nav-link">Browse</a></li>
-                <li><a href="#" class="nav-link">New Arrivals</a></li>
-                <li><a href="#" class="nav-link">Popular</a></li>
-                <li><a href="#" class="nav-link">My Collection</a></li>
-            </ul>
-            <div class="navbar-actions">
-                <a href="#" class="nav-link login-link">Log In</a>
-                <button class="btn btn-primary">Sign Up</button>
-            </div>
-        </div>
-    </nav>
+    <div id="navbar-container"></div>
 
     <!-- Loading Indicator -->
     <div id="page-loading" class="loading-overlay">
@@ -151,6 +127,13 @@
     <script src="./HomeView.js"></script>
     <script src="../../controllers/HomeController.js"></script>
     <script>
+        // Load navbar component
+        fetch('../../components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+            });
+
         // Initialize the homepage when DOM is ready
         document.addEventListener('DOMContentLoaded', function () {
             const bookModel = new BookModel();
