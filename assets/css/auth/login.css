@@ -1,0 +1,373 @@
+/* ==========================================
+   AUTH PAGE STYLES - QUẢN LÝ THƯ VIỆN
+   ========================================== */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial, sans-serif;
+  background-color: #f5f5f5;
+  overflow: hidden;
+}
+
+/* Main Container */
+.auth-container {
+  display: flex;
+  height: 100vh;
+}
+
+/* ==========================================
+   LEFT SECTION - LOGIN FORM
+   ========================================== */
+
+.auth-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffffff;
+  padding: 40px 20px;
+}
+
+.auth-content {
+  width: 100%;
+  max-width: 380px;
+}
+
+/* Logo Section */
+.auth-logo {
+  text-align: center;
+  margin-bottom: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.logo-icon {
+  font-size: 32px;
+  background: linear-gradient(135deg, #0051ff 0%, #0066ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+}
+
+.logo-text {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 0.5px;
+}
+
+/* Welcome Section */
+.auth-welcome {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.auth-welcome h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.auth-welcome p {
+  font-size: 14px;
+  color: #666666;
+  line-height: 1.5;
+}
+
+/* Form Styles */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a1a1a;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.input-wrapper:focus-within {
+  border-color: #0051ff;
+  background-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(0, 81, 255, 0.1);
+}
+
+.input-icon {
+  position: absolute;
+  left: 12px;
+  font-size: 16px;
+  color: #999999;
+}
+
+.input-wrapper input {
+  flex: 1;
+  padding: 12px 12px 12px 40px;
+  border: none;
+  background: transparent;
+  font-size: 14px;
+  color: #1a1a1a;
+  outline: none;
+}
+
+.input-wrapper input::placeholder {
+  color: #aaaaaa;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.toggle-password:hover {
+  opacity: 0.7;
+}
+
+/* Checkbox */
+.form-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.form-checkbox input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #0051ff;
+}
+
+.form-checkbox label {
+  font-size: 13px;
+  color: #666666;
+  font-weight: 400;
+  text-transform: none;
+  cursor: pointer;
+  letter-spacing: normal;
+  margin: 0;
+}
+
+/* Form Links */
+.form-links {
+  text-align: right;
+}
+
+.forgot-password {
+  font-size: 13px;
+  color: #0051ff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.forgot-password:hover {
+  color: #003dcc;
+  text-decoration: underline;
+}
+
+/* Login Button */
+.btn-login {
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #0051ff 0%, #0066ff 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-login:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 81, 255, 0.3);
+}
+
+.btn-login:active {
+  transform: translateY(0);
+}
+
+.btn-arrow {
+  font-size: 18px;
+  transition: transform 0.2s ease;
+}
+
+.btn-login:hover .btn-arrow {
+  transform: translateX(4px);
+}
+
+/* Footer */
+.auth-footer {
+  text-align: center;
+  margin-top: 40px;
+  padding-top: 20px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.auth-footer p {
+  font-size: 12px;
+  color: #999999;
+  margin-bottom: 6px;
+}
+
+.footer-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.footer-links a {
+  color: #0051ff;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #003dcc;
+}
+
+.footer-links span {
+  color: #ddd;
+}
+
+/* ==========================================
+   RESPONSIVE DESIGN
+   ========================================== */
+
+@media (max-width: 992px) {
+  .auth-container {
+    flex-direction: column;
+  }
+
+  .auth-left {
+    flex: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .auth-content {
+    max-width: 100%;
+  }
+
+  .auth-welcome h2 {
+    font-size: 24px;
+  }
+
+  .promo-title {
+    font-size: 32px;
+  }
+
+  .auth-left {
+    padding: 20px 16px;
+    font-size: 14px;
+  }
+}
+
+/* ==========================================
+   ANIMATIONS
+   ========================================== */
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.auth-left {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.auth-right {
+  animation: slideInRight 0.6s ease-out 0.1s both;
+}
+
+.form-group {
+  animation: slideInLeft 0.6s ease-out;
+}
+
+.form-group:nth-child(2) {
+  animation-delay: 0.1s;
+}
+
+/* ==========================================
+   ERROR MESSAGE
+   ========================================== */
+
+.auth-error {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  display: none; /* Ẩn mặc định, JS sẽ hiện ra khi có lỗi */
+  animation: slideInLeft 0.5s ease-out;
+}

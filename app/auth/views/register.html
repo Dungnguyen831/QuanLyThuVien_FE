@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Account - Modern UI</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="../../../assets/css/auth/register.css" />
+  </head>
+
+  <body>
+    <div class="form-card">
+      <div class="form-header">
+        <h1 class="form-title">Create Account</h1>
+        <p class="form-subtitle">Please enter your details to register.</p>
+      </div>
+
+      <form id="register-form">
+        <div class="input-group">
+          <label>Full Name</label>
+          <div class="input-field">
+            <i data-lucide="user" class="input-icon"></i>
+            <input type="text" name="fullName" placeholder="John Doe" />
+          </div>
+          <span class="error-message"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Email Address</label>
+          <div class="input-field">
+            <i data-lucide="mail" class="input-icon"></i>
+            <input type="email" name="email" placeholder="john@example.com" />
+          </div>
+          <span class="error-message"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Phone Number</label>
+          <div class="input-field">
+            <i data-lucide="phone" class="input-icon"></i>
+            <input type="text" name="phone" placeholder="+1 (555) 000-0000" />
+          </div>
+          <span class="error-message"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Password</label>
+          <div class="input-field">
+            <i data-lucide="lock" class="input-icon"></i>
+            <input type="password" name="password" placeholder="••••••••" />
+            <i data-lucide="eye" class="eye-btn" id="togglePassword"></i>
+          </div>
+          <span class="error-message"></span>
+        </div>
+
+        <div class="input-group">
+          <label>Confirm Password</label>
+          <div class="input-field">
+            <i data-lucide="rotate-ccw" class="input-icon"></i>
+            <input
+              type="password"
+              id="confirm_password"
+              name="confirm_password"
+              placeholder="••••••••"
+            />
+          </div>
+          <span class="error-message"></span>
+        </div>
+
+        <div class="checkbox-row">
+          <input type="checkbox" id="terms" />
+          <label for="terms">
+            I agree to the <a href="#">Terms of Service</a> and
+            <a href="#">Privacy Policy</a>
+          </label>
+        </div>
+
+        <button type="submit" class="submit-btn">
+          Create Account <i data-lucide="arrow-right"></i>
+        </button>
+      </form>
+
+      <p class="login-prompt">
+        Already have an account? <a href="#">Sign In</a>
+      </p>
+
+      <div class="or-divider">
+        <span>OR JOIN WITH</span>
+      </div>
+
+      <div class="social-grid">
+        <button class="social-btn">
+          <img src="https://www.google.com/favicon.ico" alt="Google" /> Google
+        </button>
+
+        <button class="social-btn">
+          <img src="https://www.apple.com/favicon.ico" alt="Apple" /> Apple
+        </button>
+      </div>
+    </div>
+
+    <script src="../models/AuthModel.js"></script>
+    <script src="AuthView.js"></script>
+    <script src="../controllers/AuthController.js"></script>
+    <script src="registerValidation.js"></script>
+    <script>
+      lucide.createIcons({
+        attrs: {
+          "stroke-width": 1.5,
+        },
+      });
+      const app = new AuthController(new AuthModel(), new AuthView());
+      document.addEventListener("click", function (e) {
+        const toggle = e.target.closest("#togglePassword");
+        if (!toggle) return;
+
+        const password = document.querySelector("#password");
+
+        const isPassword = password.type === "password";
+
+        password.type = isPassword ? "text" : "password";
+
+        toggle.setAttribute("data-lucide", isPassword ? "eye-off" : "eye");
+
+        lucide.createIcons();
+      });
+    </script>
+  </body>
+</html>

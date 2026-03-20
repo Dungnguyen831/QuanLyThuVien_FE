@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng Nhập - Quản Lý Thư Viện</title>
+    <link rel="stylesheet" href="../../../assets/css/auth/login.css">
+</head>
+<body>
+    <div class="auth-container">
+        <!-- Left Section - Login Form -->
+        <div class="auth-left">
+            <div class="auth-content">
+                <!-- Logo -->
+                <div class="auth-logo">
+                    <div class="logo-icon">📚</div>
+                    <h1 class="logo-text">QUẢN LÝ THƯ VIỆN</h1>
+                </div>
+
+                <!-- Welcome Section -->
+                <div class="auth-welcome">
+                    <h2>Chào Mừng Trở Lại</h2>
+                    <p>Vui lòng nhập thông tin đăng nhập của bạn để truy cập bảng điều khiển quản trị.</p>
+                </div>
+
+                <!-- Vùng hiển thị lỗi (sẽ được JS điều khiển) -->
+                <div id="auth-error-message" class="auth-error"></div>
+
+                <!-- Login Form -->
+                <form class="auth-form" id="login-form">
+                    <!-- Email Field -->
+                    <div class="form-group">
+                        <label for="email">Địa Chỉ Email</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">✉️</span>
+                            <input 
+                                type="email" 
+                                id="email" 
+                                name="email" 
+                                placeholder="name@institution.edu" 
+                                required
+                            >
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="form-group">
+                        <label for="password">Mật Khẩu</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="password" 
+                                placeholder="••••••••••" 
+                                required
+                            >
+                            <button type="button" class="toggle-password">
+                                👁️
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Remember Me -->
+                    <div class="form-checkbox">
+                        <input type="checkbox" id="remember" name="remember">
+                        <label for="remember">Ghi nhớ thiết bị này trong 30 ngày</label>
+                    </div>
+
+                    <!-- Forgot Password Link -->
+                    <div class="form-links">
+                        <a href="#" class="forgot-password">Quên mật khẩu?</a>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-login">
+                        <span>Đăng Nhập Bảng Điều Khiển</span>
+                        <span class="btn-arrow">→</span>
+                    </button>
+                </form>
+
+                <!-- Footer -->
+                <div class="auth-footer">
+                    <p>© 2024 Quản Lý Thư Viện. Tất cả quyền được bảo lưu.</p>
+                    <div class="footer-links">
+                        <a href="#">Chính Sách Bảo Mật</a>
+                        <span>•</span>
+                        <a href="#">Điều Khoản Dịch Vụ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+      
+
+    <!-- Nhúng các file JS của mô hình MVC -->
+    <script src="../models/AuthModel.js"></script>
+    <script src="AuthView.js"></script>
+    <script src="../controllers/AuthController.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Khởi tạo AuthController để trang bắt đầu hoạt động
+            const app = new AuthController(new AuthModel(), new AuthView());
+            // Xử lý chức năng ẩn/hiện mật khẩu
+            function togglePassword(event) {
+                const passwordInput = document.getElementById('password');
+                const button = event.currentTarget;
+                const isPassword = passwordInput.type === 'password';
+                passwordInput.type = isPassword ? 'text' : 'password';
+                button.innerHTML = isPassword ? '🙈' : '👁️';
+            }
+            const toggleButton = document.querySelector('.toggle-password');
+            if (toggleButton) {
+                toggleButton.addEventListener('click', togglePassword);
+            }
+            
+        });
+    </script>
+</body>
+</html>
