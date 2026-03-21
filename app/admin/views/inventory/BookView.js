@@ -35,6 +35,7 @@ class BookView {
             
             const imgUrl = book.imageUrl ? book.imageUrl : 'https://via.placeholder.com/150x200.png?text=No+Image';
             const tr = document.createElement('tr');
+            tr.setAttribute('data-id', book.id);
             
             let statusHtml = book.availableQty > 0 
                 ? `<span class="d-inline-block rounded-circle bg-success me-1" style="width:8px;height:8px"></span><span class="text-success fw-medium">Sẵn sàng</span>`
@@ -59,5 +60,114 @@ class BookView {
             `;
             this.tableBody.appendChild(tr);
         });
+    }
+    // xử lý hiển thị chi tiết sách trong modal
+    // Trong BookView.js
+   // Cập nhật hàm renderBookDetailToModal trong BookView.js
+    renderBookDetailToModal(book, authors, categories, publishers) {
+        if (!book) return;
+
+        // 1. Tìm kiếm tên từ danh sách (Giống logic hàm renderBooks của ông)
+        const author = authors.find(a => a.id == (book.author_id || book.authorId));
+        const category = categories.find(c => c.id == (book.category_id || book.categoryId));
+        const publisher = publishers.find(p => p.id == (book.publisher_id || book.publisherId));
+
+        // 2. Đổ dữ liệu vào các ID trong HTML
+        document.getElementById('detailBookImage').src = book.imageUrl || 'https://via.placeholder.com/150x200';
+        document.getElementById('detailBookTitle').textContent = book.title || 'N/A';
+        document.getElementById('detailBookId').textContent = `#${book.id}`;
+
+        // Đổ tên thay vì N/A
+        document.getElementById('detailAuthor').textContent = author ? author.name : 'N/A';
+        document.getElementById('detailCategory').textContent = category ? category.name : 'N/A';
+        document.getElementById('modalBookPublisher').textContent = publisher ? publisher.name : 'N/A';
+
+        // Các trường khác
+        document.getElementById('detailTotal').textContent = book.totalQty || 0;
+        document.getElementById('detailAvailable').textContent = book.availableQty || 0;
+        document.getElementById('modalBookIsbn').textContent = book.isbn || 'N/A';
+        document.getElementById('modalBookYear').textContent = book.publishedYear || 'N/A';
+        document.getElementById('modalBookDescription').textContent = book.description || 'Chưa có mô tả.';
+    }
+    renderCopiesToModal(copies) {
+        const tbody = document.getElementById('copy-table-body');
+        if (!tbody) return;
+        tbody.innerHTML = copies.length ? copies.map(c => `
+            <tr>
+                <td>#${c.id}</td>
+                <td>${c.shelf_id || 'Chưa xếp kệ'}</td> 
+                <td><code>${c.barcode || '---'}</code></td>
+                <td>${c.conditionStatus || 'NEW'}</td>
+                <td>
+                    <span class="badge ${c.availabilityStatus === 'AVAILABLE' ? 'bg-success' : 'bg-warning'}">
+                        ${c.availabilityStatus || 'N/A'}
+                    </span>
+                </td>
+                <td class="text-end"><button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button></td>
+            </tr>
+        `).join('') : '<tr><td colspan="6" class="text-center">Chưa có bản sao nào</td></tr>';
+    }
+    // Thêm vào BookView.js
+    setupCopySearch(allCopies) {
+        const searchInput = document.getElementById('copySearchInput');
+        if (!searchInput) return;
+
+        searchInput.oninput = (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            
+            // Lọc danh sách dựa trên ID hoặc Barcode
+            const filtered = allCopies.filter(copy => {
+                const idMatch = copy.id.toString().includes(query);
+                const barcodeMatch = (copy.barcode || '').toLowerCase().includes(query);
+                return idMatch || barcodeMatch;
+            });
+
+            // Gọi lại hàm render bảng với danh sách đã lọc
+            this.renderCopiesToModal(filtered);
+        };
+    }
+   // Vẽ thanh phân trang
+    renderPagination(totalItems, currentPage, itemsPerPage, onPageChange) {
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const container = document.querySelector('.pagination');
+        if (!container) return;
+
+        let html = `
+            <li class="page-item ${currentPage === 1 ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage - 1}"><i class="fas fa-chevron-left"></i></a>
+            </li>`;
+
+        for (let i = 1; i <= totalPages; i++) {
+            html += `
+                <li class="page-item ${i === currentPage ? 'active' : ''}">
+                    <a class="page-link" href="#" data-page="${i}">${i}</a>
+                </li>`;
+        }
+
+        html += `
+            <li class="page-item ${currentPage === totalPages ? 'disabled' : ''}">
+                <a class="page-link" href="#" data-page="${currentPage + 1}"><i class="fas fa-chevron-right"></i></a>
+            </li>`;
+
+        container.innerHTML = html;
+
+        // Gán sự kiện click cho các nút phân trang
+        container.querySelectorAll('.page-link').forEach(link => {
+            link.onclick = (e) => {
+                e.preventDefault();
+                const page = parseInt(link.dataset.page);
+                if (page >= 1 && page <= totalPages) onPageChange(page);
+            };
+        });
+
+        this.updatePaginationText(totalItems, currentPage, itemsPerPage);
+    }
+
+    updatePaginationText(totalItems, currentPage, itemsPerPage) {
+        const textEl = document.querySelector('.card .text-muted small');
+        if (!textEl) return;
+        const start = totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1;
+        const end = Math.min(currentPage * itemsPerPage, totalItems);
+        textEl.innerHTML = `Hiển thị <b class="text-dark">${start}</b> đến <b class="text-dark">${end}</b> trong tổng số <b class="text-dark">${totalItems}</b> kết quả`;
     }
 }
