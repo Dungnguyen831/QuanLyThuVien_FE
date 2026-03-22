@@ -102,6 +102,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Khởi tạo AuthController để trang bắt đầu hoạt động
             const app = new AuthController(new AuthModel(), new AuthView());
+
             // Xử lý chức năng ẩn/hiện mật khẩu
             function togglePassword(event) {
                 const passwordInput = document.getElementById('password');
@@ -114,7 +115,6 @@
             if (toggleButton) {
                 toggleButton.addEventListener('click', togglePassword);
             }
-            
         });
     </script>
 </body>

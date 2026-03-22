@@ -6,7 +6,12 @@ class BookModel {
     // Lấy danh sách toàn bộ sách
     async fetchBooks() {
         try {
-            const response = await fetch(this.apiUrl);
+            const token = localStorage.getItem('token');
+            const response = await fetch(this.apiUrl, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
             if (!response.ok) {
                 throw new Error(`Lỗi Server: ${response.status}`);
             }

@@ -20,7 +20,9 @@ class AuthModel {
         try {
           // Thử parse text đó thành JSON. Nếu thành công, lấy message từ đó.
           const errorJson = JSON.parse(errorText);
-          throw new Error(errorJson.message || "Đăng nhập thất bại.");
+          throw new Error(
+            errorJson.message || errorJson.error || "Đăng nhập thất bại.",
+          );
         } catch (e) {
           // Nếu không parse được JSON, nghĩa là server trả về text thuần.
           // Ném lỗi với nội dung text đó.
@@ -48,9 +50,11 @@ class AuthModel {
         const errorText = await response.text();
         try {
           const errorJson = JSON.parse(errorText);
-          throw new Error(errorJson.message || "Đăng ký thất bại.");
+          throw new Error(
+            errorJson.error || errorJson.message || "Đăng ký thất bại.",
+          );
         } catch (e) {
-          throw new Error(errorText || "Đăng ký thất bại.");
+          throw new Error(e.message || errorText || "Đăng ký thất bại.");
         }
       }
 

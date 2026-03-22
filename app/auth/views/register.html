@@ -51,8 +51,13 @@
           <label>Password</label>
           <div class="input-field">
             <i data-lucide="lock" class="input-icon"></i>
-            <input type="password" name="password" placeholder="••••••••" />
-            <i data-lucide="eye" class="eye-btn" id="togglePassword"></i>
+            <input
+              type="password"
+              class="password"
+              name="password"
+              placeholder="••••••••"
+            />
+            <button type="button" class="toggle-password">👁️</button>
           </div>
           <span class="error-message"></span>
         </div>
@@ -64,9 +69,11 @@
             <input
               type="password"
               id="confirm_password"
+              class="password"
               name="confirm_password"
               placeholder="••••••••"
             />
+            <button type="button" class="toggle-password">👁️</button>
           </div>
           <span class="error-message"></span>
         </div>
@@ -114,19 +121,17 @@
         },
       });
       const app = new AuthController(new AuthModel(), new AuthView());
-      document.addEventListener("click", function (e) {
-        const toggle = e.target.closest("#togglePassword");
-        if (!toggle) return;
-
-        const password = document.querySelector("#password");
-
-        const isPassword = password.type === "password";
-
-        password.type = isPassword ? "text" : "password";
-
-        toggle.setAttribute("data-lucide", isPassword ? "eye-off" : "eye");
-
-        lucide.createIcons();
+      document.querySelectorAll(".toggle-password").forEach((button) => {
+        button.addEventListener("click", function () {
+          const passwordInput = this.previousElementSibling;
+          if (passwordInput.type === "password") {
+            passwordInput.type = "text";
+            this.innerHTML = "🙈";
+          } else {
+            passwordInput.type = "password";
+            this.innerHTML = "👁️";
+          }
+        });
       });
     </script>
   </body>

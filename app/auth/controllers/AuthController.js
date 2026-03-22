@@ -19,9 +19,10 @@ class AuthController {
 
       // Chuyển hướng tới trang Dashboard của Admin hoặc trang chủ dựa trên Role
       if (result.user.role === "admin") {
-        window.location.href = "/app/admin/views/dashboard/admin.html";
+        // window.location.href = "/app/admin/views/dashboard/admin.html";
+        window.location.href = "/app/admin/views/inventory/inventory.html";
       } else {
-        window.location.href = "/app/auth/views/register.html"; // Hoặc trang chủ người dùng nếu có
+        window.location.href = "/app/admin/views/inventory/inventory.html"; // Hoặc trang chủ người dùng nếu có
       }
     } catch (error) {
       this.view.showError(error.message);
@@ -33,7 +34,7 @@ class AuthController {
     try {
       await this.model.register(userData);
       alert("Đăng ký thành công! Vui lòng đăng nhập.");
-      window.location.href = "login.html"; // Chuyển về trang đăng nhập
+      window.location.href = "login.html";
     } catch (error) {
       this.view.showError(error.message);
     }
