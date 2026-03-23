@@ -7,7 +7,7 @@ class BookController {
     async init() {
         // 1. Chỉnh lại giao diện Sidebar
         this.view.setupUIState();
-        
+
         // 2. Load dữ liệu bảng
         await this.loadBooks();
     }

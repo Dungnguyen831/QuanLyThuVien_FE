@@ -1,8 +1,3 @@
-/**
- * HomeView
- * Handles rendering of the user homepage
- * Dynamically renders book cards for New Arrivals and Most Popular sections
- */
 class HomeView {
     constructor() {
         this.newArrivalsContainer = document.getElementById('new-arrivals-container');
