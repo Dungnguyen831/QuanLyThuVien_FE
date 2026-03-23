@@ -55,4 +55,34 @@ class LoanView {
             `;
         }).join('');
     }
+
+    bindAddLoan(handler) {
+        const form = document.getElementById('add-loan-form');
+        if (!form) return;
+
+        // Tự động set ngày mượn là hôm nay cho tiện
+        document.getElementById('loan-borrow-date').valueAsDate = new Date();
+
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            // Gom dữ liệu đúng chuẩn DTO Backend yêu cầu
+            const loanData = {
+                userId: document.getElementById('loan-user-id').value,
+                bookId: document.getElementById('loan-book-id').value,
+                borrowDate: document.getElementById('loan-borrow-date').value,
+                dueDate: document.getElementById('loan-due-date').value,
+                note: document.getElementById('loan-note').value
+            };
+
+            handler(loanData);
+        });
+    }
+
+    closeAddModal() {
+        const modalEl = document.getElementById('addLoanModal');
+        const modal = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+        modal.hide();
+        document.getElementById('add-loan-form').reset(); // Xóa sạch form
+    }
 }

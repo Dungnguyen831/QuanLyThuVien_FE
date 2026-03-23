@@ -35,8 +35,13 @@ class AuthorModel {
                 body: JSON.stringify(authorData)
             });
 
+<<<<<<< HEAD
             if (!response.ok) throw new Error('Lỗi khi thêm tác giả');
             return await response.json();
+=======
+            if (!response.ok) throw new Error('Lỗi khi tạo phiếu mượn');
+            return await response.text();
+>>>>>>> ba9c901ac6b6829e38c89a87240c275e04865773
         } catch (error) {
             console.error("Lỗi khi thêm tác giả:", error);
             throw error;

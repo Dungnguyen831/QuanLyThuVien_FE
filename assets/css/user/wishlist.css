@@ -1,0 +1,511 @@
+/**
+ * Wishlist Page Styles
+ * Specific styling for the My Wishlist page including:
+ * - Header and controls layout
+ * - Filter pills with active/inactive states
+ * - Sort dropdown styling
+ * - Pagination buttons and states
+ * - Responsive design
+ */
+
+/* ==================== BREADCRUMB ==================== */
+.breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    color: #666;
+}
+
+.breadcrumb-link {
+    color: #6366F1;
+    text-decoration: none;
+    cursor: pointer;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    color: #4F46E5;
+    text-decoration: underline;
+}
+
+.breadcrumb-separator {
+    color: #999;
+}
+
+.breadcrumb-current {
+    color: #1A1A1A;
+    font-weight: 500;
+}
+
+/* ==================== WISHLIST HEADER ==================== */
+.wishlist-header {
+    margin-bottom: 32px;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+}
+
+.header-info {
+    flex: 1;
+}
+
+.wishlist-title {
+    font-size: 32px;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin: 0 0 8px 0;
+}
+
+.wishlist-subtitle {
+    font-size: 16px;
+    color: #666;
+    margin: 0;
+}
+
+/* ==================== CONTROLS SECTION ==================== */
+.wishlist-controls {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 32px;
+    gap: 24px;
+}
+
+/* ---------- Filter Pills ---------- */
+.filter-pills {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.filter-pill {
+    padding: 8px 16px;
+    border: 1px solid #E0E0E0;
+    border-radius: 24px;
+    background-color: #FFFFFF;
+    color: #666;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.filter-pill:hover {
+    border-color: #6366F1;
+    color: #6366F1;
+}
+
+.filter-pill.active {
+    background-color: #6366F1;
+    color: #FFFFFF;
+    border-color: #6366F1;
+}
+
+.filter-pill:active {
+    transform: scale(0.98);
+}
+
+/* ---------- Sort Controls ---------- */
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.sort-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.sort-dropdown {
+    padding: 10px 12px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    font-size: 14px;
+    cursor: pointer;
+    min-width: 150px;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L6 6L11 1' stroke='%236366F1' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 36px;
+}
+
+.sort-dropdown:hover {
+    border-color: #6366F1;
+}
+
+.sort-dropdown:focus {
+    outline: none;
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.sort-dropdown option {
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+}
+
+/* ==================== GRID CONTAINER ==================== */
+.wishlist-grid-container {
+    margin-bottom: 48px;
+    min-height: 300px;
+}
+
+.wishlist-grid-container .books-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 24px;
+}
+
+/* Empty and Loading States */
+.empty-state,
+.loading-state,
+.error-state {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 400px;
+    font-size: 18px;
+    color: #999;
+    text-align: center;
+}
+
+.error-state {
+    color: #DC2626;
+}
+
+/* ==================== PAGINATION ==================== */
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 16px;
+    margin-top: 48px;
+    padding: 32px 0;
+}
+
+.pagination-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #6366F1;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-btn:hover:not(:disabled) {
+    border-color: #6366F1;
+    background-color: #F3F4F6;
+}
+
+.pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: #999;
+}
+
+.pagination-numbers {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pagination-number {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 40px;
+    height: 40px;
+    padding: 0 8px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pagination-number:hover:not(:disabled) {
+    border-color: #6366F1;
+    color: #6366F1;
+}
+
+.pagination-number.active {
+    background-color: #6366F1;
+    color: #FFFFFF;
+    border-color: #6366F1;
+    cursor: default;
+}
+
+.pagination-number:disabled {
+    cursor: default;
+}
+
+.pagination-ellipsis {
+    color: #999;
+    padding: 0 4px;
+}
+
+/* ==================== BUTTON STYLES ==================== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background-color: #6366F1;
+    color: #FFFFFF;
+}
+
+.btn-primary:hover {
+    background-color: #4F46E5;
+}
+
+.btn-primary:active {
+    transform: scale(0.98);
+}
+
+.btn-lg {
+    padding: 12px 24px;
+    font-size: 15px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+/* ==================== RESPONSIVE DESIGN ==================== */
+@media (max-width: 768px) {
+    .header-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .btn-lg {
+        width: 100%;
+    }
+
+    .wishlist-controls {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .filter-pills {
+        width: 100%;
+        overflow-x: auto;
+        padding-bottom: 8px;
+    }
+
+    .sort-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .sort-dropdown {
+        min-width: auto;
+        flex: 1;
+    }
+
+    .wishlist-grid-container .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 16px;
+    }
+
+    .wishlist-title {
+        font-size: 24px;
+    }
+
+    .pagination-container {
+        gap: 8px;
+    }
+
+    .pagination-btn,
+    .pagination-number {
+        width: 36px;
+        height: 36px;
+        font-size: 13px;
+    }
+}
+
+@media (max-width: 480px) {
+    .breadcrumb {
+        margin-bottom: 24px;
+        font-size: 12px;
+    }
+
+    .wishlist-title {
+        font-size: 20px;
+        margin-bottom: 6px;
+    }
+
+    .wishlist-subtitle {
+        font-size: 14px;
+    }
+
+    .filter-pills {
+        gap: 8px;
+    }
+
+    .filter-pill {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+
+    .sort-label {
+        display: none;
+    }
+
+    .wishlist-grid-container .books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+        gap: 12px;
+    }
+
+    .pagination-container {
+        margin-top: 32px;
+        padding: 24px 0;
+    }
+
+    .pagination-number {
+        min-width: 32px;
+        height: 32px;
+    }
+}
+
+/* ==================== BOOK CARD ENHANCEMENTS ==================== */
+.book-card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.book-card:hover {
+    transform: translateY(-4px);
+}
+
+.book-cover-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.book-cover {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.heart-icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border: none;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.9);
+    color: #999;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    z-index: 1;
+}
+
+.heart-icon:hover {
+    background-color: #FFFFFF;
+    color: #6366F1;
+}
+
+.heart-icon.active {
+    background-color: #FFFFFF;
+    color: #6366F1;
+}
+
+.heart-icon svg {
+    width: 20px;
+    height: 20px;
+}
+
+.book-info {
+    padding: 0 4px;
+}
+
+.book-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1A1A1A;
+    margin: 0 0 4px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-author {
+    font-size: 12px;
+    color: #666;
+    margin: 0 0 6px 0;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.book-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: #999;
+}
+
+.star {
+    font-size: 12px;
+}
+
+.star.full {
+    color: #FFC107;
+}
+
+.star.half {
+    color: #FFC107;
+}
+
+.star.empty {
+    color: #E0E0E0;
+}
+
+.rating-count {
+    font-size: 11px;
+    color: #999;
+}
