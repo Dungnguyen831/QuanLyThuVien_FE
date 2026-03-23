@@ -14,13 +14,15 @@ class AuthorModel {
                 {
                     "id": 1, 
                     "name": "Nguyễn Văn A", 
-                    "biography": "Tác giả chuyên viết sách về lập trình Java",
+                    "biography": "Tác giả chuyên viết về lập trình Java và hệ thống.",
+                    "avatarColor": "#0d6efd",
                     "createdAt": "2026-03-05 23:44:47"
                 },
                 {
                     "id": 2, 
                     "name": "Trần Văn B", 
-                    "biography": "Giảng viên khoa Công nghệ thông tin",
+                    "biography": "Chuyên gia về cơ sở dữ liệu và tối ưu hóa truy vấn.",
+                    "avatarColor": "#6610f2",
                     "createdAt": "2026-03-05 23:44:47"
                 }
             ];
@@ -35,10 +37,10 @@ class AuthorModel {
                 body: JSON.stringify(authorData)
             });
 
-            if (!response.ok) throw new Error('Lỗi khi thêm tác giả');
+            if (!response.ok) throw new Error('Lỗi khi tạo tác giả');
             return await response.json();
         } catch (error) {
-            console.error("Lỗi khi thêm tác giả:", error);
+            console.error("Lỗi khi tạo tác giả:", error);
             throw error;
         }
     }

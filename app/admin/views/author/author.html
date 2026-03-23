@@ -98,6 +98,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../../../assets/js/ComponentLoader.js"></script>
+    <script src="/app/admin/controllers/AuthorController.js"></script>
+    <script src="/app/admin/models/AuthorModel.js"></script>
+    <script src="/app/admin/views/author/AuthorView.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
@@ -114,6 +117,11 @@
                 const pageTitle = document.getElementById('page-title');
                 if(pageTitle) pageTitle.textContent = 'Quản lý tác giả';
             }, 100); 
+            // Khởi tạo controller
+            if (typeof AuthorController !== 'undefined') {
+                const authorApp = new AuthorController(new AuthorModel(), new AuthorView());
+                authorApp.init();
+            }
         });
     </script>
 </body>
