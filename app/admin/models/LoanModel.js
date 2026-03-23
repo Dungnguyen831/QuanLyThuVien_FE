@@ -29,7 +29,7 @@ class LoanModel {
             });
 
             if (!response.ok) throw new Error('Lỗi khi tạo phiếu mượn');
-            return await response.json();
+            return await response.text();
         } catch (error) {
             console.error("Lỗi khi tạo phiếu mượn:", error);
             throw error;

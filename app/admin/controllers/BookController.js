@@ -15,6 +15,9 @@ class BookController {
     // Khởi tạo hệ thống
     async init() {
         this.view.setupUIState();
+
+        // 2. Load dữ liệu bảng
+        await this.loadBooks();
         try {
             const [authors, categories, publishers] = await Promise.all([
                 this.model.fetchAuthors(),
