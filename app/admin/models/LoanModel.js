@@ -4,7 +4,7 @@ class LoanModel {
       // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/loans)
       //   const response = await fetch("http://localhost:8080/api/v1/loans");
       const token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2YW5obGUyOTUyMzVAZ21haWwuY29tIiwiaWF0IjoxNzczODUwNzQ2LCJleHAiOjE3NzM5MzcxNDZ9.UR_QlIXShdMrq9i6-fArh4Snq99NuFs8CKwh0FkVZSo";
+        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjIzQGxpYnJhcnkuY29tIiwiaWF0IjoxNzc0MTkyNDg0LCJleHAiOjE3NzQyNzg4ODR9.WzWc_Et3w4bIjRX3TC2eSFc7NEM-GMrt-Dp5BOJk3Ho";
       const response = await fetch("http://localhost:8080/api/v1/loans", {
         method: "GET", // hoặc 'POST', 'PUT', ...
         headers: {
