@@ -3,8 +3,8 @@ class LoanModel {
     try {
       // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/loans)
       //   const response = await fetch("http://localhost:8080/api/v1/loans");
-      const token =
-        "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbjIzQGxpYnJhcnkuY29tIiwiaWF0IjoxNzc0MTkyNDg0LCJleHAiOjE3NzQyNzg4ODR9.WzWc_Et3w4bIjRX3TC2eSFc7NEM-GMrt-Dp5BOJk3Ho";
+      const token = localStorage.getItem("token");
+
       const response = await fetch("http://localhost:8080/api/v1/loans", {
         method: "GET", // hoặc 'POST', 'PUT', ...
         headers: {
@@ -42,10 +42,17 @@ class LoanModel {
       });
 
       if (!response.ok) throw new Error("Lỗi khi tạo phiếu mượn");
-      return await response.json();
+      return await response.text();
     } catch (error) {
       console.error("Lỗi khi tạo phiếu mượn:", error);
       throw error;
     }
+
+    if (!response.ok) throw new Error("Lỗi khi tạo phiếu mượn");
+    return await response.json();
+  }
+  catch(error) {
+    console.error("Lỗi khi tạo phiếu mượn:", error);
+    throw error;
   }
 }
