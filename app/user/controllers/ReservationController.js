@@ -44,20 +44,46 @@ class ReservationController {
      */
     async loadDashboardData() {
         try {
-            const dashboardData = await this.model.fetchUserDashboardData();
+            // Call new endpoint that returns combined reservation+book data
+            const reservations = await this.model.getUserReservationsWithBooks();
 
-            if (dashboardData) {
+            if (reservations) {
+                // Calculate stats from reservation data
+                const stats = this._calculateStatsFromReservations(reservations);
+
                 // Update stats cards
-                this.view.updateStatsCards(dashboardData.stats);
+                this.view.updateStatsCards(stats);
 
-                // Render reservation table
-                this.view.renderReservationTable(dashboardData.reservations);
+                // Render reservation table with combined data
+                this.view.renderReservationTable(reservations);
             }
         } catch (error) {
             console.error('Error loading dashboard data:', error);
             this.view.showError('Unable to load your reservations.');
             throw error;
         }
+    }
+
+    /**
+     * Calculate stats from reservation data
+     * @private
+     * @param {Array} reservations - Array of reservations with book details
+     * @returns {Object} Calculated stats
+     */
+    _calculateStatsFromReservations(reservations) {
+        if (!reservations || !Array.isArray(reservations)) {
+            return { activeBorrows: 0, upcomingDue: 0, activeReservations: 0 };
+        }
+
+        const readyCount = reservations.filter(r => r.status && r.status.toLowerCase() === 'ready').length;
+        const pendingCount = reservations.filter(r => r.status && r.status.toLowerCase() === 'pending').length;
+        const totalCount = reservations.length;
+
+        return {
+            activeBorrows: readyCount,
+            upcomingDue: pendingCount,
+            activeReservations: totalCount
+        };
     }
 
     /**

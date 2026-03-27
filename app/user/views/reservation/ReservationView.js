@@ -63,22 +63,29 @@ class ReservationView {
     /**
      * Create a single table row for a reservation
      * @private
-     * @param {Object} reservation - Reservation object
+     * @param {Object} reservation - Combined reservation+book object from BE
      * @returns {string} HTML table row string
      */
     _createReservationRow(reservation) {
         const statusBadge = this._createStatusBadge(reservation.status);
         const formattedDate = this._formatDate(reservation.reservationDate);
 
+        // Handle image URL (BE returns imageUrl instead of cover)
+        const imageUrl = this._escapeHtml(reservation.imageUrl || reservation.cover || '/assets/images/no-book-cover.jpg');
+        const title = this._escapeHtml(reservation.title || 'Unknown Title');
+
+        // Get author name or fallback to authorId
+        const author = this._escapeHtml(reservation.author || `Author ID: ${reservation.authorId || 'N/A'}`);
+
         return `
             <tr class="reservation-row" data-reservation-id="${reservation.id}">
                 <td class="col-cover">
-                    <img src="${this._escapeHtml(reservation.cover)}" alt="${this._escapeHtml(reservation.title)}" class="book-cover-thumb">
+                    <img src="${imageUrl}" alt="${title}" class="book-cover-thumb">
                 </td>
                 <td class="col-title">
                     <div class="book-info">
-                        <p class="book-title">${this._escapeHtml(reservation.title)}</p>
-                        <p class="book-author">${this._escapeHtml(reservation.author)}</p>
+                        <p class="book-title">${title}</p>
+                        <p class="book-author">${author}</p>
                     </div>
                 </td>
                 <td class="col-date">

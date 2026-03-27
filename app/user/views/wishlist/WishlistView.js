@@ -99,6 +99,10 @@ class WishlistView {
      * @returns {string} Escaped text
      */
     _escapeHtml(text) {
+        if (!text) {
+            console.warn('⚠️ Missing field in book data:', text);
+            return '';
+        }
         const map = {
             '&': '&amp;',
             '<': '&lt;',
@@ -106,7 +110,7 @@ class WishlistView {
             '"': '&quot;',
             "'": '&#039;'
         };
-        return text.replace(/[&<>"']/g, char => map[char]);
+        return String(text).replace(/[&<>"']/g, char => map[char]);
     }
 
     /**

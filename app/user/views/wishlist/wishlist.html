@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Wishlist - LibrarySaaS</title>
-    <link rel="stylesheet" href="../../../assets/css/user/style.css">
-    <link rel="stylesheet" href="../../../assets/css/user/wishlist.css">
+    <link rel="stylesheet" href="../../../../assets/css/user/style.css">
+    <link rel="stylesheet" href="../../../../assets/css/user/wishlist.css">
 </head>
 
 <body>
@@ -105,12 +105,12 @@
     </footer>
 
     <!-- Scripts -->
-    <script src="../../../app/admin/models/BookModel.js"></script>
+    <script src="../../models/WishlistModel.js"></script>
     <script src="./WishlistView.js"></script>
-    <script src="../controllers/WishlistController.js"></script>
+    <script src="../../controllers/WishlistController.js"></script>
     <script>
         // Load navbar component
-        fetch('../components/navbar.html')
+        fetch('../../components/navbar.html')
             .then(response => response.text())
             .then(html => {
                 document.getElementById('navbar-container').innerHTML = html;
@@ -118,26 +118,6 @@
 
         // Initialize the wishlist page when DOM is ready
         document.addEventListener('DOMContentLoaded', function () {
-
-            class WishlistModel {
-                async getWishlist() {
-                    // TODO: Replace with actual API call to /api/v1/wishlists
-                    return {
-                        books: [] // Empty for now
-                    };
-                }
-
-                async removeFromWishlist(bookId) {
-                    // TODO: Replace with actual API call
-                    console.log('Removing book:', bookId);
-                }
-
-                async borrowBooks(bookIds) {
-                    // TODO: Replace with actual API call
-                    console.log('Borrowing books:', bookIds);
-                }
-            }
-
             const wishlistModel = new WishlistModel();
             const wishlistView = new WishlistView();
             const wishlistController = new WishlistController(wishlistModel, wishlistView);
