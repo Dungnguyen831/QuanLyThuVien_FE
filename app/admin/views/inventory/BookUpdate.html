@@ -47,14 +47,29 @@
                             <label class="form-label small fw-bold text-muted">SẴN CÓ</label>
                             <input type="number" class="form-control bg-light border-0 py-2" id="editAvailableQty" value="0" required>
                         </div>
-
                         <div class="col-md-12">
-                            <label class="form-label small fw-bold text-muted">ẢNH BÌA SÁCH</label>
-                            <div class="d-flex align-items-center gap-3">
-                                <input type="file" class="form-control bg-light border-0 py-2" id="editBookImageFile" accept="image/*">
-                                <input type="hidden" id="editBookImageUrlHidden">
-                                <img id="editImagePreview" src="https://via.placeholder.com/70x90?text=No+Img" 
-                                     class="rounded-3 shadow-sm" style="width: 70px; height: 90px; object-fit: cover;">
+                            <div class="d-flex gap-3 mt-2">
+                                <div class="flex-grow-1">
+                                    <label class="form-label small fw-bold text-muted mb-1">TÊN FILE ẢNH BÌA</label>
+                                    <input type="text" class="form-control bg-light border-0 py-2" 
+                                           id="editBookImageUrl" 
+                                           placeholder="Ví dụ: springboot.png"
+                                           oninput="ImageService.display('editImagePreview', this.value)">
+                                    <small class="text-muted d-block mt-1">Thay đổi tên file để cập nhật ảnh bìa mới.</small>
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label small fw-bold text-muted mb-1">MÔ TẢ SÁCH</label>
+                                        <textarea class="form-control bg-light border-0 py-2" 
+                                                  id="editBookDescription" rows="3" 
+                                                  placeholder="Cập nhật nội dung sách..."></textarea>
+                                    </div>
+                                </div>
+                        
+                                <div class="flex-shrink-0">
+                                    <img id="editImagePreview" src="/assets/img/default-book.jpg" 
+                                         class="rounded shadow-sm border" 
+                                         style="width: 150px; height: 210px; object-fit: cover; background: #fff;"
+                                         onerror="this.src='/assets/img/default-book.jpg'">
+                                </div>
                             </div>
                         </div>
                     </div>

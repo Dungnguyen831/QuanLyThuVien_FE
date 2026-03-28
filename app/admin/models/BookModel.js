@@ -78,16 +78,5 @@ class BookModel {
     async fetchCategories() { return fetch('http://localhost:8080/api/v1/categories').then(r => r.json()); }
     async fetchPublishers() { return fetch('http://localhost:8080/api/v1/publishers').then(r => r.json()); }
 
-    // Xử lý Upload ảnh lên Server
-    async uploadImage(file) {
-        const formData = new FormData();
-        formData.append('file', file);
-        const response = await fetch('http://localhost:8080/api/v1/upload', {
-            method: 'POST',
-            body: formData 
-        });
-        if (!response.ok) throw new Error("Lỗi upload ảnh");
-        const data = await response.json();
-        return data.url; 
-    }
+   
 }

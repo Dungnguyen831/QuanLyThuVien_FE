@@ -37,16 +37,32 @@
                         </div>
                         
                         <div class="col-md-12 mb-3">
-                            <label class="form-label small fw-bold text-muted">ẢNH BÌA SÁCH</label>
-                            <div class="d-flex align-items-center gap-3">
-                                <input type="file" class="form-control bg-light border-0 py-2" id="bookImageFile" accept="image/*">
-                                
-                                <input type="hidden" id="bookImageUrlHidden">
-                                
-                                <img id="imagePreview" src="https://via.placeholder.com/70x90?text=No+Img" 
-                                     class="rounded-3 shadow-sm" style="width: 70px; height: 90px; object-fit: cover; display: block;">
+                            <div class="d-flex gap-3 align-items-start">
+                                <div class="flex-grow-1">
+                                    <label class="form-label small fw-bold text-muted mb-1">ẢNH BÌA SÁCH</label>
+                                    
+                                    <input type="text" class="form-control bg-light border-0 py-2" 
+                                           id="bookImageUrl" 
+                                           placeholder="Ví dụ: dacnhantam.jpg"
+                                           oninput="ImageService.display('imagePreview', this.value)">
+                                    
+                                    <small class="text-muted d-block mt-1">Nhập tên file (bao gồm đuôi .jpg, .png) </small>
+
+                                    <div class="col-md-12 mb-3">
+                                        <label class="form-label small fw-bold text-muted mb-1">MÔ TẢ SÁCH</label>
+                                        <textarea class="form-control bg-light border-0 py-2" 
+                                                  id="bookDescription" rows="3" 
+                                                  placeholder="Nhập tóm tắt nội dung sách..."></textarea>
+                                    </div>
+                                </div>
+                        
+                                <div class="flex-shrink-0">
+                                    <img id="imagePreview" src="/assets/img/default-book.jpg"  
+                                         class="rounded shadow-sm border" 
+                                         style="width: 150px; height: 210px; object-fit: cover; background: #fff;"
+                                         onerror="this.src='/assets/img/default-book.jpg'">
+                                </div>
                             </div>
-                            <small class="text-muted">Định dạng hỗ trợ: JPG, PNG. Dung lượng tối đa: 2MB.</small>
                         </div>
                     </div>
 
