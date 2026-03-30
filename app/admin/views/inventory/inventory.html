@@ -24,7 +24,7 @@
                         <h3 class="fw-bold mb-1">Quản lý kho sách chi tiết</h3>
                         <p class="text-muted mb-0">Theo dõi và cập nhật tình trạng kho sách thư viện</p>
                     </div>
-                    <button class="btn btn-primary shadow-sm fw-medium px-4">
+                    <button type="button" id="btnAddNewBook" class="btn btn-primary shadow-sm fw-medium px-4">
                         <i class="fas fa-plus me-2"></i>Thêm sách mới
                     </button>
                 </div>
@@ -40,17 +40,15 @@
                                 </div>
                             </div>
                             <div class="col-md-7 d-flex gap-2">
-                                <select class="form-select bg-light border-0">
-                                    <option selected disabled>Thể loại</option>
-                                    </select>
-                                <select class="form-select bg-light border-0">
-                                    <option selected disabled>Nhà xuất bản</option>
-                                </select>
-                                <select class="form-select bg-light border-0">
-                                    <option selected disabled>Tình trạng</option>
-                                    <option>Sẵn sàng</option>
-                                    <option>Hết sách</option>
-                                    <option>Đang bảo trì</option>
+                                <select id="filterCategory" class="form-select bg-light border-0">
+                                    <option value="">Thể loại</option> </select>
+                                
+                                <select id="filterPublisher" class="form-select bg-light border-0">
+                                    <option value="">Nhà xuất bản</option> </select>
+                                
+                                <select id="filterStatus" class="form-select bg-light border-0">
+                                    <option value="">Tình trạng</option> <option value="available">Sẵn sàng</option>
+                                    <option value="out_of_stock">Hết sách</option>
                                 </select>
                             </div>
                         </div>
@@ -111,7 +109,13 @@
     <script src="/app/admin/controllers/BookController.js"></script>
     <script src="/app/admin/models/BookModel.js"></script>
     <script src="/app/admin/views/inventory/BookView.js"></script>
-    
+    <script src="/app/admin/controllers/BookCopyController.js"></script>
+    <script src="/app/admin/models/BookCopyModel.js"></script>
+
+    <div id="modal-container"></div>
+    <div id="modal-copy-container"></div>
+    <div id="modal-container-update"></div>
+
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // 1. Nạp Sidebar và Header đồng thời
@@ -119,7 +123,9 @@
                 ComponentLoader.load('sidebar-container', '../../components/sidebar.html'),
                 ComponentLoader.load('header-container', '../../components/header.html')
             ]);
-
+            await ComponentLoader.load('modal-copy-container', 'BookCopy.html');
+            await ComponentLoader.load('modal-container', 'BookAdd.html');
+            await ComponentLoader.load('modal-container-update', 'BookUpdate.html'); 
             setTimeout(() => {
                 document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
                 // Cập nhật lại đường dẫn thẻ a cho đúng
@@ -130,11 +136,27 @@
                 if(pageTitle) pageTitle.textContent = 'Quản lý kho sách';
             }, 100); 
 
+            // 1. Tạo Model và View chung
+            const bookModel = new BookModel();
+            const bookView = new BookView();
+            
+            // 2. Tạo thằng Controller CHÍNH
+            const bookCtrl = new BookController(bookModel, bookView);
+            
+            // 3. Tạo thằng Controller PHỤ (Quản lý bản sao)
+            const copyModel = new BookCopyModel();
+            const copyCtrl = new BookCopyController(copyModel, bookView, bookCtrl);
 
-            if (typeof BookController !== 'undefined') {
-                const bookController = new BookController(new BookModel(), new BookView());
-                bookController.init();
-            }
+            // 4.  Gán thằng phụ vào một thuộc tính của thằng chính
+            bookCtrl.copyController = copyCtrl; 
+
+            // 5. Chạy
+            bookCtrl.init();
+
+            // if (typeof BookController !== 'undefined') {
+            //     const bookController = new BookController(new BookModel(), new BookView());
+            //     bookController.init();
+            // }
         });
         
     </script>

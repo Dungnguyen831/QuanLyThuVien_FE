@@ -1,0 +1,70 @@
+<div class="modal fade" id="editBookModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 p-4 pb-0">
+                <h5 class="fw-bold">Chỉnh sửa thông tin sách</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form id="editBookForm">
+                    <input type="hidden" id="editBookId">
+
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <label class="form-label small fw-bold text-muted">TÊN SÁCH</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" id="editBookTitle" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">ISBN</label>
+                            <input type="text" class="form-control bg-light border-0 py-2" id="editBookIsbn" required>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">THỂ LOẠI</label>
+                            <input class="form-control bg-light border-0 py-2" list="editCategoryOptions" id="editCategoryInput" placeholder="ID/Tên...">
+                            <datalist id="editCategoryOptions"></datalist>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">TÁC GIẢ</label>
+                            <input class="form-control bg-light border-0 py-2" list="editAuthorOptions" id="editAuthorInput" placeholder="ID/Tên...">
+                            <datalist id="editAuthorOptions"></datalist>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">NHÀ XUẤT BẢN</label>
+                            <input class="form-control bg-light border-0 py-2" list="editPublisherOptions" id="editPublisherInput" placeholder="ID/Tên...">
+                            <datalist id="editPublisherOptions"></datalist>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">NĂM XUẤT BẢN</label>
+                            <input type="number" class="form-control bg-light border-0 py-2" id="editBookYear">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">TỔNG SỐ LƯỢNG</label>
+                            <input type="number" class="form-control bg-light border-0 py-2" id="editTotalQty" value="0" required>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label small fw-bold text-muted">SẴN CÓ</label>
+                            <input type="number" class="form-control bg-light border-0 py-2" id="editAvailableQty" value="0" required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label small fw-bold text-muted">ẢNH BÌA SÁCH</label>
+                            <div class="d-flex align-items-center gap-3">
+                                <input type="file" class="form-control bg-light border-0 py-2" id="editBookImageFile" accept="image/*">
+                                <input type="hidden" id="editBookImageUrlHidden">
+                                <img id="editImagePreview" src="https://via.placeholder.com/70x90?text=No+Img" 
+                                     class="rounded-3 shadow-sm" style="width: 70px; height: 90px; object-fit: cover;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
+                        <button type="button" class="btn btn-light fw-medium px-4" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-primary fw-medium px-4">Cập nhật</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
