@@ -1,5 +1,6 @@
 class BookModel {
     constructor() {
+        
         this.apiUrl = 'http://localhost:8080/api/v1/books';
         this.allBooks = []; // Bộ nhớ đệm chứa toàn bộ sách từ Server để phân trang/lọc cục bộ
     }
@@ -10,7 +11,30 @@ class BookModel {
         const end = start + itemsPerPage;
         return filteredList.slice(start, end);
     }
-
+ // Các hàm Fetch dữ liệu từ API
+    // async fetchBooks() {
+    //     const res = await fetch(this.apiUrl);
+    //     return res.json();
+    // }
+    async fetchBooks() {
+        const token = localStorage.getItem("token"); // Lấy token từ local storage
+        const res = await fetch(this.apiUrl, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // Thêm dòng này để gửi token lên BE
+          },
+        });
+    
+        if (!res.ok) {
+          if (res.status === 401 || res.status === 403) {
+            throw new Error("Phiên đăng nhập hết hạn hoặc không có quyền!");
+          }
+          throw new Error("Lỗi khi lấy danh sách sách");
+        }
+    
+        return await res.json();
+      }
     // [MỚI] Hàm lọc dữ liệu tổng hợp dựa trên Search và 3 thanh Select
     filterBooks(allBooks, { query, category, publisher, status }) {
         return allBooks.filter(book => {
@@ -35,11 +59,7 @@ class BookModel {
         });
     }
 
-    // Các hàm Fetch dữ liệu từ API
-    async fetchBooks() {
-        const res = await fetch(this.apiUrl);
-        return res.json();
-    }
+   
 
     async fetchBookById(id) {
         const response = await fetch(`${this.apiUrl}/${id}`);
