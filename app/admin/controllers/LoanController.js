@@ -14,6 +14,7 @@ class LoanController {
     } else {
       console.log("Dữ liệu mượn trả:", loans);
     }
+    this.view.renderLoans(loans);
   }
 
   async handleAddLoan(loanData) {

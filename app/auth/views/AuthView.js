@@ -49,10 +49,13 @@ class AuthView {
   // Hiển thị thông báo (Dùng alert hoặc in ra thẻ div error)
   showError(message) {
     if (this.errorMessageElement) {
-      this.errorMessageElement.textContent = message;
+      // Nếu message là một Object Error, ta chỉ lấy phần text bên trong
+      const cleanMessage = message instanceof Error ? message.message : message;
+
+      this.errorMessageElement.textContent = cleanMessage;
       this.errorMessageElement.style.display = "block";
     } else {
-      alert(message); // Dự phòng hiển thị bằng alert
+      alert(message instanceof Error ? message.message : message);
     }
   }
 }

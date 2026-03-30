@@ -1,3 +1,5 @@
+//import { checkAuth } from "../../../assets/js/auth.js";
+
 class BookController {
   constructor(model, view) {
     this.model = model;
@@ -211,6 +213,8 @@ class BookController {
 
   // Xử lý nghiệp vụ (Add/Edit/Delete)
   async handleAddBook() {
+    //if (!checkAuth()) return; // <-- THÊM DÒNG NÀY
+
     const data = this.getFormData("book");
     try {
       await this.model.createBook(data);
@@ -233,6 +237,8 @@ class BookController {
   }
 
   async handleEditSubmit() {
+    // if (!checkAuth()) return; // <-- THÊM DÒNG NÀY
+
     const id = document.getElementById("editBookId")?.value;
     const data = this.getFormData("edit");
     try {
@@ -246,6 +252,8 @@ class BookController {
   }
 
   async handleDeleteBook(id) {
+    //if (!checkAuth()) return; // <-- THÊM DÒNG NÀY
+
     if (confirm(`Xác nhận xóa sách ID: ${id}?`)) {
       try {
         await this.model.deleteBook(id);
@@ -266,4 +274,3 @@ class BookController {
     }
   }
 }
-

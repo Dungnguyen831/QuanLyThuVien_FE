@@ -48,7 +48,6 @@ class BookModel {
   // Cập nhật hàm fetchBooks gửi kèm Token
   async fetchBooks() {
     const token = localStorage.getItem("token"); // Lấy token từ local storage
-
     const res = await fetch(this.apiUrl, {
       method: "GET",
       headers: {
@@ -66,6 +65,7 @@ class BookModel {
 
     return await res.json();
   }
+
   async fetchBookById(id) {
     const response = await fetch(`${this.apiUrl}/${id}`);
     if (!response.ok) throw new Error("Không tìm thấy sách");

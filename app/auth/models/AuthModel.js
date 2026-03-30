@@ -14,22 +14,34 @@ class AuthModel {
       });
 
       // Nếu response không thành công (status code không phải 2xx)
+      // if (!response.ok) {
+      //   // Đọc nội dung trả về dưới dạng text trước, vì nó có thể không phải là JSON
+      //   const errorText = await response.text();
+      //   try {
+      //     // Thử parse text đó thành JSON. Nếu thành công, lấy message từ đó.
+      //     const errorJson = JSON.parse(errorText);
+      //     throw new Error(
+      //       errorJson.message || errorJson.error || "Đăng nhập thất bại.",
+      //     );
+      //   } catch (e) {
+      //     // Nếu không parse được JSON, nghĩa là server trả về text thuần.
+      //     // Ném lỗi với nội dung text đó.
+      //     throw new Error(errorText || "Đăng nhập thất bại.");
+      //   }
+      // }
+      // Tìm đến đoạn catch lỗi trong login hoặc register
       if (!response.ok) {
-        // Đọc nội dung trả về dưới dạng text trước, vì nó có thể không phải là JSON
         const errorText = await response.text();
         try {
-          // Thử parse text đó thành JSON. Nếu thành công, lấy message từ đó.
           const errorJson = JSON.parse(errorText);
-          throw new Error(
-            errorJson.message || errorJson.error || "Đăng nhập thất bại.",
-          );
+          // Ở đây Backend trả về { "error": "..." } nên ta lấy errorJson.error
+          throw new Error(errorJson.error || "Đăng nhập thất bại.");
         } catch (e) {
-          // Nếu không parse được JSON, nghĩa là server trả về text thuần.
-          // Ném lỗi với nội dung text đó.
-          throw new Error(errorText || "Đăng nhập thất bại.");
+          // Nếu parse lỗi thì dùng e.message (chính là chuỗi "Tài khoản hoặc...")
+          // Hoặc dùng errorText nếu nó là string thuần
+          throw new Error(e.name === "SyntaxError" ? errorText : e.message);
         }
       }
-
       // Nếu response thành công, chắc chắn là JSON hợp lệ
       return await response.json();
     } catch (error) {

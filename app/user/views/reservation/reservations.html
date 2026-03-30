@@ -5,8 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Reservations - LibrarySaaS</title>
-    <link rel="stylesheet" href="../../../assets/css/user/style.css">
-    <link rel="stylesheet" href="../../../assets/css/user/reservations.css">
+    <link rel="stylesheet" href="../../../../assets/css/user/style.css">
+    <link rel="stylesheet" href="../../../../assets/css/user/reservations.css">
 </head>
 
 <body>
@@ -152,11 +152,11 @@
 
     <!-- Scripts -->
     <script src="./ReservationView.js"></script>
-    <script src="../models/ReservationModel.js"></script>
-    <script src="../controllers/ReservationController.js"></script>
+    <script src="../../models/ReservationModel.js"></script>
+    <script src="../../controllers/ReservationController.js"></script>
     <script>
         // Load navbar component
-        fetch('../components/navbar.html')
+        fetch('../../components/navbar.html')
             .then(response => response.text())
             .then(html => {
                 document.getElementById('navbar-container').innerHTML = html;

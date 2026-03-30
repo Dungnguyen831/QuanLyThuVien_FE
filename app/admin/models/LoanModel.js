@@ -4,7 +4,6 @@ class LoanModel {
       // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/loans)
       //   const response = await fetch("http://localhost:8080/api/v1/loans");
       const token = localStorage.getItem("token");
-
       const response = await fetch("http://localhost:8080/api/v1/loans", {
         method: "GET", // hoặc 'POST', 'PUT', ...
         headers: {
