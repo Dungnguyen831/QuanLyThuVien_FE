@@ -33,7 +33,7 @@ class BookView {
             const category = categories.find(c => c.id == cId);
             const publisher = publishers ? publishers.find(p => p.id == pId) : null; // Tìm NXB
             
-            const imgUrl = book.imageUrl ? book.imageUrl : 'https://via.placeholder.com/150x200.png?text=No+Image';
+            const imgUrl = ImageService.getImageUrl(book.imageUrl);
             const tr = document.createElement('tr');
             tr.setAttribute('data-id', book.id);
             
@@ -43,10 +43,17 @@ class BookView {
     
             tr.innerHTML = `
                 <td class="ps-4 fw-bold text-dark">${book.id}</td>
+              
                 <td>
                     <div class="d-flex align-items-center">
-                        <img src="${imgUrl}" class="rounded me-2" style="width: 40px; height: 55px; object-fit: cover;">
-                        <div class="fw-bold">${book.title || 'Chưa có tên'}</div>
+                        <img src="${imgUrl}" 
+                            class="rounded me-2 border" 
+                            style="width: 50px; height: 70px; object-fit: cover;" 
+                            onerror="this.src='/assets/img/default-book.jpg'"> 
+                        
+                        <div class="fw-bold text-truncate" style="max-width: 250px;">
+                            ${book.title || 'Chưa có tên'}
+                        </div>
                     </div>
                 </td>
                 <td>${author ? author.name : 'N/A'}</td>
@@ -73,7 +80,8 @@ class BookView {
         const publisher = publishers.find(p => p.id == (book.publisher_id || book.publisherId));
 
         // 2. Đổ dữ liệu vào các ID trong HTML
-        document.getElementById('detailBookImage').src = book.imageUrl || 'https://via.placeholder.com/150x200';
+        
+        ImageService.display('detailBookImage', book.imageUrl);        
         document.getElementById('detailBookTitle').textContent = book.title || 'N/A';
         document.getElementById('detailBookId').textContent = `#${book.id}`;
 
@@ -89,6 +97,7 @@ class BookView {
         document.getElementById('modalBookYear').textContent = book.publishedYear || 'N/A';
         document.getElementById('modalBookDescription').textContent = book.description || 'Chưa có mô tả.';
     }
+
     renderCopiesToModal(copies) {
         const tbody = document.getElementById('copy-table-body');
         if (!tbody) return;
@@ -107,7 +116,7 @@ class BookView {
             </tr>
         `).join('') : '<tr><td colspan="6" class="text-center">Chưa có bản sao nào</td></tr>';
     }
-    // Thêm vào BookView.js
+    // Thiết lập sự kiện tìm kiếm bản sao trong modal
     setupCopySearch(allCopies) {
         const searchInput = document.getElementById('copySearchInput');
         if (!searchInput) return;

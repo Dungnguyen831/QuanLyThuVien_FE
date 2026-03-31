@@ -14,7 +14,13 @@
                         <div class="row align-items-start g-4">
                             
                             <div class="col-md-7 d-flex gap-4 border-end">
-                                <img id="detailBookImage" src="" class="rounded shadow-sm flex-shrink-0" style="width: 100px; height: 140px; object-fit: cover; background: #fff;">
+                                
+                                <img id="detailBookImage" 
+                                src="/assets/img/default-book.jpg"  
+                                class="rounded shadow-sm flex-shrink-0 border" 
+                                style="width: 100px; height: 140px; object-fit: cover; background: #fff;"
+                                onerror="this.src='/assets/img/default-book.jpg'">       
+
                                 <div class="flex-grow-1">
                                     <h4 class="fw-bold mb-1" id="detailBookTitle">...</h4>
                                     <p class="text-muted mb-2 small">Mã hệ thống: <span id="detailBookId" class="badge bg-dark">#</span></p>
