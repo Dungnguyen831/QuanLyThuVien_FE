@@ -39,14 +39,15 @@ class ReservationModel {
      */
     async fetchUserDashboardData(page = 0, size = 10, sort = 'createdAt,desc') {
         try {
-            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('token');
 
-            if (!userId) {
-                throw new Error('User ID not found. Please login first.');
+            if (!token) {
+                throw new Error('User not authenticated. Please login first.');
             }
 
+            // ✅ NEW ENDPOINT: No userId in path - backend extracts from JWT
             // Build URL with pagination parameters
-            const url = new URL(`${this.apiBaseUrl}/reservations/user/${userId}`);
+            const url = new URL(`${this.apiBaseUrl}/reservations`);
             url.searchParams.append('page', page);
             url.searchParams.append('size', size);
             url.searchParams.append('sort', sort);
@@ -54,7 +55,8 @@ class ReservationModel {
             const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -112,10 +114,18 @@ class ReservationModel {
      */
     async cancelReservation(reservationId) {
         try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                throw new Error('User not authenticated.');
+            }
+
+            // ✅ Authorization header attached
             const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -149,10 +159,18 @@ class ReservationModel {
      */
     async getReservationDetails(reservationId) {
         try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                throw new Error('User not authenticated.');
+            }
+
+            // ✅ Authorization header attached
             const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
@@ -178,16 +196,18 @@ class ReservationModel {
      */
     async getUserReservationsWithBooks() {
         try {
-            const userId = localStorage.getItem('userId');
+            const token = localStorage.getItem('token');
 
-            if (!userId) {
-                throw new Error('User ID not found. Please login first.');
+            if (!token) {
+                throw new Error('User not authenticated. Please login first.');
             }
 
-            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${userId}/all`, {
+            // ✅ NEW ENDPOINT: No userId in path - backend extracts from JWT
+            const response = await fetch(`${this.apiBaseUrl}/reservations/details`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
                 }
             });
 
