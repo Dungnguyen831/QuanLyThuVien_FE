@@ -4,13 +4,12 @@ class AuthorView {
     }
 
     renderAuthors(authors) {
-        if (!this.tableBody) return;
+    if (!this.tableBody) return;
 
-        // Nếu mảng rỗng
-        if (authors.length === 0) {
-            this.tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4">Không có dữ liệu tác giả.</td></tr>`;
-            return;
-        }
+    if (authors.length === 0) {
+        this.tableBody.innerHTML = `<tr><td colspan="7" class="text-center py-4">Không có dữ liệu tác giả.</td></tr>`;
+        return;
+    }
 
         // Vẽ từng dòng dữ liệu
         this.tableBody.innerHTML = authors.map(author => {
@@ -23,7 +22,7 @@ class AuthorView {
             // Trả về chuỗi HTML của dòng (Dùng Template String ` `)
             return `
                 <tr>
-                    <td class="ps-4 fw-bold text-dark">${author.id}</td>
+                    <td class="ps-4 fw-bold text-dark">TG${String(author.id).padStart(3, '0')}</td>
                     <td>
                         <div class="d-flex align-items-center">
                             <div class="avatar-circle me-2" style="background-color: ${avatarColor}20; color: ${avatarColor};">
@@ -35,7 +34,10 @@ class AuthorView {
                     <td class="text-muted" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-transform: none; text-overflow: ellipsis;">
                         ${author.biography || 'Chưa có tiểu sử'}
                     </td>
-                    <td class="text-muted">${author.createdAt || '-'}</td>
+                    <td>Việt Nam</td> <td class="fw-bold text-center">0</td> <td>
+                        <span class="status-indicator bg-success" style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px;"></span>
+                        <span class="text-success fw-medium">Đang hợp tác</span>
+                    </td>
                     <td class="text-end pe-4">
                         <div class="d-flex justify-content-end align-items-center gap-2">
                             <button class="btn btn-sm btn-light text-primary" title="Chỉnh sửa">
@@ -52,5 +54,6 @@ class AuthorView {
                 </tr>
             `;
         }).join('');
+        document.getElementById('total-authors-count').innerText = `Hiển thị ${authors.length} tác giả`;
     }
 }

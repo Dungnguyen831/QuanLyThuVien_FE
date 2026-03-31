@@ -94,11 +94,14 @@
                         </table>
                     </div>
 
-                    <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
-                        <small>Hiển thị <b class="text-dark">1</b> kệ sách</small>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                        </ul>
+                   <div class="d-flex justify-content-between align-items-center mt-3">
+                        <p id="total-shelves-count" class="text-muted mb-0">Hiển thị 0 kệ sách</p>
+                        
+                        <nav aria-label="Page navigation">
+                            <ul class="pagination pagination-sm mb-0">
+                                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                            </ul>
+                        </nav>
                     </div>
                 </div> 
             </div>
@@ -107,26 +110,34 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
     <script src="../../../../assets/js/ComponentLoader.js"></script>
-    <script src="/app/admin/controllers/ShelfController.js"></script>
     <script src="/app/admin/models/ShelfModel.js"></script>
     <script src="/app/admin/views/shelf/ShelfView.js"></script>
+    <script src="/app/admin/controllers/ShelfController.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Nạp các thành phần giao diện dùng chung
             await Promise.all([
                 ComponentLoader.load('sidebar-container', '../../components/sidebar.html'),
                 ComponentLoader.load('header-container', '../../components/header.html')
             ]);
-            setTimeout(() => {
-                document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
+
+            // 2. Xử lý UI ngay sau khi nạp xong (Không dùng setTimeout)
+            const sidebarItems = document.querySelectorAll('#sidebar-wrapper .list-group-item');
+            if (sidebarItems.length > 0) {
+                sidebarItems.forEach(el => el.classList.remove('active'));
                 const shelfMenu = document.querySelector('#sidebar-wrapper a[href*="shelf.html"]');
                 if (shelfMenu) shelfMenu.classList.add('active');
-                const pageTitle = document.getElementById('page-title');
-                if(pageTitle) pageTitle.textContent = 'Quản lý kệ sách';
-            }, 100); 
-            // Khởi tạo controller
-            if (typeof ShelfController !== 'undefined') {
+            }
+            
+            const pageTitle = document.getElementById('page-title');
+            if (pageTitle) pageTitle.textContent = 'Quản lý kệ sách';
+
+            // 3. Khởi tạo MVC (Đảm bảo các file Model/View/Controller đã nạp đúng thứ tự ở trên)
+            if (typeof ShelfController !== 'undefined' && typeof ShelfModel !== 'undefined' && typeof ShelfView !== 'undefined') {
                 const shelfApp = new ShelfController(new ShelfModel(), new ShelfView());
                 shelfApp.init();
+            } else {
+                console.error("Thiếu một trong các file MVC: ShelfModel, ShelfView hoặc ShelfController!");
             }
         });
     </script>
