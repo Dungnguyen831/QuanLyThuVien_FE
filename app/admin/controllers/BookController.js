@@ -198,6 +198,24 @@ class BookController {
         });
         setupUploadPreview('bookImageFile', 'imagePreview');
         setupUploadPreview('editBookImageFile', 'editImagePreview');
+        // Danh sách các ID input cần đổ dữ liệu vào datalist khi người dùng tương tác
+        const datalistConfigs = [
+            { inputId: 'categoryInput', listId: 'categoryOptions', type: 'categories' },
+            { inputId: 'authorInput', listId: 'authorOptions', type: 'authors' },
+            { inputId: 'publisherInput', listId: 'publisherOptions', type: 'publishers' },
+            // Đừng quên thêm các ID cho form Sửa (Edit) nếu bạn cũng dùng datalist ở đó
+            { inputId: 'editCategoryInput', listId: 'editCategoryOptions', type: 'categories' },
+            { inputId: 'editAuthorInput', listId: 'editAuthorOptions', type: 'authors' },
+            { inputId: 'editPublisherInput', listId: 'editPublisherOptions', type: 'publishers' }
+        ];
+
+        datalistConfigs.forEach(({ inputId, listId, type }) => {
+            const inputEl = document.getElementById(inputId);
+            if (inputEl) {
+                // Khi người dùng nhấn vào ô input, danh sách sẽ được làm mới
+                inputEl.addEventListener('focus', () => this.populateDatalist(listId, type));
+            }
+        });
     }
     // Xử lý thêm mới sách với các bước kiểm tra dữ liệu đầu vào 
     async handleAddBook() {
@@ -407,5 +425,26 @@ class BookController {
         if (!fileName) return true; // Cho phép để trống nếu không bắt buộc
         const allowedExtensions = /(\.jpg|\.png)$/i;
         return allowedExtensions.test(fileName);
+    }
+
+    populateDatalist(datalistId, type) {
+        const datalist = document.getElementById(datalistId);
+        if (!datalist) return;
+    
+        const data = this[type]; // Lấy authors, categories, hoặc publishers
+        
+        // Xóa danh sách cũ
+        datalist.innerHTML = "";
+    
+        data.forEach(item => {
+            const option = document.createElement("option");
+            // Gán ID vào value để khi chọn, ID sẽ nhảy vào ô Input
+            option.value = item.id; 
+            
+            // Hiển thị Tên bên cạnh ID để người dùng nhận diện
+            option.innerText = `Tên: ${item.name || item.title}`;
+            
+            datalist.appendChild(option);
+        });
     }
 }

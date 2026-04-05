@@ -134,20 +134,39 @@ class BookModel {
         return true;
       }
 
-    // Các hàm lấy danh sách danh mục hỗ trợ
-    async fetchAuthors() {
-        return fetch("http://localhost:8080/api/v1/authors").then((r) => r.json());
-    }
-    async fetchCategories() {
-        return fetch("http://localhost:8080/api/v1/categories").then((r) =>
-        r.json(),
-        );
-    }
-    async fetchPublishers() {
-        return fetch("http://localhost:8080/api/v1/publishers").then((r) =>
-        r.json(),
-        );
-    }
+   // Các hàm lấy danh sách danh mục hỗ trợ có kèm Token
+  async fetchAuthors() {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:8080/api/v1/authors", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error("Không thể tải danh sách tác giả");
+    return await res.json();
+  }
+
+  async fetchCategories() {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:8080/api/v1/categories", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error("Không thể tải danh sách thể loại");
+    return await res.json();
+  }
+
+  async fetchPublishers() {
+    const token = localStorage.getItem("token");
+    const res = await fetch("http://localhost:8080/api/v1/publishers", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+    if (!res.ok) throw new Error("Không thể tải danh sách nhà xuất bản");
+    return await res.json();
+  }
 
    // Xử lý Upload ảnh lên Server
     async uploadImage(file) {
