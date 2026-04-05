@@ -70,8 +70,10 @@ class ReservationView {
         const statusBadge = this._createStatusBadge(reservation.status);
         const formattedDate = this._formatDate(reservation.reservationDate);
 
-        // Handle image URL (BE returns imageUrl instead of cover)
-        const imageUrl = this._escapeHtml(reservation.imageUrl || reservation.cover || '/assets/images/no-book-cover.jpg');
+        // ✅ Use ImageService to get proper image URL
+        const imageUrl = this._escapeHtml(
+            ImageService.getImageUrl(reservation.imageUrl || reservation.cover || 'default-book.jpg')
+        );
         const title = this._escapeHtml(reservation.title || 'Unknown Title');
 
         // Get author name or fallback to authorId

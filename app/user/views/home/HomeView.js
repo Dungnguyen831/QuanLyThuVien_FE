@@ -99,48 +99,50 @@ class HomeView {
     }
 
     /**
-     * Create a single book card element
-     * @param {Object} book - Book object from backend with: id, title, author_id, imageUri, category_id, availableQty, totalQty
-     * @returns {HTMLElement} - Book card DOM element
+     * Create a single book card element using reusable BookCard component
+     * Handles image display, fallbacks, and badges
+     * @param {Object} book - Book object from backend with: id, title, author_id, imageUrl, category_id, availableQty, totalQty
+     * @returns {HTMLElement} - Book card DOM element (wrapped in column div)
      */
     createBookCard(book) {
-        const col = document.createElement('div');
-        col.className = 'col-12 col-sm-6 col-md-4 col-lg-2';
-
-        // Generate availability badge (backend doesn't have rating)
-        const availabilityBadge = this.generateAvailabilityBadge(book.availableQty, book.totalQty);
-
-        // Create book card
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        card.innerHTML = `
-            <div class="book-card-image-wrapper">
-                <img 
-                    src="${book.imageUri || 'https://via.placeholder.com/150x225?text=No+Cover'}" 
-                    alt="${this.escapeHtml(book.title)}" 
-                    class="book-card-image"
-                    onerror="this.src='https://via.placeholder.com/150x225?text=No+Cover'"
-                >
-                <button class="book-card-favorite-btn" title="Add to favorites">
-                    <i class="far fa-heart"></i>
-                </button>
-            </div>
-            <div class="book-card-content">
-                <h4 class="book-card-title">${this.escapeHtml(book.title || 'Unknown Title')}</h4>
-                <p class="book-card-author">${this.getAuthorDisplay(book.author_id)}</p>
-                <div class="book-card-rating">
-                    ${availabilityBadge}
-                </div>
-                <p class="book-card-category">${this.getCategoryDisplay(book.category_id)}</p>
-            </div>
-        `;
-
-        col.appendChild(card);
-        return col;
+        // ✅ Use reusable BookCard component with shared ImageService
+        return BookCard.create(book, {
+            showFavoriteBtn: true,
+            onFavoriteClick: (bookData) => {
+                // Trigger wishlist action if needed
+                if (this.onFavoriteClick) {
+                    this.onFavoriteClick(bookData);
+                }
+            },
+            onCardClick: (bookData) => {
+                // Trigger book details if needed
+                if (this.onCardClick) {
+                    this.onCardClick(bookData);
+                }
+            },
+            imageField: 'imageUrl' // Use imageUrl from backend response
+        });
     }
 
     /**
-     * Generate availability badge HTML (replaces rating since backend doesn't have it)
+     * Bind favorite button click handler
+     * @param {Function} callback - Callback function when favorite is clicked
+     */
+    bindFavoriteClick(callback) {
+        this.onFavoriteClick = callback;
+    }
+
+    /**
+     * Bind card click handler
+     * @param {Function} callback - Callback function when card is clicked
+     */
+    bindCardClick(callback) {
+        this.onCardClick = callback;
+    }
+
+    /**
+     * [DEPRECATED] Generate availability badge - now handled by BookCard component
+     * @private
      * @param {Number} availableQty - Available quantity
      * @param {Number} totalQty - Total quantity
      * @returns {String} - HTML string with availability badge

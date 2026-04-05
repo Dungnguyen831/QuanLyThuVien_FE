@@ -20,7 +20,7 @@ class WishlistView {
   }
 
   /**
-   * Render wishlist books as a grid of cards
+   * Render wishlist books as a grid of cards using BookCard component
    * @param {Array} books - Array of book objects to render
    */
   renderWishlistBooks(books) {
@@ -30,9 +30,27 @@ class WishlistView {
       return;
     }
 
-    this.wishlistGrid.innerHTML = books
-      .map((book) => this._createBookCard(book))
-      .join("");
+    // Clear grid
+    this.wishlistGrid.innerHTML = '';
+
+    // Use BookCard component to render each book
+    books.forEach(book => {
+      const bookCardElement = BookCard.create(book, {
+        showFavoriteBtn: true,
+        onFavoriteClick: (bookData) => {
+          // Trigger remove from wishlist action
+          if (this.eventListeners.removeFromWishlist) {
+            this.eventListeners.removeFromWishlist(bookData.id);
+          }
+        },
+        imageField: 'imageUrl' // Use imageUrl from backend response
+      });
+
+      // Customize column classes for wishlist (smaller layout)
+      bookCardElement.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+
+      this.wishlistGrid.appendChild(bookCardElement);
+    });
   }
 
   /**
