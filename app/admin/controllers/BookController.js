@@ -340,7 +340,6 @@ class BookController {
     }
 
     // Xử lý submit form sửa sách với các bước kiểm tra dữ liệu đầu vào tương tự như thêm mới
-  // Xử lý submit form sửa sách
     async handleEditSubmit() {
         const id = document.getElementById("editBookId")?.value;
         const data = this.getFormData("edit");
