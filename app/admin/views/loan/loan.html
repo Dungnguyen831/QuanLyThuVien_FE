@@ -27,9 +27,7 @@
                         <p class="text-muted mb-0">Theo dõi và xử lý các giao dịch mượn trả sách trong hệ thống</p>
                     </div>
                     <div class="d-flex gap-3">
-                        <button class="btn btn-white border shadow-sm fw-medium text-secondary">
-                            <i class="fas fa-box-archive me-2"></i>Ghi nhận trả sách
-                        </button>
+                        
                         <button class="btn btn-primary shadow-sm fw-medium" data-bs-toggle="modal" data-bs-target="#addLoanModal">
                             <i class="fas fa-plus me-2"></i>Tạo phiếu mượn mới
                         </button>
@@ -84,7 +82,7 @@
                     <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="input-group" style="width: 320px;">
                             <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" class="form-control bg-light border-0" placeholder="Tìm kiếm theo tên độc giả hoặc mã sách...">
+                            <input type="text" id="search-loan-input" class="form-control bg-light border-0" placeholder="Nhập mã phiếu (VD: MP001), tên độc giả...">
                         </div>
                         
                         <div class="filter-tabs">
@@ -120,14 +118,7 @@
                     </div>
 
                     <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
-                        <small>Hiển thị <b class="text-dark">1</b> đến <b class="text-dark">6</b> trong tổng số <b class="text-dark">128</b> kết quả</small>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
-                        </ul>
+                        
                     </div>
                 </div>
 
