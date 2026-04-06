@@ -1,0 +1,183 @@
+/* ==========================================================================
+   BOOK DETAIL STYLES - LIBRARYPRO
+   ========================================================================== */
+
+:root {
+    --primary: #2b6df6;
+    --primary-light: #eef2ff;
+    --success: #10b981;
+    --success-light: #ecfdf5;
+    --text-main: #111827;
+    --text-muted: #6b7280;
+    --bg-body: #f9fafb;
+    --card-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.04);
+}
+
+body {
+    background-color: var(--bg-body);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    color: var(--text-main);
+}
+
+.container {
+    max-width: 1100px;
+    margin: 40px auto;
+    padding: 0 20px;
+}
+
+/* 1. Breadcrumb */
+.breadcrumb {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin-bottom: 30px;
+}
+.breadcrumb span { margin: 0 8px; opacity: 0.5; }
+.breadcrumb strong { color: var(--text-main); font-weight: 600; }
+
+/* 2. Layout Wrapper */
+.detail-wrap {
+    display: grid;
+    grid-template-columns: 320px 1fr;
+    gap: 50px;
+    align-items: start;
+}
+
+/* 3. Left Section: Cover */
+.book-cover-card {
+    background: #fff;
+    padding: 15px;
+    border-radius: 20px;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 20px;
+}
+.book-cover-card img {
+    width: 100%;
+    border-radius: 12px;
+    display: block;
+    object-fit: cover;
+}
+.cover-buttons {
+    display: flex;
+    gap: 10px;
+}
+.btn-sub {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-sub:hover { background: #f3f4f6; }
+
+/* 4. Right Section: Info */
+.labels {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+.lbl {
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+.lbl.tech { background: var(--primary-light); color: var(--primary); }
+.lbl.available { background: var(--success-light); color: var(--success); }
+
+.main-title {
+    font-size: 42px;
+    font-weight: 800;
+    margin: 0 0 8px;
+    line-height: 1.1;
+}
+.sub-info {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+/* Rating */
+.rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 25px;
+}
+.stars { color: #fbbf24; letter-spacing: 2px; }
+.rating-val { font-weight: 700; font-size: 18px; }
+.review-link { color: var(--text-muted); font-size: 14px; cursor: pointer; }
+
+.book-summary {
+    font-size: 16px;
+    line-height: 1.6;
+    color: #4b5563;
+    margin-bottom: 35px;
+}
+
+/* Actions */
+.primary-actions {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 40px;
+}
+.btn-borrow {
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    padding: 15px 35px;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    box-shadow: 0 10px 20px rgba(43, 109, 246, 0.2);
+    transition: all 0.2s;
+}
+.btn-borrow:hover { transform: translateY(-2px); opacity: 0.9; }
+
+.btn-wishlist {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    padding: 15px 25px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Stats Grid */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    padding-top: 30px;
+    border-top: 1px solid #e5e7eb;
+}
+.stat-box small {
+    display: block;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+.stat-box strong { font-size: 16px; }
+
+/* Responsive */
+@media (max-width: 850px) {
+    .detail-wrap { grid-template-columns: 1fr; text-align: center; }
+    .labels, .rating-row, .primary-actions { justify-content: center; }
+    .book-cover-card { max-width: 300px; margin: 0 auto 30px; }
+}
+/* Style cho liên kết trong breadcrumb */
+.breadcrumb a {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: #3b82f6; /* Đổi màu xanh khi di chuột vào */
+    text-decoration: underline;
+}
