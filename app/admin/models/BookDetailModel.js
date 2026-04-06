@@ -1,45 +1,65 @@
+/**
+ * BookDetailModel.js
+ * Chịu trách nhiệm quản lý dữ liệu cho trang chi tiết sách
+ */
 class BookDetailModel {
-    async fetchBookDetail(bookId) {
+    constructor() {
+        // Cấu hình URL cơ sở của API Spring Boot
+        this.apiUrl = 'http://localhost:8080/api/v1/books';
+    }
+
+    /**
+     * Lấy thông tin chi tiết của một cuốn sách theo ID
+     * @param {number|string} id - ID của cuốn sách cần lấy
+     * @returns {Promise<Object|null>} - Trả về object sách hoặc null nếu lỗi
+     */
+    async fetchBookDetail(id) {
         try {
-            // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/books/7)
-            const response = await fetch(`http://localhost:8080/api/v1/books/${bookId}`); 
+            console.log(`[Model] Đang gọi API lấy chi tiết sách ID: ${id}...`);
             
-            if (!response.ok) throw new Error('Lỗi khi lấy chi tiết sách');
-            return await response.json();
+            const response = await fetch(`${this.apiUrl}/${id}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    // Nếu sau này ông làm chức năng đăng nhập, thêm Token ở đây:
+                    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+
+            // Kiểm tra nếu phản hồi không thành công (ví dụ lỗi 404, 500)
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `Lỗi HTTP! Trạng thái: ${response.status}`);
+            }
+
+            // Chuyển đổi dữ liệu JSON từ server
+            const bookData = await response.json();
             
+            console.log('[Model] Dữ liệu nhận được:', bookData);
+            return bookData;
+
         } catch (error) {
-            console.error("Không thể lấy dữ liệu chi tiết sách:", error);
-            // Trả về dữ liệu mẫu khớp với database library_db để ông test giao diện
-            return {
-                "id": bookId || 7,
-                "title": "Java Programming Basics",
-                "authorName": "Nguyễn Văn A",
-                "categoryName": "Lập trình",
-                "publishedYear": 2020,
-                "isbn": "978604000001",
-                "totalQty": 10,
-                "availableQty": 10,
-                "description": "Cuốn sách chuyên sâu về ngôn ngữ lập trình Java, cung cấp kiến thức nền tảng vững chắc cho người mới bắt đầu.",
-                "imageUrl": "https://via.placeholder.com/300x450/007bff/ffffff?text=Java+Programming",
-                "rating": 4.8,
-                "reviewsCount": 1240
-            };
+            console.error('[Model Error] Lỗi khi lấy chi tiết sách:', error.message);
+            // Ông có thể bắn thông báo ra UI hoặc trả về null để Controller xử lý
+            return null;
         }
     }
 
-    async updateBookDetail(bookId, updateData) {
+    /**
+     * (Tùy chọn) Gửi yêu cầu mượn sách
+     * @param {Object} borrowData - Thông tin phiếu mượn
+     */
+    async sendBorrowRequest(borrowData) {
         try {
-            const response = await fetch(`http://localhost:8080/api/v1/books/${bookId}`, {
-                method: 'PUT',
+            const response = await fetch('http://localhost:8080/api/borrows', {
+                method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(updateData)
+                body: JSON.stringify(borrowData)
             });
-
-            if (!response.ok) throw new Error('Lỗi khi cập nhật thông tin sách');
             return await response.json();
         } catch (error) {
-            console.error("Lỗi khi cập nhật sách:", error);
-            throw error;
+            console.error('[Model Error] Lỗi mượn sách:', error);
+            return { success: false, message: "Lỗi kết nối server" };
         }
     }
 }

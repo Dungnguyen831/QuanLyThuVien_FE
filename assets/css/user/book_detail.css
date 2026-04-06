@@ -171,3 +171,13 @@ body {
     .labels, .rating-row, .primary-actions { justify-content: center; }
     .book-cover-card { max-width: 300px; margin: 0 auto 30px; }
 }
+/* Style cho liên kết trong breadcrumb */
+.breadcrumb a {
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.breadcrumb a:hover {
+    color: #3b82f6; /* Đổi màu xanh khi di chuột vào */
+    text-decoration: underline;
+}

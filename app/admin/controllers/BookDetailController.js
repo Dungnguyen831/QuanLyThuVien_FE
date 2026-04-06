@@ -5,10 +5,26 @@ class BookDetailController {
     }
 
     async init() {
-        // 1. Gọi Model lấy danh sách từ API
-        const bookdetails = await this.model.fetchBookDetails();
+        // 1. Lấy ID từ URL (Ví dụ: book_detail.html?id=7)
+        const urlParams = new URLSearchParams(window.location.search);
+        const bookId = urlParams.get('id') || 7; 
+
+        // 2. Gọi Model lấy dữ liệu theo ID
+        const book = await this.model.fetchBookDetail(bookId);
         
-        // 2. Gọi View để in ra màn hình
-        this.view.renderBookDetails(bookdetails);
+        // 3. Gọi View để in ra màn hình
+        this.view.renderBookDetail(book);
+
+        // 4. Gán sự kiện cho nút Borrow
+        this.setupEventListeners(bookId);
+    }
+
+    setupEventListeners(bookId) {
+        const btnBorrow = document.getElementById('btn-borrow');
+        if (btnBorrow) {
+            btnBorrow.onclick = () => {
+                alert(`Gửi yêu cầu mượn sách ID: ${bookId}`);
+            };
+        }
     }
 }

@@ -64,11 +64,9 @@ class HomeView {
             return;
         }
 
-        this.newArrivalsContainer.innerHTML = '';
-        books.forEach(book => {
-            const bookCard = this.createBookCard(book);
-            this.newArrivalsContainer.appendChild(bookCard);
-        });
+        this.newArrivalsContainer.innerHTML = books
+        .map(book => this.createBookCard(book))
+        .join('');
     }
 
     /**
@@ -91,11 +89,9 @@ class HomeView {
             return;
         }
 
-        this.mostPopularContainer.innerHTML = '';
-        books.forEach(book => {
-            const bookCard = this.createBookCard(book);
-            this.mostPopularContainer.appendChild(bookCard);
-        });
+        this.mostPopularContainer.innerHTML = books
+        .map(book => this.createBookCard(book))
+        .join('');
     }
 
     /**
@@ -104,39 +100,32 @@ class HomeView {
      * @returns {HTMLElement} - Book card DOM element
      */
     createBookCard(book) {
-        const col = document.createElement('div');
-        col.className = 'col-12 col-sm-6 col-md-4 col-lg-2';
+    // SỬA ĐOẠN NÀY: Dùng đường dẫn từ gốc "/"
+    const imgPath = book.imageUrl 
+        ? `/assets/images/${book.imageUrl.split('/').pop()}` 
+        : "/assets/images/default-book.png";
 
-        // Generate availability badge (backend doesn't have rating)
-        const availabilityBadge = this.generateAvailabilityBadge(book.availableQty, book.totalQty);
+    const safeTitle = this.escapeHtml(book.title || 'No Title');
+    const badgeHtml = this.generateAvailabilityBadge(book.availableQty, book.totalQty);
 
-        // Create book card
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        card.innerHTML = `
-            <div class="book-card-image-wrapper">
-                <img 
-                    src="${book.imageUri || 'https://via.placeholder.com/150x225?text=No+Cover'}" 
-                    alt="${this.escapeHtml(book.title)}" 
-                    class="book-card-image"
-                    onerror="this.src='https://via.placeholder.com/150x225?text=No+Cover'"
-                >
-                <button class="book-card-favorite-btn" title="Add to favorites">
-                    <i class="far fa-heart"></i>
-                </button>
+    return `
+        <div class="book-card" onclick="window.location.href='../book/book_detail.html?id=${book.id}'">
+            <div class="book-card-image">
+                <img src="${imgPath}" 
+                     alt="${safeTitle}" 
+                     onerror="this.onerror=null; this.src='/assets/images/default-book.png';">
+                <div class="book-badge-container">${badgeHtml}</div>
             </div>
-            <div class="book-card-content">
-                <h4 class="book-card-title">${this.escapeHtml(book.title || 'Unknown Title')}</h4>
+            <div class="book-card-info">
+                <h3 class="book-card-title">${safeTitle}</h3>
                 <p class="book-card-author">${this.getAuthorDisplay(book.author_id)}</p>
-                <div class="book-card-rating">
-                    ${availabilityBadge}
+                <div class="book-card-footer">
+                    <span class="book-card-year">${book.publishedYear || 'N/A'}</span>
+                    <div class="book-card-rating">★ 4.8</div>
                 </div>
-                <p class="book-card-category">${this.getCategoryDisplay(book.category_id)}</p>
             </div>
-        `;
-
-        col.appendChild(card);
-        return col;
+        </div>
+    `;
     }
 
     /**
@@ -195,4 +184,5 @@ class HomeView {
         };
         return text.replace(/[&<>"']/g, m => map[m]);
     }
+    
 }
