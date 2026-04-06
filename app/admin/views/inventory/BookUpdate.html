@@ -47,14 +47,36 @@
                             <label class="form-label small fw-bold text-muted">SẴN CÓ</label>
                             <input type="number" class="form-control bg-light border-0 py-2" id="editAvailableQty" value="0" required>
                         </div>
-
                         <div class="col-md-12">
-                            <label class="form-label small fw-bold text-muted">ẢNH BÌA SÁCH</label>
-                            <div class="d-flex align-items-center gap-3">
-                                <input type="file" class="form-control bg-light border-0 py-2" id="editBookImageFile" accept="image/*">
-                                <input type="hidden" id="editBookImageUrlHidden">
-                                <img id="editImagePreview" src="https://via.placeholder.com/70x90?text=No+Img" 
-                                     class="rounded-3 shadow-sm" style="width: 70px; height: 90px; object-fit: cover;">
+                            <div class="d-flex gap-3 mt-2">
+                                <div class="flex-grow-1">
+                                    <label class="form-label small fw-bold text-muted mb-1">ẢNH BÌA SÁCH</label>
+                                    
+                                    <input type="file" class="form-control bg-light border-0 py-2 mb-2" 
+                                           id="editBookImageFile" 
+                                           accept="image/jpeg, image/png">
+                                
+                                    <input type="hidden" id="editBookImageUrl">
+                                    <div class="mb-2">
+                                        <small class="text-primary fw-medium">File hiện tại: </small>
+                                        <small id="currentFileNameDisplay" class="text-muted">chưa có</small>
+                                    </div>
+                                    <small class="text-muted d-block mt-1">Chọn ảnh mới để thay thế ảnh hiện tại.</small>
+                                
+                                    <div class="col-md-12 mt-3">
+                                        <label class="form-label small fw-bold text-muted mb-1">MÔ TẢ SÁCH</label>
+                                        <textarea class="form-control bg-light border-0 py-2" 
+                                                  id="editBookDescription" rows="3" 
+                                                  placeholder="Cập nhật nội dung sách..."></textarea>
+                                    </div>
+                                </div>
+                        
+                                <div class="flex-shrink-0">
+                                    <img id="editImagePreview" src="/assets/img/default-book.jpg" 
+                                         class="rounded shadow-sm border" 
+                                         style="width: 150px; height: 210px; object-fit: cover; background: #fff;"
+                                         onerror="this.src='/assets/img/default-book.jpg'">
+                                </div>
                             </div>
                         </div>
                     </div>

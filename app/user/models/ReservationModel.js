@@ -5,76 +5,104 @@
  */
 class ReservationModel {
     constructor() {
-        this.apiBaseUrl = '/api/v1'; // Replace with your actual API base URL
+        // Auto-detect API base URL
+        // You can override by setting window.API_BASE_URL before loading this script
+        this.apiBaseUrl = window.API_BASE_URL || this._getDefaultApiUrl();
     }
 
     /**
-     * Fetch user dashboard data including stats and reservations
-     * @returns {Promise<Object>} Dashboard data object with stats and reservations array
+     * Get default API URL based on current environment
+     * @private
+     * @returns {string} API base URL
      */
-    async fetchUserDashboardData() {
-        try {
-            // TODO: Replace with actual API call when backend is ready
-            // const response = await fetch(`${this.apiBaseUrl}/reservations/dashboard`);
-            // const data = await response.json();
-            // return data;
+    _getDefaultApiUrl() {
+        // Priority:
+        // 1. If on localhost - use localhost:8080
+        // 2. If on any other host - use same host with /api/v1
+        // 3. Fallback to /api/v1 (relative path)
 
-            // For now, return mock data
-            return this._getMockDashboardData();
-        } catch (error) {
-            console.error('Error fetching reservation dashboard:', error);
-            throw error;
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            return 'http://localhost:8080/api/v1';
+        } else if (window.location.hostname !== '') {
+            return `${window.location.protocol}//${window.location.hostname}:8080/api/v1`;
+        } else {
+            return '/api/v1'; // Relative path as fallback
         }
     }
 
     /**
-     * Get mock dashboard data for development
-     * @private
-     * @returns {Object} Mock dashboard data
+     * Fetch user dashboard data including stats and reservations
+     * @param {number} page - Page number (0-indexed), default: 0
+     * @param {number} size - Page size, default: 10
+     * @param {string} sort - Sort field with direction (e.g., "createdAt,desc"), default: "createdAt,desc"
+     * @returns {Promise<Object>} Dashboard data object with stats and reservations array
      */
-    _getMockDashboardData() {
-        return {
-            stats: {
-                activeBorrows: 4,
-                upcomingDue: 1,
-                activeReservations: 3
-            },
-            reservations: [
-                {
-                    id: 1,
-                    bookId: 'BOOK001',
-                    title: 'Design Systems',
-                    author: 'Alla Kholmatova',
-                    cover: 'https://images.unsplash.com/photo-1544716278-ca5e3af2abd8?w=100&h=140&fit=crop',
-                    reservationDate: '2023-10-24',
-                    status: 'ready', // 'ready', 'pending', 'in-queue'
-                    pickupLocation: 'Main Library',
-                    expiresAt: '2023-11-07'
-                },
-                {
-                    id: 2,
-                    bookId: 'BOOK002',
-                    title: 'Refactoring UI',
-                    author: 'Adam Wathan',
-                    cover: 'https://images.unsplash.com/photo-1507842217343-583f20270319?w=100&h=140&fit=crop',
-                    reservationDate: '2023-10-26',
-                    status: 'pending',
-                    pickupLocation: 'Downtown Branch',
-                    expiresAt: null
-                },
-                {
-                    id: 3,
-                    bookId: 'BOOK003',
-                    title: 'The Clean Coder',
-                    author: 'Robert C. Martin',
-                    cover: 'https://images.unsplash.com/photo-1526936029131-b1e4e43c0a93?w=100&h=140&fit=crop',
-                    reservationDate: '2023-10-28',
-                    status: 'in-queue',
-                    pickupLocation: null,
-                    position: 4
+    async fetchUserDashboardData(page = 0, size = 10, sort = 'createdAt,desc') {
+        try {
+            const userId = localStorage.getItem('userId');
+
+            if (!userId) {
+                throw new Error('User ID not found. Please login first.');
+            }
+
+            // Build URL with pagination parameters
+            const url = new URL(`${this.apiBaseUrl}/reservations/user/${userId}`);
+            url.searchParams.append('page', page);
+            url.searchParams.append('size', size);
+            url.searchParams.append('sort', sort);
+
+            const response = await fetch(url.toString(), {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
                 }
-            ]
-        };
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            console.log('Reservation data from BE:', data);
+
+            // Handle paginated response from Spring Boot Page
+            // Backend returns either Page<ReservationResponseDTO> or EmptyPageResponse
+            if (data.content) {
+                // Page response structure
+                return {
+                    reservations: data.content,
+                    pagination: {
+                        totalElements: data.totalElements,
+                        totalPages: data.totalPages,
+                        currentPage: data.number,
+                        pageSize: data.size,
+                        empty: data.empty
+                    }
+                };
+            } else if (data.totalElements === 0) {
+                // EmptyPageResponse structure
+                return {
+                    reservations: [],
+                    pagination: {
+                        totalElements: 0,
+                        totalPages: 0,
+                        currentPage: 0,
+                        pageSize: size,
+                        empty: true
+                    },
+                    message: data.message
+                };
+            } else if (Array.isArray(data)) {
+                // Fallback: if data is already an array
+                return { reservations: data };
+            } else {
+                // Other response formats
+                return data;
+            }
+        } catch (error) {
+            console.error('Error fetching reservation from BE:', error);
+            throw error;
+        }
     }
 
     /**
@@ -84,14 +112,30 @@ class ReservationModel {
      */
     async cancelReservation(reservationId) {
         try {
-            // TODO: Replace with actual API call
-            // const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
-            //     method: 'DELETE'
-            // });
-            // return await response.json();
+            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-            console.log('Cancelling reservation:', reservationId);
-            return { success: true, message: 'Reservation cancelled successfully' };
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            // Handle both JSON and plain text responses
+            const contentType = response.headers.get('content-type');
+            let result;
+
+            if (contentType && contentType.includes('application/json')) {
+                result = await response.json();
+            } else {
+                // Plain text response (e.g., success message)
+                result = await response.text();
+            }
+
+            console.log('Cancel reservation result:', result);
+            return result;
         } catch (error) {
             console.error('Error cancelling reservation:', error);
             throw error;
@@ -105,14 +149,59 @@ class ReservationModel {
      */
     async getReservationDetails(reservationId) {
         try {
-            // TODO: Replace with actual API call
-            // const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`);
-            // return await response.json();
+            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
 
-            console.log('Fetching details for reservation:', reservationId);
-            return {};
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('Reservation details:', result);
+            return result;
         } catch (error) {
             console.error('Error fetching reservation details:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get user's reservations with FULL book details
+     * ✅ Returns custom object kết hợp Reservation + Book information
+     * ✅ Includes: reservationDate, status, book title, isbn, imageUrl, qty...
+     * 
+     * @returns {Promise<Array>} Array of combined reservation+book objects with full details
+     */
+    async getUserReservationsWithBooks() {
+        try {
+            const userId = localStorage.getItem('userId');
+
+            if (!userId) {
+                throw new Error('User ID not found. Please login first.');
+            }
+
+            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${userId}/all`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const reservations = await response.json();
+            console.log('Reservations with book details from BE:', reservations);
+
+            // Return array of combined reservation+book objects
+            return Array.isArray(reservations) ? reservations : [];
+        } catch (error) {
+            console.error('Error fetching reservations with book details from BE:', error);
             throw error;
         }
     }
