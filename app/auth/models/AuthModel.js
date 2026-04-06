@@ -69,7 +69,6 @@ class AuthModel {
           throw new Error(e.message || errorText || "Đăng ký thất bại.");
         }
       }
-
       return await response.json();
     } catch (error) {
       throw error;
