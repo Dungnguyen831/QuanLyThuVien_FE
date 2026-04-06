@@ -22,8 +22,9 @@ class WishlistView {
   /**
    * Render wishlist books as a grid of cards using BookCard component
    * @param {Array} books - Array of book objects to render
+   * @param {Object} wishlistModel - WishlistModel instance for remove action
    */
-  renderWishlistBooks(books) {
+  async renderWishlistBooks(books, wishlistModel = null) {
     if (!books || books.length === 0) {
       this.wishlistGrid.innerHTML =
         '<div class="empty-state">No books in your wishlist yet.</div>';
@@ -33,22 +34,35 @@ class WishlistView {
     // Clear grid
     this.wishlistGrid.innerHTML = '';
 
-    // Use BookCard component to render each book
-    books.forEach(book => {
-      const bookCardElement = BookCard.create(book, {
+    // Create all book cards in parallel using Promise.all
+    const bookCardPromises = books.map(book =>
+      BookCard.create(book, {
         showFavoriteBtn: true,
+        isInWishlist: true, // ✅ All books on wishlist page are in wishlist
+        wishlistModel: wishlistModel, // ✅ Pass model to handle remove
         onFavoriteClick: (bookData) => {
-          // Trigger remove from wishlist action
+          // ✅ BookCard already called removeFromWishlist, skip API call
           if (this.eventListeners.removeFromWishlist) {
-            this.eventListeners.removeFromWishlist(bookData.id);
+            this.eventListeners.removeFromWishlist(bookData.id, null, true);
+          }
+        },
+        onWishlistChange: (bookData, inWishlist) => {
+          // When removed from wishlist, trigger remove action
+          if (!inWishlist && this.eventListeners.removeFromWishlist) {
+            // ✅ Skip API call since BookCard already did it
+            this.eventListeners.removeFromWishlist(bookData.id, null, true);
           }
         },
         imageField: 'imageUrl' // Use imageUrl from backend response
-      });
+      })
+    );
 
-      // Customize column classes for wishlist (smaller layout)
+    // Wait for all book cards to be created
+    const bookCardElements = await Promise.all(bookCardPromises);
+
+    // Customize column classes for wishlist and append to grid
+    bookCardElements.forEach(bookCardElement => {
       bookCardElement.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
-
       this.wishlistGrid.appendChild(bookCardElement);
     });
   }

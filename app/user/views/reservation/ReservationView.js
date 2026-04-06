@@ -256,4 +256,91 @@ class ReservationView {
             setTimeout(() => row.remove(), 300);
         }
     }
+
+    /**
+     * Open reservation form modal
+     * @param {HTMLElement} formModal - Modal form element from ReservationForm.create()
+     */
+    openReservationModal(formModal) {
+        // Append modal to body
+        document.body.appendChild(formModal);
+
+        // Trigger animation
+        requestAnimationFrame(() => {
+            formModal.classList.add('show');
+        });
+    }
+
+    /**
+     * Close reservation form modal
+     * @param {HTMLElement} formModal - Modal form element to close
+     */
+    closeReservationModal(formModal) {
+        if (formModal && formModal.parentNode) {
+            formModal.classList.remove('show');
+            setTimeout(() => {
+                if (formModal.parentNode) {
+                    formModal.remove();
+                }
+            }, 300);
+        }
+    }
+
+    /**
+     * Bind form submission event
+     * @param {Function} callback - Callback function with form data
+     */
+    onReservationFormSubmit(callback) {
+        this.eventListeners.onReservationFormSubmit = callback;
+    }
+
+    /**
+     * Setup form submission handler
+     * @param {HTMLElement} formModal - Modal element containing the form
+     * @param {Function} onSubmit - Callback on form submission
+     */
+    setupFormSubmissionHandler(formModal, onSubmit) {
+        const form = formModal.querySelector('#reservation-form');
+        if (!form) return;
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            if (onSubmit) {
+                await onSubmit(form);
+            }
+        });
+    }
+
+    /**
+     * Update a single reservation row in the table (without full reload)
+     * @param {string|number} reservationId - ID of reservation to update
+     * @param {Object} updatedData - Updated reservation data
+     */
+    updateTableRow(reservationId, updatedData) {
+        const row = this.tableBody.querySelector(`[data-reservation-id="${reservationId}"]`);
+        if (!row) return;
+
+        // Update cells based on updatedData
+        if (updatedData.title) {
+            const titleCell = row.querySelector('.col-title .book-title');
+            if (titleCell) titleCell.textContent = updatedData.title;
+        }
+
+        if (updatedData.reservationDate) {
+            const dateCell = row.querySelector('.col-date .date');
+            if (dateCell) dateCell.textContent = this._formatDate(updatedData.reservationDate);
+        }
+
+        if (updatedData.status) {
+            const statusCell = row.querySelector('.col-status');
+            if (statusCell) statusCell.innerHTML = this._createStatusBadge(updatedData.status);
+        }
+
+        // Highlight the updated row with animation
+        row.style.animation = 'highlightUpdate 0.6s ease-out';
+        setTimeout(() => {
+            row.style.animation = '';
+        }, 600);
+    }
 }

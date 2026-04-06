@@ -6,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Home - LibrarySaaS</title>
   <link rel="stylesheet" href="../../../../assets/css/user/style.css" />
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
 </head>
 
 <body>
@@ -135,6 +137,8 @@
   <script src="../../../../app/admin/views/inventory/ImageService.js"></script>
 
   <script src="../../../../app/admin/models/BookModel.js"></script>
+  <script src="../../models/WishlistModel.js"></script>
+  <script src="../../controllers/BookCardController.js"></script>
   <script src="../../components/BookCard.js"></script>
   <script src="./HomeView.js"></script>
   <script src="../../controllers/HomeController.js"></script>
@@ -149,8 +153,9 @@
     // Initialize the homepage when DOM is ready
     document.addEventListener("DOMContentLoaded", function () {
       const bookModel = new BookModel();
+      const wishlistModel = new WishlistModel();
       const homeView = new HomeView();
-      const homeController = new HomeController(bookModel, homeView);
+      const homeController = new HomeController(bookModel, homeView, wishlistModel);
 
       homeController.init();
     });

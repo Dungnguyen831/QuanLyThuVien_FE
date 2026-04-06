@@ -3,6 +3,8 @@ class HomeView {
         this.newArrivalsContainer = document.getElementById('new-arrivals-container');
         this.mostPopularContainer = document.getElementById('most-popular-container');
         this.loadingElement = document.getElementById('page-loading');
+        this.wishlistModel = null;
+        this.wishlistBookIds = []; // Track which books are in wishlist
     }
 
     /**
@@ -46,7 +48,7 @@ class HomeView {
      * Render new arrivals section with book cards
      * @param {Array} books - Array of new arrival book objects
      */
-    renderNewArrivals(books) {
+    async renderNewArrivals(books) {
         this.hideLoading();
 
         if (!this.newArrivalsContainer) {
@@ -65,9 +67,13 @@ class HomeView {
         }
 
         this.newArrivalsContainer.innerHTML = '';
-        books.forEach(book => {
-            const bookCard = this.createBookCard(book);
-            this.newArrivalsContainer.appendChild(bookCard);
+
+        // Create all book cards in parallel
+        const bookCards = await Promise.all(books.map(book => this.createBookCard(book)));
+
+        // Append to container
+        bookCards.forEach(card => {
+            this.newArrivalsContainer.appendChild(card);
         });
     }
 
@@ -75,7 +81,7 @@ class HomeView {
      * Render most popular section with book cards
      * @param {Array} books - Array of most popular book objects
      */
-    renderMostPopular(books) {
+    async renderMostPopular(books) {
         if (!this.mostPopularContainer) {
             console.warn('Most popular container not found');
             return;
@@ -92,9 +98,13 @@ class HomeView {
         }
 
         this.mostPopularContainer.innerHTML = '';
-        books.forEach(book => {
-            const bookCard = this.createBookCard(book);
-            this.mostPopularContainer.appendChild(bookCard);
+
+        // Create all book cards in parallel
+        const bookCards = await Promise.all(books.map(book => this.createBookCard(book)));
+
+        // Append to container
+        bookCards.forEach(card => {
+            this.mostPopularContainer.appendChild(card);
         });
     }
 
@@ -105,31 +115,46 @@ class HomeView {
      * @returns {HTMLElement} - Book card DOM element (wrapped in column div)
      */
     createBookCard(book) {
+        // ✅ Check if this book is in wishlist
+        const isInWishlist = this.wishlistBookIds.includes(book.id);
+
         // ✅ Use reusable BookCard component with shared ImageService
         return BookCard.create(book, {
             showFavoriteBtn: true,
-            onFavoriteClick: (bookData) => {
-                // Trigger wishlist action if needed
-                if (this.onFavoriteClick) {
-                    this.onFavoriteClick(bookData);
-                }
-            },
             onCardClick: (bookData) => {
                 // Trigger book details if needed
                 if (this.onCardClick) {
                     this.onCardClick(bookData);
                 }
             },
-            imageField: 'imageUrl' // Use imageUrl from backend response
+            imageField: 'imageUrl', // Use imageUrl from backend response
+            wishlistModel: this.wishlistModel, // ✅ Pass WishlistModel for add to wishlist
+            isInWishlist: isInWishlist, // ✅ Pass current wishlist status
+            onWishlistChange: (bookData, inWishlist) => {
+                // ✅ Update local state when wishlist changes
+                if (inWishlist && !this.wishlistBookIds.includes(bookData.id)) {
+                    this.wishlistBookIds.push(bookData.id);
+                } else if (!inWishlist && this.wishlistBookIds.includes(bookData.id)) {
+                    this.wishlistBookIds = this.wishlistBookIds.filter(id => id !== bookData.id);
+                }
+            }
         });
     }
 
     /**
-     * Bind favorite button click handler
-     * @param {Function} callback - Callback function when favorite is clicked
+     * Bind wishlist model for add to wishlist functionality
+     * @param {Object} wishlistModel - WishlistModel instance
      */
-    bindFavoriteClick(callback) {
-        this.onFavoriteClick = callback;
+    bindWishlistModel(wishlistModel) {
+        this.wishlistModel = wishlistModel;
+    }
+
+    /**
+     * Bind wishlist book IDs to check status
+     * @param {Array} wishlistBookIds - Array of book IDs in wishlist
+     */
+    bindWishlistBookIds(wishlistBookIds) {
+        this.wishlistBookIds = wishlistBookIds || [];
     }
 
     /**

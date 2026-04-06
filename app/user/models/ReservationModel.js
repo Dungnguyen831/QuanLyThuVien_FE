@@ -225,4 +225,97 @@ class ReservationModel {
             throw error;
         }
     }
+
+    /**
+     * Create a new reservation
+     * @param {number|string} bookId - ID of the book to reserve
+     * @param {string} reservationDate - Desired reservation/pickup date (LocalDateTime format: YYYY-MM-DDTHH:mm:ss)
+     * @param {string} status - Status (default: PENDING)
+     * @returns {Promise<Object>} Created reservation object
+     */
+    async createReservation(bookId, reservationDate, status = 'PENDING') {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                throw new Error('User not authenticated.');
+            }
+
+            // Note: userId is extracted from JWT token on backend side
+            const response = await fetch(`${this.apiBaseUrl}/reservations`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    bookId: parseInt(bookId),
+                    reservationDate: reservationDate,
+                    status: status
+                    // userId NOT sent - backend extracts from JWT
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMsg = errorData.message || `HTTP error! status: ${response.status}`;
+                throw new Error(errorMsg);
+            }
+
+            const result = await response.json();
+            console.log('Reservation created:', result);
+            return result;
+        } catch (error) {
+            console.error('Error creating reservation:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Update an existing reservation
+     * @param {number|string} reservationId - ID of the reservation to update
+     * @param {Object} updateData - Data to update { reservationDate?, status? }
+     * @returns {Promise<Object>} Updated reservation object
+     */
+    async updateReservation(reservationId, updateData) {
+        try {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                throw new Error('User not authenticated.');
+            }
+
+            // Filter to only allowed fields
+            const allowedFields = ['reservationDate', 'status'];
+            const filteredData = {};
+
+            allowedFields.forEach(field => {
+                if (updateData[field] !== undefined && updateData[field] !== null) {
+                    filteredData[field] = updateData[field];
+                }
+            });
+
+            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(filteredData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                const errorMsg = errorData.message || `HTTP error! status: ${response.status}`;
+                throw new Error(errorMsg);
+            }
+
+            const result = await response.json();
+            console.log('Reservation updated:', result);
+            return result;
+        } catch (error) {
+            console.error('Error updating reservation:', error);
+            throw error;
+        }
+    }
 }
