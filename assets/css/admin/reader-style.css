@@ -1,0 +1,55 @@
+.form-control-compact {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 0.5rem 0.8rem;
+  border-radius: 0.4rem;
+  font-size: 0.9rem;
+}
+.form-control-compact:focus {
+  background-color: #fff;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.1);
+}
+.card-custom {
+  border-radius: 1rem;
+  border: none;
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+.group-title {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #6c757d;
+  margin-bottom: 1rem;
+}
+.form-control-standard {
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+  padding: 0.75rem 1rem;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #212529;
+}
+.form-control-standard:focus {
+  background-color: #ffffff;
+  border-color: #86b7fe;
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.15);
+}
+.form-control-readonly {
+  background-color: #e9ecef !important;
+  cursor: not-allowed;
+  color: #6c757d;
+}
+.form-label-standard {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+.group-title {
+  font-size: 1.1rem;
+  color: #0d6efd;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.5rem;
+}
