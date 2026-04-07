@@ -3,6 +3,8 @@ class HomeView {
         this.newArrivalsContainer = document.getElementById('new-arrivals-container');
         this.mostPopularContainer = document.getElementById('most-popular-container');
         this.loadingElement = document.getElementById('page-loading');
+        this.wishlistModel = null;
+        this.wishlistBookIds = []; // Track which books are in wishlist
     }
 
     /**
@@ -46,7 +48,7 @@ class HomeView {
      * Render new arrivals section with book cards
      * @param {Array} books - Array of new arrival book objects
      */
-    renderNewArrivals(books) {
+    async renderNewArrivals(books) {
         this.hideLoading();
 
         if (!this.newArrivalsContainer) {
@@ -65,9 +67,13 @@ class HomeView {
         }
 
         this.newArrivalsContainer.innerHTML = '';
-        books.forEach(book => {
-            const bookCard = this.createBookCard(book);
-            this.newArrivalsContainer.appendChild(bookCard);
+
+        // Create all book cards in parallel
+        const bookCards = await Promise.all(books.map(book => this.createBookCard(book)));
+
+        // Append to container
+        bookCards.forEach(card => {
+            this.newArrivalsContainer.appendChild(card);
         });
     }
 
@@ -75,7 +81,7 @@ class HomeView {
      * Render most popular section with book cards
      * @param {Array} books - Array of most popular book objects
      */
-    renderMostPopular(books) {
+    async renderMostPopular(books) {
         if (!this.mostPopularContainer) {
             console.warn('Most popular container not found');
             return;
@@ -92,55 +98,76 @@ class HomeView {
         }
 
         this.mostPopularContainer.innerHTML = '';
-        books.forEach(book => {
-            const bookCard = this.createBookCard(book);
-            this.mostPopularContainer.appendChild(bookCard);
+
+        // Create all book cards in parallel
+        const bookCards = await Promise.all(books.map(book => this.createBookCard(book)));
+
+        // Append to container
+        bookCards.forEach(card => {
+            this.mostPopularContainer.appendChild(card);
         });
     }
 
     /**
-     * Create a single book card element
-     * @param {Object} book - Book object from backend with: id, title, author_id, imageUri, category_id, availableQty, totalQty
-     * @returns {HTMLElement} - Book card DOM element
+     * Create a single book card element using reusable BookCard component
+     * Handles image display, fallbacks, and badges
+     * @param {Object} book - Book object from backend with: id, title, author_id, imageUrl, category_id, availableQty, totalQty
+     * @returns {HTMLElement} - Book card DOM element (wrapped in column div)
      */
     createBookCard(book) {
-        const col = document.createElement('div');
-        col.className = 'col-12 col-sm-6 col-md-4 col-lg-2';
+        // ✅ Check if this book is in wishlist
+        const isInWishlist = this.wishlistBookIds.includes(book.id);
 
-        // Generate availability badge (backend doesn't have rating)
-        const availabilityBadge = this.generateAvailabilityBadge(book.availableQty, book.totalQty);
-
-        // Create book card
-        const card = document.createElement('div');
-        card.className = 'book-card';
-        card.innerHTML = `
-            <div class="book-card-image-wrapper">
-                <img 
-                    src="${book.imageUri || 'https://via.placeholder.com/150x225?text=No+Cover'}" 
-                    alt="${this.escapeHtml(book.title)}" 
-                    class="book-card-image"
-                    onerror="this.src='https://via.placeholder.com/150x225?text=No+Cover'"
-                >
-                <button class="book-card-favorite-btn" title="Add to favorites">
-                    <i class="far fa-heart"></i>
-                </button>
-            </div>
-            <div class="book-card-content">
-                <h4 class="book-card-title">${this.escapeHtml(book.title || 'Unknown Title')}</h4>
-                <p class="book-card-author">${this.getAuthorDisplay(book.author_id)}</p>
-                <div class="book-card-rating">
-                    ${availabilityBadge}
-                </div>
-                <p class="book-card-category">${this.getCategoryDisplay(book.category_id)}</p>
-            </div>
-        `;
-
-        col.appendChild(card);
-        return col;
+        // ✅ Use reusable BookCard component with shared ImageService
+        return BookCard.create(book, {
+            showFavoriteBtn: true,
+            onCardClick: (bookData) => {
+                // Trigger book details if needed
+                if (this.onCardClick) {
+                    this.onCardClick(bookData);
+                }
+            },
+            imageField: 'imageUrl', // Use imageUrl from backend response
+            wishlistModel: this.wishlistModel, // ✅ Pass WishlistModel for add to wishlist
+            isInWishlist: isInWishlist, // ✅ Pass current wishlist status
+            onWishlistChange: (bookData, inWishlist) => {
+                // ✅ Update local state when wishlist changes
+                if (inWishlist && !this.wishlistBookIds.includes(bookData.id)) {
+                    this.wishlistBookIds.push(bookData.id);
+                } else if (!inWishlist && this.wishlistBookIds.includes(bookData.id)) {
+                    this.wishlistBookIds = this.wishlistBookIds.filter(id => id !== bookData.id);
+                }
+            }
+        });
     }
 
     /**
-     * Generate availability badge HTML (replaces rating since backend doesn't have it)
+     * Bind wishlist model for add to wishlist functionality
+     * @param {Object} wishlistModel - WishlistModel instance
+     */
+    bindWishlistModel(wishlistModel) {
+        this.wishlistModel = wishlistModel;
+    }
+
+    /**
+     * Bind wishlist book IDs to check status
+     * @param {Array} wishlistBookIds - Array of book IDs in wishlist
+     */
+    bindWishlistBookIds(wishlistBookIds) {
+        this.wishlistBookIds = wishlistBookIds || [];
+    }
+
+    /**
+     * Bind card click handler
+     * @param {Function} callback - Callback function when card is clicked
+     */
+    bindCardClick(callback) {
+        this.onCardClick = callback;
+    }
+
+    /**
+     * [DEPRECATED] Generate availability badge - now handled by BookCard component
+     * @private
      * @param {Number} availableQty - Available quantity
      * @param {Number} totalQty - Total quantity
      * @returns {String} - HTML string with availability badge
