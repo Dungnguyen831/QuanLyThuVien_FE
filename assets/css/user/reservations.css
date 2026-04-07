@@ -567,6 +567,266 @@
     }
 }
 
+/* ==================== RESERVATION MODAL ==================== */
+.reservation-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.reservation-modal-overlay.show {
+    opacity: 1;
+}
+
+.reservation-modal {
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+}
+
+.modal-close-btn {
+    background: none;
+    border: none;
+    font-size: 28px;
+    cursor: pointer;
+    color: #6B7280;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.modal-close-btn:hover {
+    background-color: #F3F4F6;
+    color: #111827;
+}
+
+.reservation-form {
+    padding: 24px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 500;
+    color: #374151;
+    margin-bottom: 8px;
+    font-size: 14px;
+}
+
+.form-group .required {
+    color: #EF4444;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: #6366F1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-text {
+    display: block;
+    font-size: 12px;
+    color: #6B7280;
+    margin-top: 4px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 32px;
+    padding-top: 24px;
+    border-top: 1px solid #E5E7EB;
+}
+
+.form-actions .btn {
+    flex: 1;
+    padding: 10px 16px;
+    font-weight: 600;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.form-actions .btn-primary {
+    background-color: #6366F1;
+    color: white;
+}
+
+.form-actions .btn-primary:hover {
+    background-color: #4F46E5;
+}
+
+.form-actions .btn-primary:disabled {
+    background-color: #9CA3AF;
+    cursor: not-allowed;
+}
+
+.form-actions .btn-secondary {
+    background-color: #F3F4F6;
+    color: #374151;
+    border: 1px solid #D1D5DB;
+}
+
+.form-actions .btn-secondary:hover {
+    background-color: #E5E7EB;
+}
+
+/* ==================== BOOK SEARCH AUTOCOMPLETE ==================== */
+.book-search-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.book-search-input {
+    width: 100%;
+}
+
+.book-suggestions-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 4px;
+    background-color: white;
+    border: 1px solid #D1D5DB;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 1001;
+    display: none;
+}
+
+.suggestion-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #F9FAFB;
+}
+
+.suggestion-item.no-results {
+    padding: 16px;
+    text-align: center;
+    color: #999;
+    cursor: default;
+}
+
+.suggestion-item.no-results:hover {
+    background-color: transparent;
+}
+
+.suggestion-title {
+    font-weight: 500;
+    color: #1A1A1A;
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.suggestion-author {
+    font-size: 12px;
+    color: #6B7280;
+    margin: 0;
+}
+
+/* Scrollbar styling for suggestions dropdown */
+.book-suggestions-dropdown::-webkit-scrollbar {
+    width: 6px;
+}
+
+.book-suggestions-dropdown::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.book-suggestions-dropdown::-webkit-scrollbar-thumb {
+    background-color: #D1D5DB;
+    border-radius: 3px;
+}
+
+.book-suggestions-dropdown::-webkit-scrollbar-thumb:hover {
+    background-color: #9CA3AF;
+}
+
+/* Highlight animation for updated rows */
+@keyframes highlightUpdate {
+    0% {
+        background-color: rgba(99, 102, 241, 0.1);
+    }
+
+    100% {
+        background-color: transparent;
+    }
+}
+
 /* ==================== ANIMATIONS ==================== */
 @keyframes fadeOut {
     from {

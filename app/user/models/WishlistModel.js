@@ -40,14 +40,14 @@ class WishlistModel {
   async getWishlist() {
     try {
       const token = localStorage.getItem("token");
-      const userId = 3; //localStorage.getItem('userId');
 
-      if (!userId) {
-        throw new Error("User ID not found. Please login first.");
+      if (!token) {
+        throw new Error("User not authenticated. Please login first.");
       }
 
+      // ✅ NEW ENDPOINT: No userId in path - backend extracts from JWT
       const response = await fetch(
-        `${this.apiBaseUrl}/wishlists/user/${userId}`,
+        `${this.apiBaseUrl}/wishlists`,
         {
           method: "GET",
           headers: {
@@ -78,21 +78,19 @@ class WishlistModel {
    */
   async removeFromWishlist(bookId) {
     try {
-      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
 
-      if (!userId) {
+      if (!token) {
         throw new Error("User not authenticated");
       }
 
-      const response = await fetch(`${this.apiBaseUrl}/wishlists`, {
+      // ✅ NEW ENDPOINT: No userId in body - backend uses JWT to identify user
+      const response = await fetch(`${this.apiBaseUrl}/wishlists/${bookId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          userId: parseInt(userId),
-          bookId: parseInt(bookId),
-        }),
       });
 
       if (!response.ok) {
@@ -125,19 +123,20 @@ class WishlistModel {
    */
   async addToWishlist(bookId) {
     try {
-      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
 
-      if (!userId) {
+      if (!token) {
         throw new Error("User not authenticated");
       }
 
+      // ✅ NEW ENDPOINT: No userId in body - backend uses JWT to identify user
       const response = await fetch(`${this.apiBaseUrl}/wishlists`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          userId: parseInt(userId),
           bookId: parseInt(bookId),
         }),
       });
@@ -171,21 +170,20 @@ class WishlistModel {
    */
   async borrowAll() {
     try {
-      const userId = localStorage.getItem("userId");
+      const token = localStorage.getItem("token");
 
-      if (!userId) {
+      if (!token) {
         throw new Error("User not authenticated");
       }
 
-      // This endpoint needs to be confirmed with backend
+      // ✅ NEW ENDPOINT: No userId in body - backend uses JWT to identify user
       const response = await fetch(`${this.apiBaseUrl}/wishlists/borrow-all`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          userId: parseInt(userId),
-        }),
+        body: JSON.stringify({}),
       });
 
       if (!response.ok) {

@@ -1,0 +1,18 @@
+<!-- BookCard Template -->
+<!-- This template is cached after first load and reused for all book cards -->
+<template id="book-card-template">
+    <div class="col-12 col-sm-6 col-md-4 col-lg-2" data-book-id="{bookId}">
+        <div class="book-card">
+            <div class="book-card-image-wrapper">
+                {imageElement}
+                {favoriteButton}
+            </div>
+            <div class="book-card-content">
+                <h4 class="book-card-title">{bookTitle}</h4>
+                <p class="book-card-author">{authorDisplay}</p>
+                <div class="book-card-rating">{availabilityBadge}</div>
+                <p class="book-card-category">{categoryDisplay}</p>
+            </div>
+        </div>
+    </div>
+</template>
