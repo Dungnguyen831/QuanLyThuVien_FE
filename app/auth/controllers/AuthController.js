@@ -25,7 +25,8 @@ class AuthController {
       // Chuyển hướng tới trang Dashboard của Admin hoặc trang chủ dựa trên Role
       if (result.user.role === "admin") {
         // window.location.href = "/app/admin/views/dashboard/admin.html";
-        window.location.href = "/app/user/views/reservation/reservations.html";
+        window.location.href = "/app/user/views/home/home.html";
+        // window.location.href = "/app/admin/views/loan/home.html";
         // window.location.href = "/app/admin/views/loan/loan.html";
       } else {
         window.location.href = "/app/admin/views/inventory/inventory.html"; // Hoặc trang chủ người dùng nếu có
