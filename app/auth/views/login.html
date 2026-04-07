@@ -90,9 +90,6 @@
                 </div>
             </div>
         </div>
-
-      
-
     <!-- Nhúng các file JS của mô hình MVC -->
     <script src="../models/AuthModel.js"></script>
     <script src="AuthView.js"></script>
@@ -102,7 +99,6 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Khởi tạo AuthController để trang bắt đầu hoạt động
             const app = new AuthController(new AuthModel(), new AuthView());
-
             // Xử lý chức năng ẩn/hiện mật khẩu
             function togglePassword(event) {
                 const passwordInput = document.getElementById('password');
