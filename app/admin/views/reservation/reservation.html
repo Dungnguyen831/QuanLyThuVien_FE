@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản lý đặt sách - LMS Admin</title>
+    
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
+    <link rel="stylesheet" href="../../../../assets/css/admin/admin-style.css"> 
+    <link rel="stylesheet" href="../../../../assets/css/admin/reservation-style.css"> 
+</head>
+<body class="bg-light">
+
+    <div class="d-flex" id="wrapper">
+        <div id="sidebar-container"></div>
+
+        <div id="page-content-wrapper" class="flex-grow-1">
+            <div id="header-container"></div>
+
+            <div class="container-fluid px-4 py-4" id="main-content">
+                
+                <div class="d-flex justify-content-between align-items-end mb-4">
+                    <div>
+                        <h3 class="fw-bold mb-1" id="page-title">Quản lý đơn đặt sách</h3>
+                        <p class="text-muted mb-0">Theo dõi và phê duyệt các yêu cầu đặt trước sách từ độc giả</p>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4">
+                    
+                    <div class="p-4 border-bottom d-flex gap-3 flex-wrap align-items-center">
+                        <div class="input-group search-input">
+                            <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
+                            <input type="text" id="search-reservation-input" class="form-control bg-light border-0" placeholder="Tìm theo mã đơn, tên độc giả, tên sách...">
+                        </div>
+                        
+                        <select class="form-select bg-light border-0 filter-select w-auto">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="pending">Chờ xử lý</option>
+                            <option value="approved">Đã duyệt (Chờ nhận)</option>
+                            <option value="completed">Đã hoàn thành</option>
+                            <option value="cancelled">Đã hủy</option>
+                        </select>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-custom align-middle mb-0">
+                            <thead class="bg-light">
+                                <tr>
+                                    <th class="ps-4 py-3">MÃ ĐƠN</th>
+                                    <th class="py-3">ĐỘC GIẢ</th>
+                                    <th class="py-3" style="width: 25%;">TÊN SÁCH</th>
+                                    <th class="py-3">NGÀY ĐẶT</th>
+                                    <th class="py-3">TRẠNG THÁI</th>
+                                    <th class="text-center pe-4 py-3">THAO TÁC</th>
+                                </tr>
+                            </thead>
+                            <tbody id="reservation-table-body">
+                                <tr>
+                                    <td colspan="6" class="text-center py-4 text-muted">
+                                        <i class="fas fa-spinner fa-spin me-2"></i> Đang tải dữ liệu...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="p-4 border-top d-flex justify-content-between align-items-center">
+                        <small class="text-muted">Hiển thị <b class="text-dark">1</b> đến <b class="text-dark">10</b> trong tổng số <b class="text-dark">0</b> kết quả</small>
+                        <ul class="pagination pagination-sm mb-0">
+                            <li class="page-item disabled"><a class="page-link border-0 text-muted" href="#"><i class="fas fa-chevron-left"></i></a></li>
+                            <li class="page-item active"><a class="page-link border-0 rounded-1 px-3" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link border-0 text-dark" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link border-0 text-muted" href="#"><i class="fas fa-chevron-right"></i></a></li>
+                        </ul>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script src="../../../../assets/js/ComponentLoader.js"></script>
+    <script src="../../../../assets/js/main.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Tải Sidebar và Header vào các thẻ div có sẵn
+            ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
+            ComponentLoader.load('header-container', '../../components/header.html');
+            
+            // Chờ một chút để HTML được nhúng xong rồi mới đổi trạng thái active
+            setTimeout(() => {
+                // Xóa trạng thái active cũ
+                document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
+                
+                // Tìm menu "Đặt sách" (Bạn nhớ sửa lại đường dẫn href bên dưới cho đúng với thẻ a trong file sidebar.html của bạn)
+                const reservationMenu = document.querySelector('#sidebar-wrapper a[href="../reservation/reservation.html"]'); 
+                if (reservationMenu) reservationMenu.classList.add('active');
+                
+                // Cập nhật tiêu đề trên Header
+                const pageTitle = document.getElementById('page-title');
+                if(pageTitle) pageTitle.textContent = 'Quản lý đơn đặt sách';
+            }, 100); 
+        });
+    </script>
+</body>
+</html>

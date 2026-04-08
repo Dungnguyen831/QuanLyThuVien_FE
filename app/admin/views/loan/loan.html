@@ -4,8 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quản lý mượn trả - LMS Admin</title>
+    
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    
     <link rel="stylesheet" href="../../../../assets/css/admin/admin-style.css">
     <link rel="stylesheet" href="../../../../assets/css/admin/loan-style.css">
 </head>
@@ -23,68 +25,122 @@
                 
                 <div class="d-flex justify-content-between align-items-end mb-4">
                     <div>
-                        <h3 class="fw-bold mb-1">Quản lý mượn trả</h3>
+                        <h3 class="fw-bold mb-1" id="page-title">Quản lý mượn trả</h3>
                         <p class="text-muted mb-0">Theo dõi và xử lý các giao dịch mượn trả sách trong hệ thống</p>
                     </div>
                     <div class="d-flex gap-3">
-                        <button class="btn btn-white border shadow-sm fw-medium text-secondary">
-                            <i class="fas fa-box-archive me-2"></i>Ghi nhận trả sách
-                        </button>
                         <button class="btn btn-primary shadow-sm fw-medium" data-bs-toggle="modal" data-bs-target="#addLoanModal">
                             <i class="fas fa-plus me-2"></i>Tạo phiếu mượn mới
                         </button>
-
-                        <div class="modal fade" id="addLoanModal" tabindex="-1" aria-labelledby="addLoanModalLabel" aria-hidden="true">
-                            <div class="modal-dialog modal-dialog-centered">
-                                <div class="modal-content border-0 shadow">
-                                    <div class="modal-header bg-light border-bottom-0 pb-3">
-                                        <h5 class="modal-title fw-bold" id="addLoanModalLabel">Tạo phiếu mượn mới</h5>
-                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                    </div>
-                                    <div class="modal-body p-4">
-                                        <form id="add-loan-form">
-                                            <div class="mb-3">
-                                                <label class="form-label fw-medium text-muted small">Mã Độc Giả (ID)</label>
-                                                <input type="number" class="form-control" id="loan-user-id" required>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label fw-medium text-muted small">Mã Sách (ID)</label>
-                                                <input type="number" class="form-control" id="loan-book-id" required>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-medium text-muted small">Ngày mượn</label>
-                                                    <input type="date" class="form-control" id="loan-borrow-date" required>
-                                                </div>
-                                                <div class="col-md-6 mb-3">
-                                                    <label class="form-label fw-medium text-muted small">Hẹn trả</label>
-                                                    <input type="date" class="form-control" id="loan-due-date" required>
-                                                </div>
-                                            </div>
-                                            <div class="mb-3">
-                                                <label class="form-label fw-medium text-muted small">Ghi chú (Tùy chọn)</label>
-                                                <textarea class="form-control" id="loan-note" rows="2"></textarea>
-                                            </div>
-                                        </form>
-                                    </div>
-                                    <div class="modal-footer border-top-0 pt-0">
-                                        <button type="button" class="btn btn-white border text-secondary fw-medium" data-bs-dismiss="modal">Hủy</button>
-                                        <button type="submit" form="add-loan-form" class="btn btn-primary fw-medium px-4">Xác nhận tạo</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
                     </div>
                 </div>
 
-                <div class="card border-0 shadow-sm rounded-4">
+                <div class="modal fade" id="addLoanModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light border-bottom-0 pb-3">
+                                <h5 class="modal-title fw-bold">Tạo phiếu mượn mới</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <form id="add-loan-form">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Mã Độc Giả (ID)</label>
+                                        <input type="number" class="form-control" id="loan-user-id" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Mã Sách (ID)</label>
+                                        <input type="number" class="form-control" id="loan-book-id" required>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-medium text-muted small">Ngày mượn</label>
+                                            <input type="date" class="form-control" id="loan-borrow-date" required>
+                                        </div>
+                                        <div class="col-md-6 mb-3">
+                                            <label class="form-label fw-medium text-muted small">Hẹn trả</label>
+                                            <input type="date" class="form-control" id="loan-due-date" required>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Ghi chú (Tùy chọn)</label>
+                                        <textarea class="form-control" id="loan-note" rows="2"></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer border-top-0 pt-0">
+                                <button type="button" class="btn btn-white border text-secondary fw-medium" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" form="add-loan-form" class="btn btn-primary fw-medium px-4">Xác nhận tạo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="renewLoanModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light pb-3">
+                                <h5 class="modal-title fw-bold">Gia hạn sách</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <form id="renew-loan-form">
+                                    <input type="hidden" id="renew-detail-id">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Chọn ngày hẹn trả mới</label>
+                                        <input type="date" class="form-control" id="renew-new-date" required>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer pt-0 border-0">
+                                <button type="button" class="btn btn-white border text-secondary fw-medium" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" form="renew-loan-form" class="btn btn-primary fw-medium">Xác nhận</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="returnLoanModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light pb-3">
+                                <h5 class="modal-title fw-bold">Xác nhận trả sách</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <div class="alert alert-info bg-light border-0 small mb-4">
+                                    <i class="fas fa-info-circle me-2"></i>Hệ thống sẽ tự động đối chiếu ngày hẹn trả để tính tiền phạt (nếu có).
+                                </div>
+                                <form id="return-loan-form">
+                                    <input type="hidden" id="return-detail-id">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Tình trạng sách lúc trả</label>
+                                        <select class="form-select" id="return-condition" required>
+                                            <option value="GOOD" selected>Tốt / Nguyên vẹn</option>
+                                            <option value="DAMAGED">Hư hỏng / Rách</option>
+                                            <option value="LOST">Báo mất sách</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Ghi chú tình trạng (Nếu hỏng/mất)</label>
+                                        <textarea class="form-control" id="return-note" rows="2" placeholder="Ví dụ: Rách trang 15, hoặc khách làm rơi xuống nước..."></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer pt-0 border-0">
+                                <button type="button" class="btn btn-white border text-secondary fw-medium" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" form="return-loan-form" class="btn btn-success fw-medium"><i class="fas fa-undo me-2"></i>Hoàn tất trả sách</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card border-0 shadow-sm rounded-4 mt-4">
                     
                     <div class="p-4 border-bottom d-flex justify-content-between align-items-center flex-wrap gap-3">
                         <div class="input-group" style="width: 320px;">
                             <span class="input-group-text bg-light border-0"><i class="fas fa-search text-muted"></i></span>
-                            <input type="text" class="form-control bg-light border-0" placeholder="Tìm kiếm theo tên độc giả hoặc mã sách...">
+                            <input type="text" id="search-loan-input" class="form-control bg-light border-0" placeholder="Nhập mã phiếu, tên độc giả, sách...">
                         </div>
                         
                         <div class="filter-tabs">
@@ -118,37 +174,28 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
-                        <small>Hiển thị <b class="text-dark">1</b> đến <b class="text-dark">6</b> trong tổng số <b class="text-dark">128</b> kết quả</small>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a></li>
-                            <li class="page-item active"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">3</a></li>
-                            <li class="page-item"><a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a></li>
-                        </ul>
-                    </div>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <script src="../../../../assets/js/ComponentLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script src="/app/admin/controllers/LoanController.js"></script>
+    <script src="../../../../assets/js/ComponentLoader.js"></script>
     <script src="/app/admin/models/LoanModel.js"></script>
     <script src="/app/admin/views/loan/LoanView.js"></script>
+    <script src="/app/admin/controllers/LoanController.js"></script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Tải UI Components
             ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
             ComponentLoader.load('header-container', '../../components/header.html');
             
+            // Xử lý Active Menu (Đợi 100ms để Sidebar load xong)
             setTimeout(() => {
                 document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
-                // Cập nhật lại đường dẫn thẻ a cho đúng
                 const loanMenu = document.querySelector('#sidebar-wrapper a[href="../loan/loan.html"]');
                 if (loanMenu) loanMenu.classList.add('active');
                 
@@ -156,10 +203,12 @@
                 if(pageTitle) pageTitle.textContent = 'Quản lý mượn trả';
             }, 100); 
 
-            // Khởi tạo controller
+            // Khởi tạo mô hình MVC
             if (typeof LoanController !== 'undefined') {
                 const loanApp = new LoanController(new LoanModel(), new LoanView());
                 loanApp.init();
+            } else {
+                console.error("Không thể tải LoanController. Hãy kiểm tra lại đường dẫn file js.");
             }
         });
     </script>

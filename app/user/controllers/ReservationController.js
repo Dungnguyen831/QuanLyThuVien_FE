@@ -89,11 +89,149 @@ class ReservationController {
     /**
      * Handle new reservation button click
      */
-    handleNewReservation() {
-        console.log('New reservation clicked');
-        // TODO: Implement navigation to search/book selection page
-        // or open a modal for creating a new reservation
-        alert('Feature coming soon: Create a new reservation');
+    async handleNewReservation() {
+        try {
+            // Fetch all available books for user to choose from
+            const allBooks = await this._getAvailableBooksForReservation();
+
+            // Create form modal in CREATE mode
+            const formModal = await ReservationForm.create({
+                reservation: null,
+                availableBooks: allBooks
+            });
+
+            // Open modal
+            this.view.openReservationModal(formModal);
+
+            // Setup form submission
+            this.view.setupFormSubmissionHandler(formModal, async (form) => {
+                await this._handleReservationFormSubmit(form, formModal, false);
+            });
+
+        } catch (error) {
+            console.error('Error opening new reservation form:', error);
+            alert('Failed to open reservation form. Please try again.');
+        }
+    }
+
+    /**
+     * Get available books for reservation
+     * ✅ Fetch from BookModel or use data already loaded
+     * @private
+     */
+    async _getAvailableBooksForReservation() {
+        try {
+            // If BookModel is available globally, use it
+            if (typeof BookModel !== 'undefined') {
+                const bookModel = new BookModel();
+                const books = await bookModel.fetchBooks();
+                return books || [];
+            }
+            return [];
+        } catch (error) {
+            console.error('Error fetching available books:', error);
+            return [];
+        }
+    }
+
+    /**
+     * Handle edit reservation (called when user clicks edit for existing reservation)
+     * @param {number|string} reservationId - ID of reservation to edit
+     */
+    async handleEditReservation(reservationId) {
+        try {
+            // Fetch reservation details
+            const reservation = await this.model.getReservationDetails(reservationId);
+
+            // Create form modal in UPDATE mode
+            const formModal = await ReservationForm.create({
+                reservation: reservation,
+                availableBooks: [] // Not needed for UPDATE mode
+            });
+
+            // Open modal
+            this.view.openReservationModal(formModal);
+
+            // Setup form submission
+            this.view.setupFormSubmissionHandler(formModal, async (form) => {
+                await this._handleReservationFormSubmit(form, formModal, true, reservationId);
+            });
+
+        } catch (error) {
+            console.error('Error opening edit reservation form:', error);
+            alert('Failed to load reservation for editing. Please try again.');
+        }
+    }
+
+    /**
+     * Handle reservation form submission (both CREATE and UPDATE)
+     * @private
+     * @param {HTMLFormElement} form - Form element
+     * @param {HTMLElement} formModal - Modal element
+     * @param {boolean} isUpdate - Whether this is an UPDATE operation
+     * @param {string|number} reservationId - ID if UPDATE mode
+     */
+    async _handleReservationFormSubmit(form, formModal, isUpdate = false, reservationId = null) {
+        try {
+            // Get form data - params: modal, isCreateMode
+            const formData = ReservationForm.getFormData(formModal, !isUpdate);
+
+            // Validate form data
+            const validation = ReservationForm.validateFormData(formData, !isUpdate);
+            if (!validation.isValid) {
+                alert('Validation errors:\n' + validation.errors.join('\n'));
+                return;
+            }
+
+            // Show loading state on button
+            const submitBtn = form.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Processing...';
+
+            try {
+                if (isUpdate) {
+                    // UPDATE existing reservation
+                    const updateData = {
+                        reservationDate: formData.reservationDate,
+                        status: formData.status
+                    };
+
+                    await this.model.updateReservation(reservationId, updateData);
+
+                    // Update table row without full reload
+                    this.view.updateTableRow(reservationId, {
+                        reservationDate: formData.reservationDate,
+                        status: formData.status
+                    });
+
+                    this.view.closeReservationModal(formModal);
+                    alert('Reservation updated successfully!');
+                } else {
+                    // CREATE new reservation
+                    // Pass: bookId, reservationDate, status
+                    await this.model.createReservation(
+                        formData.bookId,
+                        formData.reservationDate,
+                        formData.status // 'PENDING' by default
+                    );
+
+                    // Reload dashboard to show new reservation
+                    await this.loadDashboardData();
+
+                    this.view.closeReservationModal(formModal);
+                    alert('Reservation created successfully!');
+                }
+            } finally {
+                // Restore button state
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+
+        } catch (error) {
+            console.error('Error submitting reservation form:', error);
+            alert('Error: ' + (error.message || 'Failed to save reservation. Please try again.'));
+        }
     }
 
     /**
@@ -101,10 +239,8 @@ class ReservationController {
      * @param {string|number} reservationId - ID of the reservation
      */
     handleViewDetails(reservationId) {
-        console.log('Viewing details for reservation:', reservationId);
-        // TODO: Implement navigation to reservation details page
-        // or open a modal with detailed information
-        alert(`Viewing details for reservation ${reservationId}`);
+        // Open the edit form for viewing/editing details
+        this.handleEditReservation(reservationId);
     }
 
     /**
