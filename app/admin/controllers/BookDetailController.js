@@ -5,18 +5,36 @@ class BookDetailController {
     }
 
     async init() {
-        // 1. Lấy ID từ URL (Ví dụ: book_detail.html?id=7)
-        const urlParams = new URLSearchParams(window.location.search);
-        const bookId = urlParams.get('id') || 7; 
+    try {
+        // 1. Lấy chuỗi query từ URL (ví dụ: "?id=10")
+        const queryString = window.location.search;
+        
+        // 2. Dùng URLSearchParams để tách lấy giá trị của 'id'
+        const urlParams = new URLSearchParams(queryString);
+        const bookId = urlParams.get('id'); 
 
-        // 2. Gọi Model lấy dữ liệu theo ID
+        // 3. Kiểm tra xem có ID không
+        if (!bookId) {
+            console.error("Không tìm thấy ID nào trên thanh địa chỉ!");
+            document.getElementById('book-title').innerText = "Vui lòng chọn sách từ danh sách!";
+            return;
+        }
+
+        console.log("Đang nhận biết ID sách từ URL là:", bookId);
+
+        // 4. Chạy API lấy dữ liệu theo ID vừa lấy được
         const book = await this.model.fetchBookDetail(bookId);
         
-        // 3. Gọi View để in ra màn hình
-        this.view.renderBookDetail(book);
-
-        // 4. Gán sự kiện cho nút Borrow
-        this.setupEventListeners(bookId);
+        if (book) {
+            // Đổ dữ liệu vào View
+            this.view.renderBookDetail(book);
+            this.setupEventListeners(bookId);
+        } else {
+            document.getElementById('book-title').innerText = "Sách không tồn tại!";
+        }
+    } catch (e) {
+        console.error("Lỗi khi load chi tiết sách:", e);
+    }
     }
 
     setupEventListeners(bookId) {
