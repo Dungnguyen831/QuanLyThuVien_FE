@@ -1,41 +1,78 @@
 class ShelfModel {
-    async fetchShelves() {
-        try {
-            // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/shelves)
-            const response = await fetch('http://localhost:8080/api/v1/shelves'); 
-            
-            if (!response.ok) throw new Error('Lỗi kết nối API');
-            return await response.json();
-            
-        } catch (error) {
-            console.error("Không thể lấy dữ liệu kệ sách:", error);
-            // Trả về dữ liệu mẫu dựa trên file SQL library_db để test
-            return [
-                {
-                    "id": 1, "name": "Chưa có", "location": "Tầng 1, khu vực A", 
-                    "capacity": 65, "createdAt": "2026-03-05 23:44:55"
-                },
-                {
-                    "id": 2, "name": "ĐÉo có", "location": "Tầng 2, khu vực B", 
-                    "capacity": 150, "createdAt": "2026-03-05 23:44:55"
-                }
-            ];
-        }
+    // Hàm phụ để lấy token bảo mật
+    getHeaders() {
+        const token = localStorage.getItem('token'); 
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        };
     }
 
-    async createShelf(shelfData) {
-        try {
-            const response = await fetch('http://localhost:8080/api/v1/shelves', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(shelfData)
-            });
+    async fetchShelves(name = "", floor = "") {
+    try {
+        const url = new URL('http://localhost:8080/api/v1/shelves');
+        
+        // Chỉ thêm params nếu có giá trị thực
+        if (name) url.searchParams.append('name', name); 
+        if (floor) url.searchParams.append('floor', floor);
 
-            if (!response.ok) throw new Error('Lỗi khi thêm kệ sách');
-            return await response.json();
-        } catch (error) {
-            console.error("Lỗi khi thêm kệ sách:", error);
-            throw error;
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: this.getHeaders()
+        }); 
+
+        // Xử lý lỗi Token hết hạn (401)
+        if (response.status === 401) {
+            alert("Phiên đăng nhập hết hạn, Dương vui lòng đăng nhập lại nhé!");
+            window.location.href = "/login.html"; 
+            return [];
         }
+        
+        if (!response.ok) throw new Error('Lỗi kết nối API');
+        
+        return await response.json();
+        
+    } catch (error) {
+        console.error("Không thể lấy dữ liệu kệ sách:", error);
+        // Trả về mảng rỗng thay vì dữ liệu ảo để ông dễ debug lỗi API
+        return [];
+    }
+}
+
+    async createShelf(shelfData) {
+        const response = await fetch('http://localhost:8080/api/v1/shelves', {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(shelfData)
+        });
+        if (!response.ok) throw new Error('Lỗi khi thêm kệ sách');
+        return await response.json();
+    }
+
+    // Lấy 1 kệ để sửa
+    async getShelfById(id) {
+        const response = await fetch(`http://localhost:8080/api/v1/shelves/${id}`, {
+            headers: this.getHeaders()
+        });
+        return await response.json();
+    }
+
+    // Cập nhật kệ
+    async updateShelf(id, shelfData) {
+        const response = await fetch(`http://localhost:8080/api/v1/shelves/${id}`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+            body: JSON.stringify(shelfData)
+        });
+        return response.ok;
+    }
+
+    // Xóa kệ
+    async deleteShelf(id) {
+        const response = await fetch(`http://localhost:8080/api/v1/shelves/${id}`, {
+            method: 'DELETE',
+            headers: this.getHeaders()
+        });
+        return response.ok;
     }
 }

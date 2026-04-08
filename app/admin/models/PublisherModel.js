@@ -1,9 +1,19 @@
 class PublisherModel {
+    getHeaders() {
+        const token = localStorage.getItem('token'); 
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Đính kèm token dạng Bearer để vượt lỗi 401
+        };
+    }
     async fetchPublishers() {
         try {
             // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/publishers)
-            const response = await fetch('http://localhost:8080/api/v1/publishers'); 
-            
+            const response = await fetch('http://localhost:8080/api/v1/publishers', {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+
             if (!response.ok) throw new Error('Lỗi kết nối API');
             return await response.json();
             
@@ -37,5 +47,42 @@ class PublisherModel {
             console.error("Lỗi khi thêm nhà xuất bản:", error);
             throw error;
         }
+    }
+    // Lấy 1 NXB theo ID để sửa
+    async getPublisherById(id) {
+        const response = await fetch(`http://localhost:8080/api/v1/publishers/${id}`, {
+            method: 'GET',
+            headers: this.getHeaders()
+        });
+        if (!response.ok) throw new Error('Không lấy được thông tin NXB');
+        return await response.json();
+    }
+
+    // Cập nhật NXB
+    async updatePublisher(id, data) {
+        // --- PHẦN VIẾT THÊM: Token cho phương thức PUT ---
+        const response = await fetch(`http://localhost:8080/api/v1/publishers/${id}`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+            body: JSON.stringify(data)
+        });
+        if (!response.ok) throw new Error('Không thể cập nhật NXB');
+        return await response.json();
+    }
+
+
+    // Xóa NXB
+    async deletePublisher(id) {
+        // --- PHẦN VIẾT THÊM: Token cho phương thức DELETE ---
+        const response = await fetch(`http://localhost:8080/api/v1/publishers/${id}`, {
+            method: 'DELETE',
+            headers: this.getHeaders()
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.message || "Lỗi khi xóa nhà xuất bản");
+        }
+        return true;
     }
 }
