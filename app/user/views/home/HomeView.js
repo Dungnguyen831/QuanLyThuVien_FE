@@ -110,7 +110,7 @@ class HomeView {
 
     /**
      * Create a single book card element using reusable BookCard component
-     * Handles image display, fallbacks, and badges
+     * Handles image display, fallbacks, badges, wishlist, and navigation
      * @param {Object} book - Book object from backend with: id, title, author_id, imageUrl, category_id, availableQty, totalQty
      * @returns {HTMLElement} - Book card DOM element (wrapped in column div)
      */
@@ -121,15 +121,13 @@ class HomeView {
         // ✅ Use reusable BookCard component with shared ImageService
         return BookCard.create(book, {
             showFavoriteBtn: true,
-            onCardClick: (bookData) => {
-                // Trigger book details if needed
-                if (this.onCardClick) {
-                    this.onCardClick(bookData);
-                }
-            },
             imageField: 'imageUrl', // Use imageUrl from backend response
             wishlistModel: this.wishlistModel, // ✅ Pass WishlistModel for add to wishlist
             isInWishlist: isInWishlist, // ✅ Pass current wishlist status
+            onCardClick: (bookData) => {
+                // ✅ Navigate to book details when card is clicked
+                window.location.href = `../book/book_detail.html?id=${bookData.id}`;
+            },
             onWishlistChange: (bookData, inWishlist) => {
                 // ✅ Update local state when wishlist changes
                 if (inWishlist && !this.wishlistBookIds.includes(bookData.id)) {
@@ -222,4 +220,5 @@ class HomeView {
         };
         return text.replace(/[&<>"']/g, m => map[m]);
     }
+
 }
