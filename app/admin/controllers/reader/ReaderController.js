@@ -37,9 +37,7 @@ class ReaderController {
       this.currentPage,
       this.itemsPerPage,
     );
-
     this.view.renderReaders(readersToShow);
-
     this.view.renderPagination(
       total,
       this.currentPage,
@@ -56,7 +54,6 @@ class ReaderController {
     // 1. Lọc và tìm kiếm
     const searchInput = document.getElementById("searchInput");
     const filterStatus = document.getElementById("filterStatus");
-
     const applyFilters = () => {
       this.currentPage = 1;
       this.filteredReaders = this.model.filterReaders(this.currentReaders, {
@@ -127,7 +124,6 @@ class ReaderController {
   async initUpdatePage() {
     const id = new URLSearchParams(window.location.search).get("id");
     if (!id) return;
-
     try {
       // Sử dụng đúng hàm fetchReaderById có sẵn trong Model của bạn
       const reader = await this.model.fetchReaderById(id);

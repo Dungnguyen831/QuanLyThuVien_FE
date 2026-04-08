@@ -9,7 +9,6 @@ class ReaderModel {
     const headers = {
       "Content-Type": "application/json",
     };
-
     if (requireToken) {
       const token = localStorage.getItem("token"); // Lấy token từ biến của bạn
       if (token) {

@@ -6,14 +6,11 @@ class ProfileView {
     this.inputEmail = document.getElementById("email");
     this.inputPhone = document.getElementById("phone");
     this.inputPassword = document.getElementById("password");
-
     // Các nút bấm
     this.btnEdit = document.getElementById("btnEdit"); // Nút mở khóa
     this.btnSave = document.getElementById("btnSave"); // Nút lưu
     this.btnCancel = document.getElementById("btnCancel"); // Nút hủy (ẩn lúc đầu)
-
     this.displayName = document.getElementById("displayName");
-
     // Mảng chứa các ô input có thể sửa được
     this.editableInputs = [
       this.inputFullName,

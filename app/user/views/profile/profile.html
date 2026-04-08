@@ -2,116 +2,76 @@
 <html lang="vi">
   <head>
     <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hồ sơ cá nhân - LMS</title>
-    <link
-      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
+
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css"
     />
-    <style>
-      .profile-card {
-        border-radius: 15px;
-        overflow: hidden;
-        border: none;
-      }
-      .profile-banner {
-        background: #4e73df;
-        height: 120px;
-      }
-      .avatar-section {
-        margin-top: -50px;
-      }
-      .avatar-circle {
-        width: 100px;
-        height: 100px;
-        border: 4px solid #fff;
-        font-size: 2.5rem;
-      }
-      /* Style cho ô input bị khóa để nhìn giống văn bản thường hơn */
-      .form-control:disabled {
-        background-color: #f8f9fa;
-        cursor: not-allowed;
-        border-color: #e9ecef;
-        color: #6c757d;
-      }
-    </style>
+    <link rel="stylesheet" href="../../../../assets/css/user/style.css" />
+    <link rel="stylesheet" href="../../../../assets/css/user/profile.css" />
   </head>
-  <body class="bg-light">
-    <div class="container py-5">
-      <div class="row justify-content-center">
-        <div class="col-md-8">
-          <div class="card profile-card shadow-sm">
-            <div class="profile-banner"></div>
-            <div class="card-body px-5 pb-5">
-              <div class="avatar-section text-center mb-4">
-                <div
-                  class="avatar-circle bg-primary text-white rounded-circle d-inline-flex align-items-center justify-content-center shadow-sm"
-                >
-                  <i class="fas fa-user"></i>
-                </div>
-                <h4 class="fw-bold mt-2" id="displayName">---</h4>
-              </div>
+  <body>
+    <div id="navbar-container"></div>
 
-              <form id="profileForm">
-                <div class="row g-4">
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold">Họ và Tên</label>
-                    <input type="text" id="fullName" class="form-control" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold">Email (Cố định)</label>
-                    <input
-                      type="email"
-                      id="email"
-                      class="form-control bg-light"
-                      disabled
-                    />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold">Số điện thoại</label>
-                    <input type="text" id="phone" class="form-control" />
-                  </div>
-                  <div class="col-md-6">
-                    <label class="form-label fw-bold">Đổi mật khẩu</label>
-                    <input
-                      type="password"
-                      id="password"
-                      class="form-control"
-                      placeholder="Để trống nếu giữ nguyên"
-                    />
-                  </div>
-                </div>
+    <div class="profile-page-wrapper">
+      <div class="profile-card">
+        <div class="profile-banner"></div>
 
-                <div class="d-flex justify-content-center gap-3 mt-5">
-                  <button
-                    type="button"
-                    id="btnEdit"
-                    class="btn btn-outline-primary px-5 py-2 fw-bold"
-                  >
-                    <i class="fas fa-edit me-2"></i>Chỉnh sửa hồ sơ
-                  </button>
-
-                  <button
-                    type="button"
-                    id="btnCancel"
-                    class="btn btn-light px-4 py-2 fw-bold d-none text-secondary border"
-                  >
-                    Hủy bỏ
-                  </button>
-                  <button
-                    type="submit"
-                    id="btnSave"
-                    class="btn btn-primary px-5 py-2 fw-bold d-none shadow-sm"
-                  >
-                    <i class="fas fa-save me-2"></i>Lưu thay đổi
-                  </button>
-                </div>
-              </form>
+        <div class="profile-body">
+          <div class="avatar-section">
+            <div class="avatar-circle">
+              <i class="fas fa-user"></i>
             </div>
+            <h4 class="avatar-name" id="displayName">---</h4>
           </div>
+
+          <form id="profileForm">
+            <div class="profile-form-grid">
+              <div class="form-group">
+                <label class="form-label">Họ và Tên</label>
+                <input type="text" id="fullName" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Email (Cố định)</label>
+                <input type="email" id="email" class="form-control" disabled />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Số điện thoại</label>
+                <input type="text" id="phone" class="form-control" />
+              </div>
+              <div class="form-group">
+                <label class="form-label">Đổi mật khẩu</label>
+                <input
+                  type="password"
+                  id="password"
+                  class="form-control"
+                  placeholder="Để trống nếu giữ nguyên"
+                />
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button type="button" id="btnEdit" class="btn-custom btn-outline">
+                <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
+              </button>
+              <button
+                type="button"
+                id="btnCancel"
+                class="btn-custom btn-light-custom d-none"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                type="submit"
+                id="btnSave"
+                class="btn-custom btn-fill d-none"
+              >
+                <i class="fas fa-save"></i> Lưu thay đổi
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
@@ -119,8 +79,15 @@
     <script src="/app/admin/models/reader/ReaderModel.js"></script>
     <script src="/app/user/views/profile/profileView.js"></script>
     <script src="/app/user/controllers/profile/ProfileController.js"></script>
+    <script src="../../../../assets/js/auth.js"></script>
     <script>
+      fetch("../../components/navbar.html")
+        .then((response) => response.text())
+        .then((html) => {
+          document.getElementById("navbar-container").innerHTML = html;
+        });
       document.addEventListener("DOMContentLoaded", () => {
+        // Khởi tạo tính năng cho riêng trang Profile
         const app = new ProfileController(new ReaderModel(), new ProfileView());
         app.init();
       });
