@@ -26,6 +26,47 @@
                         <h3 class="fw-bold mb-1" id="page-title">Quản lý tiền phạt</h3>
                         <p class="text-muted mb-0">Kiểm soát các khoản phạt vi phạm mượn trả của độc giả</p>
                     </div>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-danger shadow-sm fw-medium" data-bs-toggle="modal" data-bs-target="#createFineModal">
+                            <i class="fas fa-plus me-2"></i>Tạo biên bản phạt
+                        </button>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="createFineModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light border-bottom-0 pb-3">
+                                <h5 class="modal-title fw-bold text-danger">
+                                    <i class="fas fa-exclamation-triangle me-2"></i>Tạo biên bản phạt
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4">
+                                <div class="alert alert-warning bg-opacity-10 border-0 small mb-4">
+                                    <i class="fas fa-info-circle me-2"></i>Dành cho các trường hợp độc giả làm mất sách, làm rách hỏng tài liệu...
+                                </div>
+                                <form id="create-fine-form">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Mã Chi tiết mượn (Loan Detail ID)</label>
+                                        <input type="number" class="form-control" id="fine-loan-detail-id" required placeholder="Ví dụ: 15">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Số tiền phạt (VNĐ)</label>
+                                        <input type="number" class="form-control" id="fine-amount" required min="0" step="1000" placeholder="Ví dụ: 50000">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label fw-medium text-muted small">Lý do phạt</label>
+                                        <textarea class="form-control" id="fine-reason" rows="3" required placeholder="Ví dụ: Khách làm rơi sách xuống nước rách 10 trang..."></textarea>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer border-top-0 pt-0">
+                                <button type="button" class="btn btn-white border text-secondary fw-medium" data-bs-dismiss="modal">Hủy</button>
+                                <button type="submit" form="create-fine-form" class="btn btn-danger fw-medium px-4">Tạo biên bản</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4">
@@ -58,69 +99,23 @@
                             </thead>
                             <tbody id="fine-table-body">
                                 <tr>
-                                    <td class="ps-4 fw-medium text-dark">F001</td>
-                                    <td><a href="#" class="text-decoration-none fw-medium">MP042</a></td>
-                                    <td>
-                                        <div class="fw-medium text-dark">Phạm Hoàng Nam</div>
-                                        <div class="small text-muted">nam@gmail.com</div>
-                                    </td>
+                                    <td class="ps-4">Example</td>
+                                    <td>LOI123</td>
+                                    <td>Mẫu</td>
                                     <td>Quá hạn 5 ngày</td>
-                                    <td class="fine-amount">25,000 đ</td>
-                                    <td>
-                                        <span class="status-unpaid"><span class="status-dot"></span>Chưa đóng</span>
-                                    </td>
+                                    <td>25,000</td>
+                                    <td><span class="badge bg-danger">Chưa đóng phạt</span></td>
                                     <td class="text-center pe-4">
-                                        <button class="btn-action pay" title="Xác nhận đã thu tiền"><i class="fas fa-hand-holding-usd"></i></button>
+                                        <button class="btn btn-sm btn-success me-2"><i class="fas fa-check"></i> Đóng phạt</button>
+                                        <button class="btn btn-sm btn-primary"><i class="fas fa-eye"></i> Xem chi tiết</button>
                                     </td>
                                 </tr>
-
-                                <tr>
-                                    <td class="ps-4 fw-medium text-dark">F002</td>
-                                    <td><a href="#" class="text-decoration-none fw-medium">MP089</a></td>
-                                    <td>
-                                        <div class="fw-medium text-dark">Lê Minh Anh</div>
-                                        <div class="small text-muted">anh@gmail.com</div>
-                                    </td>
-                                    <td>Làm rách bìa sách "Deep Learning"</td>
-                                    <td class="fine-amount">50,000 đ</td>
-                                    <td>
-                                        <span class="status-unpaid"><span class="status-dot"></span>Chưa đóng</span>
-                                    </td>
-                                    <td class="text-center pe-4">
-                                        <button class="btn-action pay" title="Xác nhận đã thu tiền"><i class="fas fa-hand-holding-usd"></i></button>
-                                    </td>
-                                </tr>
-
-                                <tr>
-                                    <td class="ps-4 fw-medium text-dark">F003</td>
-                                    <td><a href="#" class="text-decoration-none fw-medium text-muted">MP015</a></td>
-                                    <td>
-                                        <div class="fw-medium text-dark">Trần Thu Thu</div>
-                                        <div class="small text-muted">librarian@library.com</div>
-                                    </td>
-                                    <td>Quá hạn 2 ngày</td>
-                                    <td class="fine-amount paid">10,000 đ</td>
-                                    <td>
-                                        <span class="status-paid"><span class="status-dot"></span>Đã đóng</span>
-                                    </td>
-                                    <td class="text-center pe-4">
-                                        <button class="btn-action" title="Xem biên lai"><i class="fas fa-file-invoice"></i></button>
-                                    </td>
-                                </tr>
+                                
                             </tbody>
                         </table>
                     </div>
 
-                    <div class="p-4 border-top d-flex justify-content-between align-items-center">
-                        <small class="text-muted">Hiển thị <b class="text-dark">1</b> đến <b class="text-dark">3</b> trong tổng số <b class="text-dark">15</b> khoản phạt</small>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><a class="page-link border-0 text-muted" href="#"><i class="fas fa-chevron-left"></i></a></li>
-                            <li class="page-item active"><a class="page-link border-0 rounded-1 px-3" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link border-0 text-dark" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link border-0 text-muted" href="#"><i class="fas fa-chevron-right"></i></a></li>
-                        </ul>
-                    </div>
-
+                    <div class="p-4 border-top d-flex justify-content-between align-items-center"></div>
                 </div>
             </div>
         </div>
@@ -130,6 +125,10 @@
     
     <script src="../../../../assets/js/ComponentLoader.js"></script>
     <script src="../../../../assets/js/main.js"></script>
+
+    <script src="/app/admin/models/FineModel.js"></script>
+    <script src="/app/admin/views/fine/FineView.js"></script>
+    <script src="/app/admin/controllers/FineController.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -138,14 +137,18 @@
             
             setTimeout(() => {
                 document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
-                
-                // Cập nhật link trỏ tới menu Quản lý phạt trong file sidebar.html của bạn
                 const fineMenu = document.querySelector('#sidebar-wrapper a[href="../fine/fine.html"]'); 
                 if (fineMenu) fineMenu.classList.add('active');
                 
                 const pageTitle = document.getElementById('page-title');
                 if(pageTitle) pageTitle.textContent = 'Quản lý tiền phạt';
             }, 100); 
+
+            // KHỞI TẠO CONTROLLER CHẠY NGHIỆP VỤ
+            if (typeof FineController !== 'undefined') {
+                const fineApp = new FineController(new FineModel(), new FineView());
+                fineApp.init();
+            }
         });
     </script>
 </body>
