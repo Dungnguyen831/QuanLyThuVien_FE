@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chi tiết sách - LibraryPro</title>
+    <link rel="stylesheet" href="../../../../assets/css/user/style.css">
+    <link rel="stylesheet" href="../../../../assets/css/user/book_detail.css">
+    <link rel="stylesheet" href="../../../../assets/css/user/reservations.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+        rel="stylesheet">
+</head>
+
+<body>
+
+    <div id="navbar-container"></div>
+    <div class="container">
+        <nav class="breadcrumb">
+
+            Home <span></span> <span id="category-path">Loading...</span> <span></span> <strong
+                id="title-path">...</strong>
+
+        </nav>
+
+        <main class="detail-wrap">
+            <aside class="cover-section">
+                <div class="book-cover-card">
+                    <img id="book-img" src="https://via.placeholder.com/300x450" alt="Book Cover">
+                </div>
+            </aside>
+
+            <section class="info-section">
+                <div class="labels">
+                    <span id="category-label" class="lbl tech text-uppercase">...</span>
+                    <span id="availability-label" class="lbl available">● ...</span>
+                </div>
+
+                <h1 id="book-title" class="main-title">Đang tải...</h1>
+                <p id="book-author-year" class="sub-info">...</p>
+
+                <div class="rating-row">
+                    <div class="stars">★★★★★</div>
+                    <span class="rating-val">4.8</span>
+                    <span class="review-link">| <u>1,240 Reviews</u></span>
+                </div>
+
+                <p class="book-summary" id="book-desc">
+                </p>
+
+                <div class="primary-actions">
+                    <button id="btn-borrow" class="btn-borrow">🛍️ Borrow Now</button>
+                    <button class="btn-wishlist">❤️ Add to Wishlist</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-box">
+                        <small>ISBN</small>
+                        <strong id="book-isbn">...</strong>
+                    </div>
+                    <div class="stat-box">
+                        <small>PUBLISHED</small>
+                        <strong id="book-year">...</strong>
+                    </div>
+                    <div class="stat-box">
+                        <small>TOTAL QTY</small>
+                        <strong id="book-qty">...</strong>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+    <!-- Reservation/Wishlist Components -->
+    <script src="/app/user/models/ReservationModel.js"></script>
+    <script src="/app/user/models/WishlistModel.js"></script>
+    <script src="/app/user/models/AllBooksModel.js"></script>
+    <script src="/app/user/components/BorrowForm.js"></script>
+    <script src="/app/user/components/ReservationForm.js"></script>
+
+    <!-- Book Detail -->
+    <script src="/app/admin/models/BookDetailModel.js"></script>
+    <script src="/app/user/views/book/BookDetailView.js"></script>
+    <script src="/app/admin/controllers/BookDetailController.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        fetch('../../components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+            });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const model = new BookDetailModel();
+            const view = new BookDetailView();
+            const app = new BookDetailController(model, view);
+            app.init();
+        });
+    </script>
+
+</body>
+
+</html>
