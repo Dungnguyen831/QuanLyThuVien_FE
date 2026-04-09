@@ -110,7 +110,7 @@ class HomeView {
 
     /**
      * Create a single book card element using reusable BookCard component
-     * Handles image display, fallbacks, and badges
+     * Handles image display, fallbacks, badges, wishlist, and navigation
      * @param {Object} book - Book object from backend with: id, title, author_id, imageUrl, category_id, availableQty, totalQty
      * @returns {HTMLElement} - Book card DOM element (wrapped in column div)
      */
@@ -121,15 +121,13 @@ class HomeView {
         // ✅ Use reusable BookCard component with shared ImageService
         return BookCard.create(book, {
             showFavoriteBtn: true,
-            onCardClick: (bookData) => {
-                // Trigger book details if needed
-                if (this.onCardClick) {
-                    this.onCardClick(bookData);
-                }
-            },
             imageField: 'imageUrl', // Use imageUrl from backend response
             wishlistModel: this.wishlistModel, // ✅ Pass WishlistModel for add to wishlist
             isInWishlist: isInWishlist, // ✅ Pass current wishlist status
+            onCardClick: (bookData) => {
+                // ✅ Navigate to book details when card is clicked
+                window.location.href = `../book/book_detail.html?id=${bookData.id}`;
+            },
             onWishlistChange: (bookData, inWishlist) => {
                 // ✅ Update local state when wishlist changes
                 if (inWishlist && !this.wishlistBookIds.includes(bookData.id)) {
@@ -157,69 +155,4 @@ class HomeView {
         this.wishlistBookIds = wishlistBookIds || [];
     }
 
-    /**
-     * Bind card click handler
-     * @param {Function} callback - Callback function when card is clicked
-     */
-    bindCardClick(callback) {
-        this.onCardClick = callback;
-    }
-
-    /**
-     * [DEPRECATED] Generate availability badge - now handled by BookCard component
-     * @private
-     * @param {Number} availableQty - Available quantity
-     * @param {Number} totalQty - Total quantity
-     * @returns {String} - HTML string with availability badge
-     */
-    generateAvailabilityBadge(availableQty, totalQty) {
-        const available = availableQty || 0;
-        const total = totalQty || 1;
-
-        if (available === 0) {
-            return '<span class="availability-badge unavailable">Out of Stock</span>';
-        } else if (available <= Math.ceil(total * 0.25)) {
-            return '<span class="availability-badge low">Low Stock</span>';
-        } else {
-            return '<span class="availability-badge available">Available</span>';
-        }
-    }
-
-    /**
-     * Get author display name
-     * Backend returns author_id only, not author name
-     * @param {Number} author_id - Author ID from backend
-     * @returns {String} - Author display text
-     */
-    getAuthorDisplay(author_id) {
-        if (!author_id) return 'Unknown Author';
-        return `Author #${author_id}`;
-    }
-
-    /**
-     * Get category display name
-     * Backend returns category_id only, not category name
-     * @param {Number} category_id - Category ID from backend
-     * @returns {String} - Category display text
-     */
-    getCategoryDisplay(category_id) {
-        if (!category_id) return 'General';
-        return `Category #${category_id}`;
-    }
-
-    /**
-     * Escape HTML special characters to prevent XSS
-     * @param {String} text - Text to escape
-     * @returns {String} - Escaped text
-     */
-    escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, m => map[m]);
-    }
 }

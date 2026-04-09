@@ -129,6 +129,8 @@ class WishlistModel {
         throw new Error("User not authenticated");
       }
 
+      console.log('Adding to wishlist - bookId type:', typeof bookId, 'value:', bookId);
+
       // ✅ NEW ENDPOINT: No userId in body - backend uses JWT to identify user
       const response = await fetch(`${this.apiBaseUrl}/wishlists`, {
         method: "POST",
@@ -141,8 +143,19 @@ class WishlistModel {
         }),
       });
 
+      console.log('Add to wishlist response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+          console.error('Server error response:', errorData);
+        } catch (e) {
+          const errorText = await response.text();
+          console.error('Error response text:', errorText);
+        }
+        throw new Error(errorMessage);
       }
 
       // Handle both JSON and plain text responses
@@ -160,51 +173,6 @@ class WishlistModel {
       return result;
     } catch (error) {
       console.error("Error adding to wishlist:", error);
-      throw error;
-    }
-  }
-
-  /**
-   * Borrow all available books from wishlist
-   * @returns {Promise<Object>} Result of borrowing
-   */
-  async borrowAll() {
-    try {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        throw new Error("User not authenticated");
-      }
-
-      // ✅ NEW ENDPOINT: No userId in body - backend uses JWT to identify user
-      const response = await fetch(`${this.apiBaseUrl}/wishlists/borrow-all`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({}),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      // Handle both JSON and plain text responses
-      const contentType = response.headers.get("content-type");
-      let result;
-
-      if (contentType && contentType.includes("application/json")) {
-        result = await response.json();
-      } else {
-        // Plain text response (e.g., success message)
-        result = await response.text();
-      }
-
-      console.log("Borrow all result:", result);
-      return result;
-    } catch (error) {
-      console.error("Error borrowing books:", error);
       throw error;
     }
   }
