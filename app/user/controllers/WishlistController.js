@@ -31,6 +31,13 @@ class WishlistController {
   init() {
     this.bindViewEvents();
     this.loadWishlistData();
+
+    // ✅ Listen for wishlist changes from other pages (e.g., home page)
+    window.addEventListener('wishlistChanged', (event) => {
+      console.log('Wishlist changed from another page:', event.detail);
+      // Reload wishlist data to reflect changes
+      this.loadWishlistData();
+    });
   }
 
   /**
@@ -68,7 +75,7 @@ class WishlistController {
 
         this.view.updateItemsCounter(this.state.filteredBooks.length);
         this.applyFilterAndSort();
-        this.renderPage();
+        await this.renderPage(); // await async render
       } else {
         this.view.showError("Unable to load wishlist data");
       }
@@ -88,7 +95,7 @@ class WishlistController {
     this.state.activeFilter = filterValue;
     this.state.currentPage = 1;
     this.applyFilterAndSort();
-    this.renderPage();
+    this.renderPage(); // renderPage is now async but we don't need to wait
   }
 
   /**
@@ -99,7 +106,7 @@ class WishlistController {
     this.state.sortBy = sortValue;
     this.state.currentPage = 1;
     this.applyFilterAndSort();
-    this.renderPage();
+    this.renderPage(); // renderPage is now async but we don't need to wait
   }
 
   /**
@@ -108,7 +115,7 @@ class WishlistController {
    */
   handlePageChange(pageNumber) {
     this.state.currentPage = pageNumber;
-    this.renderPage();
+    this.renderPage(); // renderPage is now async but we don't need to wait
     this.scrollToTop();
   }
 
@@ -135,10 +142,14 @@ class WishlistController {
    * Handle removing book from wishlist
    * @param {string|number} bookId - ID of the book to remove
    * @param {Element} btn - Heart button element
+   * @param {boolean} skipApiCall - Skip API call if already done by BookCard
    */
-  async handleRemoveFromWishlist(bookId, btn) {
+  async handleRemoveFromWishlist(bookId, btn, skipApiCall = false) {
     try {
-      await this.model.removeFromWishlist(bookId);
+      // ✅ Skip API call if BookCard component already called it
+      if (!skipApiCall) {
+        await this.model.removeFromWishlist(bookId);
+      }
 
       // Remove book from local state
       this.state.allBooks = this.state.allBooks.filter(
@@ -155,7 +166,7 @@ class WishlistController {
       }
 
       this.view.updateItemsCounter(this.state.filteredBooks.length);
-      this.renderPage();
+      await this.renderPage(); // renderPage is now async
     } catch (error) {
       console.error("Error removing from wishlist:", error);
       alert("Failed to remove book from wishlist");
@@ -180,7 +191,7 @@ class WishlistController {
       await this.model.borrowBooks(bookIds);
 
       alert(`Successfully borrowed ${bookIds.length} book(s)`);
-      this.loadWishlistData(); // Reload to update availability status
+      await this.loadWishlistData(); // Reload to update availability status
     } catch (error) {
       console.error("Error borrowing books:", error);
       alert("Failed to borrow books");
@@ -294,11 +305,12 @@ class WishlistController {
   /**
    * Render the current page
    */
-  renderPage() {
+  async renderPage() {
     const booksToDisplay = this.getBooksForCurrentPage();
     const totalPages = this.getTotalPages();
 
-    this.view.renderWishlistBooks(booksToDisplay);
+    // ✅ Pass wishlistModel to view for remove functionality (await async render)
+    await this.view.renderWishlistBooks(booksToDisplay, this.model);
     this.view.renderPagination(totalPages, this.state.currentPage);
   }
 

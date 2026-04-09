@@ -4,9 +4,10 @@
  * Fetches "New Arrivals" and "Most Popular" book sections
  */
 class HomeController {
-    constructor(model, view) {
+    constructor(model, view, wishlistModel = null) {
         this.model = model;
         this.view = view;
+        this.wishlistModel = wishlistModel;
     }
 
     /**
@@ -17,6 +18,22 @@ class HomeController {
         try {
             this.view.showLoading();
 
+            // Bind wishlist handler if available
+            if (this.wishlistModel) {
+                this.view.bindWishlistModel(this.wishlistModel);
+
+                // ✅ Fetch wishlist IDs to check which books are in wishlist
+                try {
+                    const wishlistData = await this.wishlistModel.getWishlist();
+                    const wishlistBookIds = wishlistData && wishlistData.books
+                        ? wishlistData.books.map(b => b.id)
+                        : [];
+                    this.view.bindWishlistBookIds(wishlistBookIds);
+                } catch (error) {
+                    console.warn('Could not load wishlist status:', error);
+                }
+            }
+
             // Fetch all books from the model
             const books = await this.model.fetchBooks();
 
@@ -24,9 +41,9 @@ class HomeController {
             const newArrivals = this.getNewArrivals(books, 6);
             const mostPopular = this.getMostPopular(books, 6);
 
-            // Render sections with the processed data
-            this.view.renderNewArrivals(newArrivals);
-            this.view.renderMostPopular(mostPopular);
+            // Render sections with the processed data (await async render methods)
+            await this.view.renderNewArrivals(newArrivals);
+            await this.view.renderMostPopular(mostPopular);
 
         } catch (error) {
             console.error("Lỗi ở HomeController:", error);

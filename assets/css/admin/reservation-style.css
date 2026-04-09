@@ -1,0 +1,94 @@
+/* Thiết lập chung cho bảng */
+.table-custom th { 
+    font-weight: 600; 
+    color: #6c757d; 
+    font-size: 0.85rem; 
+    text-transform: uppercase; 
+    letter-spacing: 0.5px; 
+    border-bottom: 1px solid #e9ecef; 
+}
+
+.table-custom td { 
+    color: #212529; 
+    font-size: 0.95rem; 
+    border-bottom: 1px solid #f1f3f5; 
+}
+
+.table-custom tbody tr:hover { 
+    background-color: #f8f9fa; 
+}
+
+/* Các ô input và filter */
+.search-input { 
+    min-width: 300px; 
+}
+
+.filter-select { 
+    min-width: 150px; 
+}
+
+/* Base style cho các trạng thái (Status) */
+.status-dot { 
+    height: 8px; 
+    width: 8px; 
+    border-radius: 50%; 
+    display: inline-block; 
+    margin-right: 6px; 
+}
+
+/* Badge: Chờ xử lý (Pending) - Màu vàng/cam */
+.status-pending { 
+    color: #d97706; 
+    background-color: #fef3c7; 
+    padding: 4px 12px; 
+    border-radius: 20px; 
+    font-weight: 500; 
+    font-size: 0.85rem; 
+}
+.status-pending .status-dot { background-color: #f59e0b; }
+
+/* Badge: Đã duyệt (Approved) - Màu xanh dương */
+.status-approved { 
+    color: #0369a1; 
+    background-color: #e0f2fe; 
+    padding: 4px 12px; 
+    border-radius: 20px; 
+    font-weight: 500; 
+    font-size: 0.85rem; 
+}
+.status-approved .status-dot { background-color: #0ea5e9; }
+
+/* Badge: Đã hoàn thành (Completed) - Màu xanh lá */
+.status-completed { 
+    color: #15803d; 
+    background-color: #dcfce3; 
+    padding: 4px 12px; 
+    border-radius: 20px; 
+    font-weight: 500; 
+    font-size: 0.85rem; 
+}
+.status-completed .status-dot { background-color: #22c55e; }
+
+/* Badge: Đã hủy (Cancelled) - Màu xám */
+.status-cancelled { 
+    color: #6b7280; 
+    background-color: #f3f4f6; 
+    padding: 4px 12px; 
+    border-radius: 20px; 
+    font-weight: 500; 
+    font-size: 0.85rem; 
+}
+.status-cancelled .status-dot { background-color: #9ca3af; }
+
+/* Nút thao tác (Action buttons) */
+.btn-action { 
+    color: #6c757d; 
+    padding: 4px 8px; 
+    border-radius: 6px; 
+    transition: all 0.2s; 
+    border: none; 
+    background: transparent; 
+}
+.btn-action:hover { background-color: #e9ecef; color: #0d6efd; }
+.btn-action.approve:hover { color: #198754; background-color: #d1e7dd; }
+.btn-action.cancel:hover { color: #dc3545; background-color: #f8d7da; }
