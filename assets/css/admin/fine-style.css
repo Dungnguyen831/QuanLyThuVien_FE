@@ -1,0 +1,43 @@
+/* Thiết lập chung cho bảng (Có thể bỏ qua nếu đã viết trong admin-style.css) */
+.table-custom th { 
+    font-weight: 600; color: #6c757d; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #e9ecef; 
+}
+.table-custom td { color: #212529; font-size: 0.95rem; border-bottom: 1px solid #f1f3f5; }
+.table-custom tbody tr:hover { background-color: #f8f9fa; }
+
+/* Các ô input và filter */
+.search-input { min-width: 300px; }
+.filter-select { min-width: 150px; }
+
+/* Base style cho các trạng thái */
+.status-dot { height: 8px; width: 8px; border-radius: 50%; display: inline-block; margin-right: 6px; }
+
+/* Badge: Chưa đóng phạt (Unpaid) - Màu đỏ báo động */
+.status-unpaid { 
+    color: #b91c1c; 
+    background-color: #fee2e2; 
+    padding: 4px 12px; border-radius: 20px; font-weight: 500; font-size: 0.85rem; 
+}
+.status-unpaid .status-dot { background-color: #ef4444; }
+
+/* Badge: Đã đóng phạt (Paid) - Màu xanh lá */
+.status-paid { 
+    color: #15803d; 
+    background-color: #dcfce3; 
+    padding: 4px 12px; border-radius: 20px; font-weight: 500; font-size: 0.85rem; 
+}
+.status-paid .status-dot { background-color: #22c55e; }
+
+/* Số tiền phạt nổi bật */
+.fine-amount {
+    font-weight: 700;
+    color: #dc3545;
+}
+.fine-amount.paid {
+    color: #198754;
+}
+
+/* Nút thao tác */
+.btn-action { color: #6c757d; padding: 4px 8px; border-radius: 6px; transition: all 0.2s; border: none; background: transparent; }
+.btn-action:hover { background-color: #e9ecef; color: #0d6efd; }
+.btn-action.pay:hover { color: #198754; background-color: #d1e7dd; }
