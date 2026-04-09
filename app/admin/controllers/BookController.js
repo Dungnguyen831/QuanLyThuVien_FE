@@ -5,6 +5,7 @@ class BookController {
         this.authors = [];
         this.categories = [];
         this.publishers = [];
+        this.shelfModel = [];
         this.currentBooks = []; // Danh sách gốc từ server
         this.filteredBooks = []; // Danh sách sau khi lọc/tìm kiếm
         this.currentPage = 1; // Trang hiện tại
@@ -19,6 +20,7 @@ class BookController {
             await this.refreshAllDatalists();
             await this.loadBooks();
             this.bindEvents();
+            
         } catch (error) {
             console.error("Lỗi khởi tạo:", error);
         }
@@ -39,15 +41,17 @@ class BookController {
     // Tải và làm mới các danh sách (author, category, publisher) cho các bộ lọc
     async refreshAllDatalists() {
         try {
-            const [authors, categories, publishers] = await Promise.all([
+            const [authors, categories, publishers, shelves] = await Promise.all([
                 this.model.fetchAuthors(),
                 this.model.fetchCategories(),
                 this.model.fetchPublishers(),
+                this.model.fetchShelves(), // Đưa vào đây để chạy song song
             ]);
+    
             this.authors = authors;
             this.categories = categories;
             this.publishers = publishers;
-
+            this.shelves = shelves; // Gán dữ liệu kệ ở đây
             // Đổ dữ liệu vào các ô Select lọc ở thanh tìm kiếm
             const filterCat = document.getElementById("filterCategory");
             const filterPub = document.getElementById("filterPublisher");
@@ -224,7 +228,21 @@ class BookController {
         // BƯỚC 1: CHỈ KHI BẤM LƯU MỚI UPLOAD ẢNH
         if (this.selectedFile) {
             // Gọi model để đẩy file thật lên server
-            finalImageUrl = await this.model.uploadImage(this.selectedFile); 
+            const fileName = this.selectedFile.name;
+            // Kiểm tra xem trong danh sách sách hiện tại đã có ai dùng tên ảnh này chưa
+            const isFileExists = this.currentBooks.some(b => b.imageUrl === fileName);
+
+            if (isFileExists) {
+                finalImageUrl = fileName; 
+            } else {
+                try {
+                    // Chỉ upload nếu là ảnh hoàn toàn mới
+                    finalImageUrl = await this.model.uploadImage(this.selectedFile);
+                } catch (err) {
+                    console.error("Lỗi upload ảnh", err);
+                    finalImageUrl = fileName;
+                }
+            }
         }
         const data = this.getFormData("book");
         data.imageUrl = finalImageUrl || "default-book.jpg"; // Gán tên file đã upload thành công
@@ -347,17 +365,34 @@ class BookController {
 
         try {
             // --- 1. XỬ LÝ UPLOAD ẢNH ---
+            const currentImageUrl = document.getElementById('editBookImageUrl')?.value || "";
+
             if (this.selectedEditFile) {
-                // Chỉ upload nếu người dùng có chọn file mới
-                try {
-                    const uploadedFileName = await this.model.uploadImage(this.selectedEditFile);
-                    data.imageUrl = uploadedFileName; 
-                } catch (uploadError) {
-                    throw new Error("Không thể upload ảnh mới. Vui lòng thử lại.");
+                // Lấy tên file người dùng vừa chọn từ máy tính
+                const selectedFileName = this.selectedEditFile.name;
+    
+                // KIỂM TRẢ TRÙNG TÊN: 
+                // So sánh với ảnh cũ của chính nó HOẶC quét trong danh sách currentBooks xem có ai dùng tên này chưa
+                const isNameExists = selectedFileName === currentImageUrl || 
+                                     this.currentBooks.some(b => b.imageUrl === selectedFileName);
+    
+                if (isNameExists) {
+                    // Nếu trùng tên: Không gọi API upload, chỉ gán tên file vào data để lưu DB
+                    data.imageUrl = selectedFileName;
+                } else {
+                    // Nếu tên hoàn toàn mới: Thực hiện upload
+                    try {
+                        const uploadedFileName = await this.model.uploadImage(this.selectedEditFile);
+                        data.imageUrl = uploadedFileName; 
+                    } catch (uploadError) {
+                        // Backup: Nếu server báo lỗi (ví dụ file đã tồn tại trên server nhưng client chưa biết)
+                        // thì vẫn lấy tên file đó để lưu vào DB
+                        data.imageUrl = selectedFileName;
+                    }
                 }
             } else {
-                // Giữ lại ảnh cũ từ trường hidden nếu không đổi ảnh
-                data.imageUrl = document.getElementById('editBookImageUrl')?.value || "default-book.jpg";
+                // Nếu không chọn file mới: Giữ nguyên ảnh cũ
+                data.imageUrl = currentImageUrl || "default-book.jpg";
             }
 
             // --- 2. KIỂM TRA DỮ LIỆU (VALIDATION) ---
