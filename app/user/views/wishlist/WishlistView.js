@@ -73,58 +73,6 @@ class WishlistView {
    * @param {Object} book - Book object with properties: id, title, author, cover, rating, inWishlist
    * @returns {string} HTML string for book card
    */
-  _createBookCard(book) {
-    const starRating = this._generateStarRating(book.rating);
-    const reviewCount = book.reviewCount || 0;
-
-    return `
-            <div class="book-card" data-book-id="${book.id}">
-                <div class="book-cover-container">
-                    <img src="${book.cover}" alt="${book.title}" class="book-cover">
-                    <button class="heart-icon active" data-book-id="${book.id}" title="Remove from wishlist">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">${this._escapeHtml(book.title)}</h3>
-                    <p class="book-author">${this._escapeHtml(book.author)}</p>
-                    <div class="book-rating">
-                        ${starRating}
-                        <span class="rating-count">(${reviewCount})</span>
-                    </div>
-                </div>
-            </div>
-        `;
-  }
-
-  /**
-   * Generate star rating HTML
-   * @private
-   * @param {number} rating - Rating value (0-5)
-   * @returns {string} HTML string with stars
-   */
-  _generateStarRating(rating) {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    let stars = "";
-
-    for (let i = 0; i < fullStars; i++) {
-      stars += '<span class="star full">★</span>';
-    }
-
-    if (hasHalfStar) {
-      stars += '<span class="star half">★</span>';
-    }
-
-    const emptyStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < emptyStars; i++) {
-      stars += '<span class="star empty">★</span>';
-    }
-
-    return stars;
-  }
 
   /**
    * Escape HTML special characters to prevent XSS

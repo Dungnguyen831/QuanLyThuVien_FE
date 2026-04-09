@@ -113,7 +113,7 @@ class ReservationView {
     /**
      * Create status badge HTML based on reservation status
      * @private
-     * @param {string} status - Status value ('ready', 'pending', 'in-queue')
+     * @param {string} status - Status value (PENDING, APPROVED, CANCELLED, COMPLETED)
      * @returns {string} HTML badge string
      */
     _createStatusBadge(status) {
@@ -121,17 +121,21 @@ class ReservationView {
         let badgeText = status;
 
         switch (status.toLowerCase()) {
-            case 'ready':
-                badgeClass += ' status-ready';
-                badgeText = 'Ready for Pickup';
-                break;
             case 'pending':
                 badgeClass += ' status-pending';
-                badgeText = 'Pending';
+                badgeText = 'Pending - Waiting';
                 break;
-            case 'in-queue':
-                badgeClass += ' status-in-queue';
-                badgeText = 'In Queue (4)';
+            case 'approved':
+                badgeClass += ' status-approved';
+                badgeText = 'Approved';
+                break;
+            case 'cancelled':
+                badgeClass += ' status-cancelled';
+                badgeText = 'Cancelled';
+                break;
+            case 'completed':
+                badgeClass += ' status-completed';
+                badgeText = 'Completed';
                 break;
             default:
                 badgeClass += ' status-default';
