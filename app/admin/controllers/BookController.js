@@ -41,11 +41,18 @@ class BookController {
     // Tải và làm mới các danh sách (author, category, publisher) cho các bộ lọc
     async refreshAllDatalists() {
         try {
+           // Khởi tạo các Model riêng biệt (vì bạn đã nạp các file này trong HTML)
+            const authorModel = new AuthorModel();
+            const categoryModel = new CategoryModel();
+            const publisherModel = new PublisherModel();
+            const shelfModel = new ShelfModel();
+
+            // Gọi đúng hàm fetch của từng Model
             const [authors, categories, publishers, shelves] = await Promise.all([
-                this.model.fetchAuthors(),
-                this.model.fetchCategories(),
-                this.model.fetchPublishers(),
-                this.model.fetchShelves(), // Đưa vào đây để chạy song song
+                authorModel.fetchAuthors(), // Giả sử hàm trong AuthorModel là fetchAuthors
+                categoryModel.fetchCategories(), 
+                publisherModel.fetchPublishers(),
+                shelfModel.fetchShelves(),
             ]);
     
             this.authors = authors;

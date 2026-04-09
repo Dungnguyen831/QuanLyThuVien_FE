@@ -135,48 +135,48 @@ class BookModel {
       }
 
    // Các hàm lấy danh sách danh mục hỗ trợ có kèm Token
-  async fetchAuthors() {
-    const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:8080/api/v1/authors", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-    if (!res.ok) throw new Error("Không thể tải danh sách tác giả");
-    return await res.json();
-  }
+  // async fetchAuthors() {
+  //   const token = localStorage.getItem("token");
+  //   const res = await fetch("http://localhost:8080/api/v1/authors", {
+  //     headers: {
+  //       "Authorization": `Bearer ${token}`
+  //     }
+  //   });
+  //   if (!res.ok) throw new Error("Không thể tải danh sách tác giả");
+  //   return await res.json();
+  // }
 
-  async fetchCategories() {
-    const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:8080/api/v1/categories", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-    if (!res.ok) throw new Error("Không thể tải danh sách thể loại");
-    return await res.json();
-  }
+  // async fetchCategories() {
+  //   const token = localStorage.getItem("token");
+  //   const res = await fetch("http://localhost:8080/api/v1/categories", {
+  //     headers: {
+  //       "Authorization": `Bearer ${token}`
+  //     }
+  //   });
+  //   if (!res.ok) throw new Error("Không thể tải danh sách thể loại");
+  //   return await res.json();
+  // }
 
-  async fetchPublishers() {
-    const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:8080/api/v1/publishers", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-    if (!res.ok) throw new Error("Không thể tải danh sách nhà xuất bản");
-    return await res.json();
-  }
-  async fetchShelves() {
-    const token = localStorage.getItem("token");
-    const res = await fetch("http://localhost:8080/api/v1/shelves", {
-      headers: {
-        "Authorization": `Bearer ${token}`
-      }
-    });
-    if (!res.ok) throw new Error("Không thể tải danh sách kệ");
-    return await res.json();
-  }
+  // async fetchPublishers() {
+  //   const token = localStorage.getItem("token");
+  //   const res = await fetch("http://localhost:8080/api/v1/publishers", {
+  //     headers: {
+  //       "Authorization": `Bearer ${token}`
+  //     }
+  //   });
+  //   if (!res.ok) throw new Error("Không thể tải danh sách nhà xuất bản");
+  //   return await res.json();
+  // }
+  // async fetchShelves() {
+  //   const token = localStorage.getItem("token");
+  //   const res = await fetch("http://localhost:8080/api/v1/shelves", {
+  //     headers: {
+  //       "Authorization": `Bearer ${token}`
+  //     }
+  //   });
+  //   if (!res.ok) throw new Error("Không thể tải danh sách kệ");
+  //   return await res.json();
+  // }
 
 
    // Xử lý Upload ảnh lên Server

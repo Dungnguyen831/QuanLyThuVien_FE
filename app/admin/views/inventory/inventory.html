@@ -111,6 +111,10 @@
     <script src="/app/admin/models/BookCopyModel.js"></script>
     <script src="/app/admin/controllers/BookCopyController.js"></script>
     <script src="/app/admin/models/BookModel.js"></script>
+    <script src="/app/admin/models/AuthorModel.js"></script>
+    <script src="/app/admin/models/PublisherModel.js"></script>
+    <script src="/app/admin/models/CategoryModel.js"></script>
+    <script src="/app/admin/models/ShelfModel.js"></script>
     <script src="/app/admin/controllers/BookController.js"></script>
     <div id="modal-container"></div>
     <div id="modal-copy-container"></div>
@@ -141,7 +145,11 @@
             const bookView = new BookView();
             
             // 2. Tạo thằng Controller CHÍNH
-            const bookCtrl = new BookController(bookModel, bookView);
+            const bookCtrl = new BookController(bookModel, bookView, {
+                author: new AuthorModel(),
+                category: new CategoryModel(),
+                publisher: new PublisherModel()
+            });
             
             // 3. Tạo thằng Controller PHỤ (Quản lý bản sao)
             const copyModel = new BookCopyModel();
