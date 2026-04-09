@@ -1,51 +1,89 @@
 class CategoryModel {
+    constructor() {
+        this.apiUrl = 'http://localhost:8080/api/v1/categories';
+    }
+
+    // Hàm phụ để lấy token từ localStorage 
+    getHeaders() {
+        const token = localStorage.getItem('token'); 
+        return {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` 
+        };
+    }
+
     async fetchCategories() {
         try {
-            // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/categories)
-            const response = await fetch('http://localhost:8080/api/v1/categories'); 
+            const response = await fetch(this.apiUrl, {
+                method: 'GET',
+                headers: this.getHeaders() 
+            }); 
             
-            if (!response.ok) throw new Error('Lỗi kết nối API');
+            // Xử lý lỗi 401 hoặc 500 từ server
+            if (!response.ok) throw new Error('Lỗi kết nối API hoặc Token hết hạn');
             return await response.json();
             
         } catch (error) {
             console.error("Không thể lấy dữ liệu danh mục:", error);
-            // Trả về dữ liệu mẫu dựa trên file SQL library_db để test
-            return [
-                {
-                    "id": 1, 
-                    "name": "Lập trình", 
-                    "description": "Sách về lập trình và phát triển phần mềm",
-                    "createdAt": "2026-03-05 23:44:35"
-                },
-                {
-                    "id": 2, 
-                    "name": "Khoa học máy tính", 
-                    "description": "Sách về thuật toán, cấu trúc dữ liệu",
-                    "createdAt": "2026-03-05 23:44:35"
-                },
-                {
-                    "id": 3, 
-                    "name": "Trí tuệ nhân tạo", 
-                    "description": "Sách về AI, Machine Learning, Deep Learning",
-                    "createdAt": "2026-03-05 23:44:35"
-                }
-            ];
+            // Trả về mảng rỗng để tránh lỗi "undefined" ở View
+            return [];
+        }
+    }
+
+    async searchCategories(name) {
+        try {
+            // Sửa lỗi 401 khi tìm kiếm bằng cách đính kèm Header
+            const response = await fetch(`${this.apiUrl}?name=${encodeURIComponent(name)}`, {
+                method: 'GET',
+                headers: this.getHeaders()
+            });
+            
+            if (!response.ok) throw new Error('Lỗi khi tìm kiếm hoặc không có quyền');
+            return await response.json();
+        } catch (error) {
+            console.error("Lỗi tìm kiếm:", error);
+            throw error;
         }
     }
 
     async createCategory(categoryData) {
-        try {
-            const response = await fetch('http://localhost:8080/api/v1/categories', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(categoryData)
-            });
+        const response = await fetch(this.apiUrl, {
+            method: 'POST',
+            headers: this.getHeaders(),
+            body: JSON.stringify(categoryData)
+        });
+        if (!response.ok) throw new Error('Không thể thêm danh mục. Kiểm tra quyền Admin!');
+        return await response.json();
+    }
 
-            if (!response.ok) throw new Error('Lỗi khi tạo danh mục');
-            return await response.json();
-        } catch (error) {
-            console.error("Lỗi khi tạo danh mục:", error);
-            throw error;
+    async updateCategory(id, categoryData) {
+        const response = await fetch(`${this.apiUrl}/${id}`, {
+            method: 'PUT',
+            headers: this.getHeaders(),
+            body: JSON.stringify(categoryData)
+        });
+
+        if (!response.ok) {
+            throw new Error('Không thể cập nhật danh mục. Token có thể đã hết hạn!');
         }
+        return await response.json();
+    }
+
+    async deleteCategory(id) {
+        const response = await fetch(`${this.apiUrl}/${id}`, {
+            method: 'DELETE',
+            headers: this.getHeaders()
+        });
+
+        if (!response.ok) {
+            // Xử lý lỗi trả về từ Backend
+            try {
+                const errorData = await response.json();
+                throw new Error(errorData.message || "Lỗi không xác định");
+            } catch (e) {
+                throw new Error("Không thể xóa danh mục này!");
+            }
+        }
+        return true;
     }
 }

@@ -14,35 +14,42 @@ class BookDetailModel {
      * @returns {Promise<Object|null>} - Trả về object sách hoặc null nếu lỗi
      */
     async fetchBookDetail(id) {
-        try {
-            console.log(`[Model] Đang gọi API lấy chi tiết sách ID: ${id}...`);
-            
-            const response = await fetch(`${this.apiUrl}/${id}`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    // Nếu sau này ông làm chức năng đăng nhập, thêm Token ở đây:
-                    // 'Authorization': `Bearer ${localStorage.getItem('token')}`
-                }
-            });
+    try {
+        console.log(`[Model] Đang gọi API lấy chi tiết sách ID: ${id}...`);
+        
+        // Lấy token từ localStorage (giống bên CategoryModel ông đã làm)
+        const token = localStorage.getItem('token');
 
-            // Kiểm tra nếu phản hồi không thành công (ví dụ lỗi 404, 500)
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                throw new Error(errorData.message || `Lỗi HTTP! Trạng thái: ${response.status}`);
+        const response = await fetch(`${this.apiUrl}/${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                // Chèn Token vào đây để vượt qua lớp bảo mật JWT của Spring Boot
+                'Authorization': `Bearer ${token}` 
             }
+        });
 
-            // Chuyển đổi dữ liệu JSON từ server
-            const bookData = await response.json();
-            
-            console.log('[Model] Dữ liệu nhận được:', bookData);
-            return bookData;
-
-        } catch (error) {
-            console.error('[Model Error] Lỗi khi lấy chi tiết sách:', error.message);
-            // Ông có thể bắn thông báo ra UI hoặc trả về null để Controller xử lý
+        // Nếu Token hết hạn hoặc không có Token, server sẽ trả về 401 hoặc 403
+        if (response.status === 401 || response.status === 403) {
+            console.error("Token hết hạn hoặc không hợp lệ!");
+            // Có thể điều hướng người dùng về trang login nếu cần
+            // window.location.href = '/login.html';
             return null;
         }
+
+        if (!response.ok) {
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.message || `Lỗi HTTP! Trạng thái: ${response.status}`);
+        }
+
+        const bookData = await response.json();
+        console.log('[Model] Dữ liệu nhận được:', bookData);
+        return bookData;
+
+    } catch (error) {
+        console.error('[Model Error] Lỗi khi lấy chi tiết sách:', error.message);
+        return null;
+    }
     }
 
     /**

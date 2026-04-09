@@ -29,19 +29,25 @@ class BookDetailView {
         const catName = book.categoryName || `Category ID: ${book.category_id || 'N/A'}`;
         dom.categoryPath.innerText = catName;
         dom.categoryLabel.innerText = catName;
-        const authorName = book.authorName || `Author ID: ${book.author_id || 'Unknown'}`;
-        dom.authorYear.innerText = `${authorName} • Edition ${book.publishedYear || 'N/A'}`;
+        const authorName = book.authorName || `Tên Tác giả: ${book.author_name || 'Unknown'}`;
+        dom.authorYear.innerText = `${authorName} •Năm tái bản  ${book.publishedYear || 'N/A'}`;
 
-        // 2. XỬ LÝ ẢNH (Quan trọng nhất)
-        // Reset lại onerror trước khi gán src mới để tránh bị rác sự kiện cũ
+       // 2. XỬ LÝ ẢNH 
         dom.img.onerror = null; 
 
         if (book.imageUrl) {
+            // Lấy tên file từ database (ví dụ: dacnhantam.jpg)
             const fileName = book.imageUrl.includes('/') ? book.imageUrl.split('/').pop() : book.imageUrl;
-            dom.img.src = `../../../../assets/images/${fileName}`;
+            
+            // SỬA TẠI ĐÂY: Trỏ đúng vào thư mục /img/ 
+            // Thử dùng đường dẫn tương đối chính xác từ file book_detail.html
+            dom.img.src = `../../../../assets/img/${fileName}`;
+            
+            console.log("Đường dẫn ảnh đang gọi:", dom.img.src);
         } else {
-            dom.img.src = "../../../../assets/images/default-book.png"; 
-        }
+            // Ảnh mặc định cũng phải trỏ vào thư mục img và đúng đuôi .jpg
+            dom.img.src = "../../../../assets/img/default-book.jpg"; 
+        }``
 
         // Hàm xử lý khi link ảnh trên bị chết (Ví dụ file không tồn tại trong assets)
         dom.img.onerror = function() {

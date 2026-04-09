@@ -40,15 +40,16 @@
                                 </div>
                             </div>
                             <div class="col-md-7 d-flex gap-2 justify-content-end">
-                                <select class="form-select bg-light border-0" style="width: 180px;">
-                                    <option selected disabled>Quốc tịch</option>
-                                    <option>Việt Nam</option>
-                                    <option>Nước ngoài</option>
+                                <select id="filterCountry" class="form-select bg-light border-0" style="width: 180px;">
+                                    <option value="Tất cả quốc tịch" selected>Tất cả quốc tịch</option>
+                                    <option value="Việt Nam">Việt Nam</option>
+                                    <option value="Nước ngoài">Nước ngoài</option>
                                 </select>
-                                <select class="form-select bg-light border-0" style="width: 180px;">
-                                    <option selected disabled>Trạng thái</option>
-                                    <option>Đang hợp tác</option>
-                                    <option>Ngừng hợp tác</option>
+                                
+                                <select id="filterStatus" class="form-select bg-light border-0" style="width: 180px;">
+                                    <option value="Tất cả trạng thái" selected>Tất cả trạng thái</option>
+                                    <option value="Active">Đang hợp tác</option>
+                                    <option value="Inactive">Ngừng hợp tác</option>
                                 </select>
                             </div>
                         </div>
@@ -68,21 +69,7 @@
                                 </tr>
                             </thead>
                             <tbody id="author-table-body">
-                                <tr>
-                                    <td class="ps-4 fw-bold text-dark">TG001</td>
-                                    <td><div class="fw-bold">Dale Carnegie</div></td>
-                                    <td>Hoa Kỳ</td>
-                                    <td class="fw-bold">12</td>
-                                    <td>
-                                        <span class="status-indicator bg-success"></span>
-                                        <span class="text-success fw-medium">Đang hợp tác</span>
-                                    </td>
-                                    <td class="text-end pe-4">
-                                        <button class="btn btn-sm btn-light-primary me-1" title="Chỉnh sửa"><i class="fas fa-edit"></i></button>
-                                        <button class="btn btn-sm btn-light-danger" title="Xóa"><i class="fas fa-trash"></i></button>
-                                    </td>
-                                </tr>
-                            </tbody>
+                                </tbody>
                         </table>
                     </div>
 
@@ -96,6 +83,73 @@
                         </nav>
                     </div>
                 </div> 
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="authorModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalTitle">Thêm tác giả</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="authorForm">
+                        <input type="hidden" id="authorId">
+                        <div class="mb-3">
+                            <label class="form-label">Tên tác giả</label>
+                            <input type="text" class="form-control" id="authorName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Tiểu sử</label>
+                            <textarea class="form-control" id="authorBio" rows="3"></textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Quốc gia</label>
+                            <select class="form-select" id="authorCountry">
+                                <option value="Tất cả quốc tịch" selected>Tất cả quốc tịch</option>
+                                <option value="Việt Nam">Việt Nam</option>
+                                <option value="Nước ngoài">Nước ngoài</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Số lượng sách</label>
+                            <input type="number" class="form-control" id="authorBookCount" min="0" placeholder="0">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Trạng thái</label>
+                            <select class="form-select" id="authorStatus">
+                                <option value="Tất cả trạng thái" selected>Tất cả trạng thái</option>
+                                <option value="Active">Đang hợp tác</option>
+                                <option value="Inactive">Ngừng hợp tác</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" id="btnSaveAuthor" form="authorForm" class="btn btn-primary">Xác nhận</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content border-0 shadow">
+                <div class="modal-header bg-danger text-white border-0">
+                    <h5 class="modal-title"><i class="fas fa-exclamation-triangle me-2"></i>Xác nhận xóa</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="mb-0">Bạn có chắc chắn muốn xóa tác giả này không?</p>
+                    <small class="text-muted">Dữ liệu đã xóa sẽ không thể khôi phục lại.</small>
+                </div>
+                <div class="modal-footer border-0">
+                    <button type="button" class="btn btn-light px-4" data-bs-dismiss="modal">Hủy</button>
+                    <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4">Xóa ngay</button>
+                </div>
             </div>
         </div>
     </div>
@@ -121,10 +175,10 @@
                 const pageTitle = document.getElementById('page-title');
                 if(pageTitle) pageTitle.textContent = 'Quản lý tác giả';
             }, 100); 
-            // Khởi tạo controller
+
+            // Chỉ khởi tạo 1 lần duy nhất ở đây
             if (typeof AuthorController !== 'undefined') {
-                const authorApp = new AuthorController(new AuthorModel(), new AuthorView());
-                authorApp.init();
+                new AuthorController(new AuthorModel(), new AuthorView());
             }
         });
     </script>
