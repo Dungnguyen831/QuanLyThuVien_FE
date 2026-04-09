@@ -125,7 +125,6 @@ class ReaderController {
     const id = new URLSearchParams(window.location.search).get("id");
     if (!id) return;
     try {
-      // Sử dụng đúng hàm fetchReaderById có sẵn trong Model của bạn
       const reader = await this.model.fetchReaderById(id);
       // Gọi View để điền dữ liệu
       this.view.fillForm(reader);
