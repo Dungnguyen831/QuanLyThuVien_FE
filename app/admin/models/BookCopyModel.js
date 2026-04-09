@@ -56,4 +56,52 @@ class BookCopyModel {
             return false;
         }
     }
+    async updateBookCopy(id, updateData) {
+        try {
+            // Gửi yêu cầu PUT để cập nhật bản sao dựa trên ID
+            const response = await fetch(`${this.apiUrl}/${id}`, {
+                method: 'PUT',
+                headers: this._getHeaders(), // Đảm bảo có Token để tránh lỗi 401
+                body: JSON.stringify(updateData)
+            });
+    
+            if (response.status === 401) {
+                alert("Bạn không có quyền thực hiện thao tác này hoặc phiên đăng nhập đã hết hạn.");
+                return false;
+            }
+    
+            if (!response.ok) {
+                const errorMsg = await response.text();
+                throw new Error(errorMsg || "Lỗi khi cập nhật bản sao sách");
+            }
+    
+            return true;
+        } catch (error) {
+            console.error(`Lỗi updateBookCopy (ID: ${id}):`, error);
+            return false;
+        }
+    }
+    async deleteBookCopy(id) {
+        try {
+            const response = await fetch(`${this.apiUrl}/${id}`, {
+                method: 'DELETE',
+                headers: this._getHeaders() // Đảm bảo có Token để không bị 401
+            });
+    
+            if (response.status === 401) {
+                alert("Bạn không có quyền xóa hoặc phiên đăng nhập đã hết hạn.");
+                return false;
+            }
+    
+            if (!response.ok) {
+                const errorMsg = await response.text();
+                throw new Error(errorMsg || "Lỗi khi xóa bản sao");
+            }
+    
+            return true;
+        } catch (error) {
+            console.error(`Lỗi deleteBookCopy (ID: ${id}):`, error);
+            return false;
+        }
+    }
 }

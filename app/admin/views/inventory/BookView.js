@@ -101,9 +101,9 @@ class BookView {
     renderCopiesToModal(copies) {
         const tbody = document.getElementById('copy-table-body');
         if (!tbody) return;
+    
         tbody.innerHTML = copies.length ? copies.map(c => `
-            <tr>
-                <td>#${c.id}</td>
+            <tr data-copy-id="${c.id}"> <td>#${c.id}</td>
                 <td>${c.shelf_id || 'Chưa xếp kệ'}</td> 
                 <td><code>${c.barcode || '---'}</code></td>
                 <td>${c.conditionStatus || 'NEW'}</td>
@@ -112,9 +112,33 @@ class BookView {
                         ${c.availabilityStatus || 'N/A'}
                     </span>
                 </td>
-                <td class="text-end"><button class="btn btn-sm btn-light text-danger"><i class="fas fa-trash"></i></button></td>
+                <td class="text-end">
+                    <button class="btn btn-sm btn-light text-danger btn-delete-copy">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
             </tr>
         `).join('') : '<tr><td colspan="6" class="text-center">Chưa có bản sao nào</td></tr>';
+    
+        // Sau khi vẽ HTML xong thì phải gán sự kiện ngay
+        this.bindCopyEvents(); 
+    }
+    
+    bindCopyEvents() {
+        const tbody = document.getElementById('copy-table-body');
+        if (!tbody) return;
+    
+        // Bắt sự kiện xóa
+        tbody.querySelectorAll('.btn-delete-copy').forEach(btn => {
+            btn.onclick = async () => {
+                const copyId = btn.closest('tr').dataset.copyId;
+                if (confirm(`Xác nhận xóa bản sao #${copyId}?`)) {
+                    if (this.onDeleteCopy) {
+                        await this.onDeleteCopy(copyId);
+                    }
+                }
+            };
+        });
     }
     // Thiết lập sự kiện tìm kiếm bản sao trong modal
     setupCopySearch(allCopies) {
