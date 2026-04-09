@@ -3,6 +3,8 @@ class HomeView {
         this.newArrivalsContainer = document.getElementById('new-arrivals-container');
         this.mostPopularContainer = document.getElementById('most-popular-container');
         this.loadingElement = document.getElementById('page-loading');
+        this.wishlistModel = null;
+        this.wishlistBookIds = []; // Track which books are in wishlist
     }
 
     /**
@@ -46,7 +48,7 @@ class HomeView {
      * Render new arrivals section with book cards
      * @param {Array} books - Array of new arrival book objects
      */
-    renderNewArrivals(books) {
+    async renderNewArrivals(books) {
         this.hideLoading();
 
         if (!this.newArrivalsContainer) {
@@ -64,16 +66,22 @@ class HomeView {
             return;
         }
 
-        this.newArrivalsContainer.innerHTML = books
-        .map(book => this.createBookCard(book))
-        .join('');
+        this.newArrivalsContainer.innerHTML = '';
+
+        // Create all book cards in parallel
+        const bookCards = await Promise.all(books.map(book => this.createBookCard(book)));
+
+        // Append to container
+        bookCards.forEach(card => {
+            this.newArrivalsContainer.appendChild(card);
+        });
     }
 
     /**
      * Render most popular section with book cards
      * @param {Array} books - Array of most popular book objects
      */
-    renderMostPopular(books) {
+    async renderMostPopular(books) {
         if (!this.mostPopularContainer) {
             console.warn('Most popular container not found');
             return;
@@ -89,100 +97,62 @@ class HomeView {
             return;
         }
 
-        this.mostPopularContainer.innerHTML = books
-        .map(book => this.createBookCard(book))
-        .join('');
+        this.mostPopularContainer.innerHTML = '';
+
+        // Create all book cards in parallel
+        const bookCards = await Promise.all(books.map(book => this.createBookCard(book)));
+
+        // Append to container
+        bookCards.forEach(card => {
+            this.mostPopularContainer.appendChild(card);
+        });
     }
 
     /**
-     * Create a single book card element
-     * @param {Object} book - Book object from backend with: id, title, author_id, imageUri, category_id, availableQty, totalQty
-     * @returns {HTMLElement} - Book card DOM element
+     * Create a single book card element using reusable BookCard component
+     * Handles image display, fallbacks, badges, wishlist, and navigation
+     * @param {Object} book - Book object from backend with: id, title, author_id, imageUrl, category_id, availableQty, totalQty
+     * @returns {HTMLElement} - Book card DOM element (wrapped in column div)
      */
     createBookCard(book) {
-    // SỬA ĐOẠN NÀY: Dùng đường dẫn từ gốc "/"
-    const imgPath = book.imageUrl 
-        ? `/assets/images/${book.imageUrl.split('/').pop()}` 
-        : "/assets/images/default-book.png";
+        // ✅ Check if this book is in wishlist
+        const isInWishlist = this.wishlistBookIds.includes(book.id);
 
-    const safeTitle = this.escapeHtml(book.title || 'No Title');
-    const badgeHtml = this.generateAvailabilityBadge(book.availableQty, book.totalQty);
-
-    return `
-        <div class="book-card" onclick="window.location.href='../book/book_detail.html?id=${book.id}'">
-            <div class="book-card-image">
-                <img src="${imgPath}" 
-                     alt="${safeTitle}" 
-                     onerror="this.onerror=null; this.src='/assets/images/default-book.png';">
-                <div class="book-badge-container">${badgeHtml}</div>
-            </div>
-            <div class="book-card-info">
-                <h3 class="book-card-title">${safeTitle}</h3>
-                <p class="book-card-author">${this.getAuthorDisplay(book.author_id)}</p>
-                <div class="book-card-footer">
-                    <span class="book-card-year">${book.publishedYear || 'N/A'}</span>
-                    <div class="book-card-rating">★ 4.8</div>
-                </div>
-            </div>
-        </div>
-    `;
+        // ✅ Use reusable BookCard component with shared ImageService
+        return BookCard.create(book, {
+            showFavoriteBtn: true,
+            imageField: 'imageUrl', // Use imageUrl from backend response
+            wishlistModel: this.wishlistModel, // ✅ Pass WishlistModel for add to wishlist
+            isInWishlist: isInWishlist, // ✅ Pass current wishlist status
+            onCardClick: (bookData) => {
+                // ✅ Navigate to book details when card is clicked
+                window.location.href = `../book/book_detail.html?id=${bookData.id}`;
+            },
+            onWishlistChange: (bookData, inWishlist) => {
+                // ✅ Update local state when wishlist changes
+                if (inWishlist && !this.wishlistBookIds.includes(bookData.id)) {
+                    this.wishlistBookIds.push(bookData.id);
+                } else if (!inWishlist && this.wishlistBookIds.includes(bookData.id)) {
+                    this.wishlistBookIds = this.wishlistBookIds.filter(id => id !== bookData.id);
+                }
+            }
+        });
     }
 
     /**
-     * Generate availability badge HTML (replaces rating since backend doesn't have it)
-     * @param {Number} availableQty - Available quantity
-     * @param {Number} totalQty - Total quantity
-     * @returns {String} - HTML string with availability badge
+     * Bind wishlist model for add to wishlist functionality
+     * @param {Object} wishlistModel - WishlistModel instance
      */
-    generateAvailabilityBadge(availableQty, totalQty) {
-        const available = availableQty || 0;
-        const total = totalQty || 1;
-
-        if (available === 0) {
-            return '<span class="availability-badge unavailable">Out of Stock</span>';
-        } else if (available <= Math.ceil(total * 0.25)) {
-            return '<span class="availability-badge low">Low Stock</span>';
-        } else {
-            return '<span class="availability-badge available">Available</span>';
-        }
+    bindWishlistModel(wishlistModel) {
+        this.wishlistModel = wishlistModel;
     }
 
     /**
-     * Get author display name
-     * Backend returns author_id only, not author name
-     * @param {Number} author_id - Author ID from backend
-     * @returns {String} - Author display text
+     * Bind wishlist book IDs to check status
+     * @param {Array} wishlistBookIds - Array of book IDs in wishlist
      */
-    getAuthorDisplay(author_id) {
-        if (!author_id) return 'Unknown Author';
-        return `Author #${author_id}`;
+    bindWishlistBookIds(wishlistBookIds) {
+        this.wishlistBookIds = wishlistBookIds || [];
     }
 
-    /**
-     * Get category display name
-     * Backend returns category_id only, not category name
-     * @param {Number} category_id - Category ID from backend
-     * @returns {String} - Category display text
-     */
-    getCategoryDisplay(category_id) {
-        if (!category_id) return 'General';
-        return `Category #${category_id}`;
-    }
-
-    /**
-     * Escape HTML special characters to prevent XSS
-     * @param {String} text - Text to escape
-     * @returns {String} - Escaped text
-     */
-    escapeHtml(text) {
-        const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, m => map[m]);
-    }
-    
 }

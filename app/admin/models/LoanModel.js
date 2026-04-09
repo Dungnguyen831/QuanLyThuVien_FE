@@ -1,57 +1,127 @@
 class LoanModel {
+  
+  // ==========================================
+  // 1. LẤY DANH SÁCH PHIẾU MƯỢN
+  // ==========================================
   async fetchLoans() {
     try {
-      // Thay URL này bằng đường dẫn API thật của bạn (ví dụ: http://localhost:8080/api/v1/loans)
-      //   const response = await fetch("http://localhost:8080/api/v1/loans");
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:8080/api/v1/loans", {
-        method: "GET", // hoặc 'POST', 'PUT', ...
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
-          // Thêm token vào header Authorization
-          Authorization: `Bearer ${token}`,
+          "Authorization": `Bearer ${token}`, // Có Token
         },
       });
-      if (!response.ok) throw new Error("Lỗi kết nối API");
+      if (!response.ok) throw new Error("Lỗi kết nối API lấy danh sách");
       return await response.json();
     } catch (error) {
       console.error("Không thể lấy dữ liệu:", error);
-      // Tạm thời trả về dữ liệu mẫu của bạn để test nếu API chưa chạy
-      return [
-        {
-          id: "MP001",
-          userName: "Mẫu",
-          userAvatarColor: "#0d6efd",
-          bookName: "Lập trình Python Cơ bản",
-          borrowDate: "10/10/2023",
-          dueDate: "25/10/2023",
-          returnDate: "-",
-          status: "borrowing",
-        },
-      ];
+      // Tạm thời trả về mảng rỗng để bảng không bị sập nếu lỗi API
+      return []; 
     }
   }
 
+  // ==========================================
+  // 2. TẠO PHIẾU MƯỢN MỚI
+  // ==========================================
   async createLoan(loanData) {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:8080/api/v1/loans", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}` // ĐÃ THÊM TOKEN CHO AN TOÀN
+        },
         body: JSON.stringify(loanData),
       });
 
-      if (!response.ok) throw new Error("Lỗi khi tạo phiếu mượn");
+      if (!response.ok) {
+         // Lấy câu thông báo lỗi từ Backend (Ví dụ: "Độc giả đang nợ phạt")
+         const errorMsg = await response.text(); 
+         throw new Error(errorMsg);
+      }
       return await response.text();
     } catch (error) {
       console.error("Lỗi khi tạo phiếu mượn:", error);
       throw error;
     }
-
-    if (!response.ok) throw new Error("Lỗi khi tạo phiếu mượn");
-    return await response.json();
   }
-  catch(error) {
-    console.error("Lỗi khi tạo phiếu mượn:", error);
-    throw error;
+
+  // ==========================================
+  // 3. XÓA PHIẾU MƯỢN
+  // ==========================================
+  async deleteLoan(loanId) {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:8080/api/v1/loans/${loanId}`, {
+            method: 'DELETE',
+            headers: {
+                "Authorization": `Bearer ${token}`
+            }
+        });
+        
+        if (!response.ok) {
+            const errorMsg = await response.text();
+            throw new Error(errorMsg);
+        }
+        return await response.text();
+    } catch (error) {
+        console.error("Lỗi khi xóa phiếu mượn:", error);
+        throw error;
+    }
+  }
+
+  // ==========================================
+  // 4. GIA HẠN SÁCH
+  // ==========================================
+  async renewBook(detailId, newDateData) {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:8080/api/v1/loans/details/${detailId}/renew`, {
+            method: 'PUT',
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(newDateData)
+        });
+        
+        if (!response.ok) {
+            const errorMsg = await response.text();
+            throw new Error(errorMsg);
+        }
+        return await response.text();
+    } catch (error) {
+        console.error("Lỗi khi gia hạn sách:", error);
+        throw error;
+    }
+  }
+
+  // ==========================================
+  // 5. TRẢ SÁCH
+  // ==========================================
+  async returnBook(detailId, conditionData) {
+    try {
+        const token = localStorage.getItem("token");
+        const response = await fetch(`http://localhost:8080/api/v1/loans/details/${detailId}/return`, {
+            method: 'PUT',
+            headers: { 
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${token}`
+            },
+            body: JSON.stringify(conditionData)
+        });
+        
+        if (!response.ok) {
+            const errorMsg = await response.text();
+            throw new Error(errorMsg);
+        }
+        return await response.text();
+    } catch (error) {
+        console.error("Lỗi khi trả sách:", error);
+        throw error;
+    }
   }
 }

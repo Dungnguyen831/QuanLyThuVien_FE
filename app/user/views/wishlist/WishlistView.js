@@ -20,19 +20,51 @@ class WishlistView {
   }
 
   /**
-   * Render wishlist books as a grid of cards
+   * Render wishlist books as a grid of cards using BookCard component
    * @param {Array} books - Array of book objects to render
+   * @param {Object} wishlistModel - WishlistModel instance for remove action
    */
-  renderWishlistBooks(books) {
+  async renderWishlistBooks(books, wishlistModel = null) {
     if (!books || books.length === 0) {
       this.wishlistGrid.innerHTML =
         '<div class="empty-state">No books in your wishlist yet.</div>';
       return;
     }
 
-    this.wishlistGrid.innerHTML = books
-      .map((book) => this._createBookCard(book))
-      .join("");
+    // Clear grid
+    this.wishlistGrid.innerHTML = '';
+
+    // Create all book cards in parallel using Promise.all
+    const bookCardPromises = books.map(book =>
+      BookCard.create(book, {
+        showFavoriteBtn: true,
+        isInWishlist: true, // ✅ All books on wishlist page are in wishlist
+        wishlistModel: wishlistModel, // ✅ Pass model to handle remove
+        onFavoriteClick: (bookData) => {
+          // ✅ BookCard already called removeFromWishlist, skip API call
+          if (this.eventListeners.removeFromWishlist) {
+            this.eventListeners.removeFromWishlist(bookData.id, null, true);
+          }
+        },
+        onWishlistChange: (bookData, inWishlist) => {
+          // When removed from wishlist, trigger remove action
+          if (!inWishlist && this.eventListeners.removeFromWishlist) {
+            // ✅ Skip API call since BookCard already did it
+            this.eventListeners.removeFromWishlist(bookData.id, null, true);
+          }
+        },
+        imageField: 'imageUrl' // Use imageUrl from backend response
+      })
+    );
+
+    // Wait for all book cards to be created
+    const bookCardElements = await Promise.all(bookCardPromises);
+
+    // Customize column classes for wishlist and append to grid
+    bookCardElements.forEach(bookCardElement => {
+      bookCardElement.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
+      this.wishlistGrid.appendChild(bookCardElement);
+    });
   }
 
   /**
@@ -41,58 +73,6 @@ class WishlistView {
    * @param {Object} book - Book object with properties: id, title, author, cover, rating, inWishlist
    * @returns {string} HTML string for book card
    */
-  _createBookCard(book) {
-    const starRating = this._generateStarRating(book.rating);
-    const reviewCount = book.reviewCount || 0;
-
-    return `
-            <div class="book-card" data-book-id="${book.id}">
-                <div class="book-cover-container">
-                    <img src="${book.cover}" alt="${book.title}" class="book-cover">
-                    <button class="heart-icon active" data-book-id="${book.id}" title="Remove from wishlist">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" />
-                        </svg>
-                    </button>
-                </div>
-                <div class="book-info">
-                    <h3 class="book-title">${this._escapeHtml(book.title)}</h3>
-                    <p class="book-author">${this._escapeHtml(book.author)}</p>
-                    <div class="book-rating">
-                        ${starRating}
-                        <span class="rating-count">(${reviewCount})</span>
-                    </div>
-                </div>
-            </div>
-        `;
-  }
-
-  /**
-   * Generate star rating HTML
-   * @private
-   * @param {number} rating - Rating value (0-5)
-   * @returns {string} HTML string with stars
-   */
-  _generateStarRating(rating) {
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    let stars = "";
-
-    for (let i = 0; i < fullStars; i++) {
-      stars += '<span class="star full">★</span>';
-    }
-
-    if (hasHalfStar) {
-      stars += '<span class="star half">★</span>';
-    }
-
-    const emptyStars = 5 - Math.ceil(rating);
-    for (let i = 0; i < emptyStars; i++) {
-      stars += '<span class="star empty">★</span>';
-    }
-
-    return stars;
-  }
 
   /**
    * Escape HTML special characters to prevent XSS

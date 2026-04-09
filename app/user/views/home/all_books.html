@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>All Books - LibrarySaaS</title>
+    <link rel="stylesheet" href="../../../../assets/css/user/style.css" />
+    <link rel="stylesheet" href="../../../../assets/css/user/all_books.css" />
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+</head>
+
+<body>
+    <!-- Navigation Bar -->
+    <div id="navbar-container"></div>
+
+    <!-- Loading Indicator -->
+    <div id="page-loading" class="loading-overlay">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="all-books-container">
+        <!-- Page Header -->
+        <div class="all-books-header">
+            <div class="header-content">
+                <h1 class="page-title">All Books</h1>
+                <p class="page-subtitle">Explore the complete Indigo Archive catalog.</p>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="all-books-wrapper">
+            <!-- Left Sidebar - Categories -->
+            <aside class="categories-sidebar">
+                <div class="sidebar-title">
+                    <i class="fas fa-list"></i>
+                    <span>CATEGORIES</span>
+                </div>
+                <div id="categories-sidebar" class="categories-list">
+                    <!-- Categories will be rendered here -->
+                </div>
+            </aside>
+
+            <!-- Right Content -->
+            <div class="books-content">
+                <!-- Top Controls -->
+                <div class="books-controls">
+                    <div class="controls-left">
+                        <label class="availability-toggle-label">
+                            <input type="checkbox" id="availability-toggle" class="availability-toggle" />
+                            <span class="toggle-text">AVAILABLE ONLY</span>
+                        </label>
+                    </div>
+
+                    <div class="controls-right">
+                        <span class="sort-label">SORT BY</span>
+                        <select id="sort-dropdown" class="sort-dropdown">
+                            <option value="popularity">Popularity</option>
+                            <option value="newest">Newest</option>
+                            <option value="rating">Rating</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Books Counter -->
+                <div class="books-counter">
+                    <span id="books-count">0 books</span>
+                </div>
+
+                <!-- Books Grid -->
+                <div class="books-grid-container">
+                    <div id="all-books-grid" class="books-grid">
+                        <!-- Book cards will be rendered here -->
+                    </div>
+                </div>
+
+                <!-- Pagination -->
+                <div class="pagination-container">
+                    <button class="pagination-btn pagination-prev" id="pagination-prev" title="Previous page">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+
+                    <div class="pagination-numbers" id="pagination-numbers">
+                        <!-- Page buttons will be rendered here -->
+                    </div>
+
+                    <button class="pagination-btn pagination-next" id="pagination-next" title="Next page">
+                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M6 4L10 8L6 12" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-logo">Indigo Archive</div>
+            <p class="footer-tagline">"Curation is the bridge between data and wisdom."</p>
+            <div class="footer-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Contact Support</a>
+                <a href="#">Archive Guidelines</a>
+            </div>
+            <p class="footer-copyright">© 2024 Indigo Archive. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="../../../../app/admin/views/inventory/ImageService.js"></script>
+    <script src="../../../../app/admin/models/BookModel.js"></script>
+    <script src="../../models/WishlistModel.js"></script>
+    <script src="../../controllers/BookCardController.js"></script>
+    <script src="../../components/BookCard.js"></script>
+    <script src="../../models/AllBooksModel.js"></script>
+    <script src="./AllBooksView.js"></script>
+    <script src="../../controllers/AllBooksController.js"></script>
+
+    <script>
+        // Initialize the All Books page
+        document.addEventListener('DOMContentLoaded', async () => {
+            try {
+                // Load navbar component
+                fetch("../../components/navbar.html")
+                    .then((response) => response.text())
+                    .then((html) => {
+                        document.getElementById("navbar-container").innerHTML = html;
+                    });
+
+                // Initialize controller with model and view
+                const model = new AllBooksModel();
+                const view = new AllBooksView();
+
+                // Check if WishlistModel is available
+                let wishlistModel = null;
+                if (typeof WishlistModel !== 'undefined') {
+                    wishlistModel = new WishlistModel();
+                }
+
+                const controller = new AllBooksController(model, view, wishlistModel);
+            } catch (error) {
+                console.error('Error initializing All Books page:', error);
+            }
+        });
+    </script>
+</body>
+
+</html>
