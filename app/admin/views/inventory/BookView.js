@@ -98,45 +98,70 @@ class BookView {
         document.getElementById('modalBookDescription').textContent = book.description || 'Chưa có mô tả.';
     }
 
-    renderCopiesToModal(copies) {
+    // Thêm tham số shelves vào hàm
+    renderCopiesToModal(copies, shelves = []) {
         const tbody = document.getElementById('copy-table-body');
         if (!tbody) return;
     
-        tbody.innerHTML = copies.length ? copies.map(c => `
-            <tr data-copy-id="${c.id}"> <td>#${c.id}</td>
-                <td>${c.shelf_id || 'Chưa xếp kệ'}</td> 
-                <td><code>${c.barcode || '---'}</code></td>
-                <td>${c.conditionStatus || 'NEW'}</td>
-                <td>
-                    <span class="badge ${c.availabilityStatus === 'AVAILABLE' ? 'bg-success' : 'bg-warning'}">
-                        ${c.availabilityStatus || 'N/A'}
-                    </span>
-                </td>
-                <td class="text-end">
-                    <button class="btn btn-sm btn-light text-danger btn-delete-copy">
-                        <i class="fas fa-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `).join('') : '<tr><td colspan="6" class="text-center">Chưa có bản sao nào</td></tr>';
+        tbody.innerHTML = copies.length ? copies.map(c => {
+            // Kiểm tra kỹ tên trường từ API trả về để tránh undefined
+            const barcode = c.barcode || c.copyBarcode || '---';
+            const condition = (c.conditionStatus || c.copyCondition || 'NEW').toUpperCase();
+            const status = (c.availabilityStatus || c.copyStatus || 'AVAILABLE').toUpperCase();
+            const currentShelfId = c.shelf ? c.shelf.id : (c.shelf_id || null);
     
-        // Sau khi vẽ HTML xong thì phải gán sự kiện ngay
-        this.bindCopyEvents(); 
+            let conditionClass = 'bg-success';
+            if (condition === 'DAMAGED') conditionClass = 'bg-warning text-dark';
+            if (condition === 'LOST') conditionClass = 'bg-danger';
+    
+            const statusClass = status === 'AVAILABLE' ? 'bg-success' : 'bg-danger';
+    
+            const shelfOptions = shelves.map(s => 
+                `<option value="${s.id}" ${currentShelfId == s.id ? 'selected' : ''}>${s.shelfName || s.name}</option>`
+            ).join('');
+    
+            return `
+                <tr data-copy-id="${c.id}"> 
+                    <td>#${c.id}</td>
+                    <td>
+                        <select class="form-select form-select-sm shelf-select" data-copy-id="${c.id}">
+                            <option value="">-- Chưa xếp kệ --</option>
+                            ${shelfOptions}
+                        </select>
+                    </td> 
+                    <td><code>${barcode}</code></td>
+                    <td><span class="badge ${conditionClass}">${condition}</span></td>
+                    <td><span class="badge ${statusClass}">${status}</span></td>
+                    <td class="text-end">
+                        <button class="btn btn-sm btn-light text-danger btn-delete-copy">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `;
+        }).join('') : '<tr><td colspan="6" class="text-center">Chưa có bản sao nào</td></tr>';
+    
+        this.bindCopyActionEvents(); 
     }
     
-    bindCopyEvents() {
+    bindCopyActionEvents() {
         const tbody = document.getElementById('copy-table-body');
         if (!tbody) return;
     
-        // Bắt sự kiện xóa
+        // Sự kiện xóa
         tbody.querySelectorAll('.btn-delete-copy').forEach(btn => {
-            btn.onclick = async () => {
-                const copyId = btn.closest('tr').dataset.copyId;
-                if (confirm(`Xác nhận xóa bản sao #${copyId}?`)) {
-                    if (this.onDeleteCopy) {
-                        await this.onDeleteCopy(copyId);
-                    }
-                }
+            btn.onclick = () => {
+                const id = btn.closest('tr').dataset.copyId;
+                if (this.onDeleteCopy) this.onDeleteCopy(id);
+            };
+        });
+    
+        // Sự kiện đổi kệ (Sửa lỗi image_45c3a1.png)
+        tbody.querySelectorAll('.shelf-select').forEach(select => {
+            select.onchange = (e) => {
+                const id = e.target.dataset.copyId;
+                const shelfId = e.target.value;
+                if (this.onUpdateShelf) this.onUpdateShelf(id, shelfId);
             };
         });
     }
