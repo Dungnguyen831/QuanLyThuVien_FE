@@ -75,14 +75,22 @@ class ReservationController {
             return { activeBorrows: 0, upcomingDue: 0, activeReservations: 0 };
         }
 
-        const readyCount = reservations.filter(r => r.status && r.status.toLowerCase() === 'ready').length;
-        const pendingCount = reservations.filter(r => r.status && r.status.toLowerCase() === 'pending').length;
-        const totalCount = reservations.length;
+        // Count APPROVED reservations (ready for pickup)
+        const approvedCount = reservations.filter(r => r.status && r.status.toUpperCase() === 'APPROVED').length;
+
+        // Count PENDING reservations (waiting for approval)
+        const pendingCount = reservations.filter(r => r.status && r.status.toUpperCase() === 'PENDING').length;
+
+        // Count active reservations (PENDING + APPROVED, excluding CANCELLED and COMPLETED)
+        const activeCount = reservations.filter(r => {
+            const status = r.status && r.status.toUpperCase();
+            return status === 'PENDING' || status === 'APPROVED';
+        }).length;
 
         return {
-            activeBorrows: readyCount,
+            activeBorrows: approvedCount,
             upcomingDue: pendingCount,
-            activeReservations: totalCount
+            activeReservations: activeCount
         };
     }
 
@@ -94,19 +102,43 @@ class ReservationController {
             // Fetch all available books for user to choose from
             const allBooks = await this._getAvailableBooksForReservation();
 
-            // Create form modal in CREATE mode
-            const formModal = await ReservationForm.create({
-                reservation: null,
-                availableBooks: allBooks
+            // Create borrow form modal in selection mode
+            const formModal = await BorrowForm.create({
+                books: allBooks,
+                mode: 'selection',
+                onSubmit: async (formData) => {
+                    try {
+                        console.log('Borrow form submitted:', formData);
+
+                        // Validate pickup date with business rules
+                        const dateValidation = BorrowForm.validatePickupDate(formData.pickupDate);
+                        if (!dateValidation.valid) {
+                            alert(dateValidation.message);
+                            return; // Stay on form, don't close
+                        }
+
+                        // Format date to LocalDateTime format (YYYY-MM-DDTHH:mm:ss)
+                        const formattedDate = BorrowForm.formatPickupDate(formData.pickupDate);
+
+                        // Create reservation using the form data
+                        await this.model.createReservation(
+                            formData.bookId,
+                            formattedDate
+                        );
+
+                        // Reload dashboard to show new reservation
+                        await this.loadDashboardData();
+
+                        alert('✅ Yêu cầu mượn sách thành công!\n\nVui lòng chờ xác nhận từ thư viện.');
+                    } catch (error) {
+                        console.error('Error in form submission:', error);
+                        alert('Lỗi: ' + (error.message || 'Không thể tạo yêu cầu mượn sách'));
+                    }
+                }
             });
 
-            // Open modal
-            this.view.openReservationModal(formModal);
-
-            // Setup form submission
-            this.view.setupFormSubmissionHandler(formModal, async (form) => {
-                await this._handleReservationFormSubmit(form, formModal, false);
-            });
+            // Add modal to page
+            document.body.appendChild(formModal);
 
         } catch (error) {
             console.error('Error opening new reservation form:', error);
@@ -116,16 +148,25 @@ class ReservationController {
 
     /**
      * Get available books for reservation
-     * ✅ Fetch from BookModel or use data already loaded
+     * Uses AllBooksModel to fetch all available books
      * @private
      */
     async _getAvailableBooksForReservation() {
         try {
-            // If BookModel is available globally, use it
-            if (typeof BookModel !== 'undefined') {
-                const bookModel = new BookModel();
-                const books = await bookModel.fetchBooks();
-                return books || [];
+            // Use AllBooksModel to fetch books
+            if (typeof AllBooksModel !== 'undefined') {
+                const booksModel = new AllBooksModel();
+                const books = await booksModel.fetchAllBooks();
+
+                // Ensure books have the required structure (id, title)
+                if (Array.isArray(books)) {
+                    return books.map(book => ({
+                        id: book.id || book.bookId,
+                        title: book.title || book.bookTitle,
+                        ...book // Include other properties too
+                    }));
+                }
+                return [];
             }
             return [];
         } catch (error) {
@@ -142,6 +183,9 @@ class ReservationController {
         try {
             // Fetch reservation details
             const reservation = await this.model.getReservationDetails(reservationId);
+
+            // ✅ Store current reservation for later use in form submission
+            this.currentReservation = reservation;
 
             // Create form modal in UPDATE mode
             const formModal = await ReservationForm.create({
@@ -191,18 +235,24 @@ class ReservationController {
 
             try {
                 if (isUpdate) {
-                    // UPDATE existing reservation
+                    // ✅ UPDATE existing reservation
+                    // User can ONLY edit the date - bookId and status come from current reservation
+                    console.log('[ReservationController] Updating - Form data:', formData);
+                    console.log('[ReservationController] Current reservation:', this.currentReservation);
+
                     const updateData = {
-                        reservationDate: formData.reservationDate,
-                        status: formData.status
+                        bookId: this.currentReservation.bookId,  // Keep current bookId
+                        reservationDate: formData.reservationDate,  // New date from form
+                        status: this.currentReservation.status  // Keep current status
                     };
 
+                    console.log('[ReservationController] Sending update data:', updateData);
                     await this.model.updateReservation(reservationId, updateData);
 
                     // Update table row without full reload
                     this.view.updateTableRow(reservationId, {
-                        reservationDate: formData.reservationDate,
-                        status: formData.status
+                        reservationDate: formData.reservationDate
+                        // Status không update (giữ trạng thái cũ)
                     });
 
                     this.view.closeReservationModal(formModal);

@@ -103,12 +103,6 @@ class ReservationForm {
             bookSelector = ReservationForm._createBookSelector(availableBooks);
         }
 
-        // Prepare status selector (only for UPDATE mode)
-        let statusSelector = '';
-        if (!isCreateMode) {
-            statusSelector = ReservationForm._createStatusSelector(reservation.status);
-        }
-
         // Get pickup date (extract date part from reservationDate LocalDateTime)
         let pickupDate = ReservationForm.defaultTodayDate;
         if (!isCreateMode && reservation) {
@@ -122,7 +116,6 @@ class ReservationForm {
             .replace('{modalTitle}', modalTitle)
             .replace('{bookSelector}', bookSelector)
             .replace('{pickupDate}', pickupDate)
-            .replace('{statusSelector}', statusSelector)
             .replace('{submitButtonText}', submitButtonText);
 
         // Convert HTML string to DOM element
@@ -175,30 +168,6 @@ class ReservationForm {
      * @param {string} currentStatus - Current reservation status
      * @returns {string} - Status selector HTML
      */
-    static _createStatusSelector(currentStatus = 'PENDING') {
-        // Backend allowed statuses: PENDING, APPROVED, CANCELLED, COMPLETED
-        const statuses = [
-            { value: 'PENDING', label: 'Pending - Waiting for approval' },
-            { value: 'APPROVED', label: 'Approved - Ready for review' },
-            { value: 'CANCELLED', label: 'Cancelled - Removed reservation' },
-            { value: 'COMPLETED', label: 'Completed - Finished' }
-        ];
-
-        const options = statuses.map(status => {
-            const selected = status.value === currentStatus ? 'selected' : '';
-            return `<option value="${status.value}" ${selected}>${status.label}</option>`;
-        }).join('');
-
-        return `
-            <div class="form-group">
-                <label for="status">Status</label>
-                <select id="status" name="status" class="form-control">
-                    ${options}
-                </select>
-                <small class="form-text">Update the current status of this reservation</small>
-            </div>
-        `;
-    }
 
     /**
      * Setup all event listeners for the form
