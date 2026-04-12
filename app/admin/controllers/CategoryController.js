@@ -95,7 +95,7 @@ class CategoryController {
 
     async handleDelete(id) {
         const targetId = Number(id);
-        if (confirm("Dương có chắc muốn xóa thể loại này không?")) {
+        if (confirm("Bạn có chắc muốn xóa thể loại này không?")) {
             try {
                 await this.model.deleteCategory(targetId);
                 await this.loadCategories();

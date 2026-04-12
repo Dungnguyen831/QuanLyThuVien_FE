@@ -109,12 +109,16 @@ class CategoryView {
         }
 
         const confirmBtn = document.getElementById('confirmDeleteBtn');
-        if (confirmBtn) {
-            confirmBtn.onclick = () => {
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true)); // Mẹo xóa sạch sự kiện cũ
+        const newConfirmBtn = document.getElementById('confirmDeleteBtn');
+        
+        newConfirmBtn.addEventListener('click', () => {
+            if (this.currentDeleteId) {
                 handler(this.currentDeleteId);
                 this.deleteModal.hide();
-            };
-        }
+                this.currentDeleteId = null; // Xóa id sau khi dùng xong cho sạch
+            }
+        });
     }
 
     // Mở modal để sửa
