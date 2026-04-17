@@ -49,44 +49,40 @@ class ReaderController {
     );
     this.view.updatePaginationText(total, this.currentPage, this.itemsPerPage);
   }
+  applyFilters(keywords, status) {
+    this.currentPage = 1;
+    this.filteredReaders = this.model.filterReaders(this.currentReaders, {
+      query: keywords,
+      status: status,
+    });
+    this.renderCurrentPage();
+  }
 
   bindEvents() {
     // 1. Lọc và tìm kiếm
-    const searchInput = document.getElementById("searchInput");
-    const filterStatus = document.getElementById("filterStatus");
-    const applyFilters = () => {
-      this.currentPage = 1;
-      this.filteredReaders = this.model.filterReaders(this.currentReaders, {
-        query: searchInput?.value,
-        status: filterStatus?.value,
-      });
-      this.renderCurrentPage();
-    };
+    // const searchInput = document.getElementById("searchInput");
+    // const filterStatus = document.getElementById("filterStatus");
+    // const applyFilters = () => {
+    //   this.currentPage = 1;
+    //   this.filteredReaders = this.model.filterReaders(this.currentReaders, {
+    //     query: searchInput?.value,
+    //     status: filterStatus?.value,
+    //   });
+    //   this.renderCurrentPage();
+    // };
 
-    searchInput?.addEventListener("input", applyFilters);
-    filterStatus?.addEventListener("change", applyFilters);
+    // searchInput?.addEventListener("input", applyFilters);
+    // filterStatus?.addEventListener("change", applyFilters);
+    this.view.bindSearch(this.applyFilters.bind(this));
+    this.view.bindEditReader((id) => this.handleOpenEditModal(id));
+    this.view.bindDeleteReader((id) => this.handleDeleteReader(id));
+    this.view.bindToggleStatus((id, newStatus) =>
+      this.handleChangeStatus(id, newStatus),
+    );
 
     // 2. Lắng nghe click trên bảng (Sửa, Khóa/Mở, Xóa)
-    this.view.tableBody.addEventListener("click", (e) => {
-      const btnEdit = e.target.closest(".btn-edit-reader");
-      const btnDelete = e.target.closest(".btn-delete-reader");
-      const btnToggle = e.target.closest(".btn-toggle-status");
-
-      if (btnEdit) this.handleOpenEditModal(btnEdit.dataset.id);
-      if (btnDelete) this.handleDeleteReader(btnDelete.dataset.id);
-      if (btnToggle)
-        this.handleChangeStatus(btnToggle.dataset.id, btnToggle.dataset.status);
-    });
 
     // 3. Nút thêm mới
-    document
-      .getElementById("btnAddNewReader")
-      ?.addEventListener("click", () => {
-        document.getElementById("addReaderForm")?.reset();
-        bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("addReaderModal"),
-        ).show();
-      });
   }
 
   handleOpenEditModal(id) {
