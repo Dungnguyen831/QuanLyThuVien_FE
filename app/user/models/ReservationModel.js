@@ -44,7 +44,7 @@ class ReservationModel {
             }
 
             // ✅ Authorization header attached
-            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${reservationId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -89,7 +89,7 @@ class ReservationModel {
             }
 
             // ✅ Authorization header attached
-            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${reservationId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -198,7 +198,7 @@ class ReservationModel {
      * Update an existing reservation
      * ✅ CRITICAL: Sends bookId, reservationDate, status to backend
      * ✅ SECURITY: Always validates ID > 0 before sending
-     * ✅ API: ID must be in URL path: /api/v1/reservations/{id}
+     * ✅ API: ID must be in URL path: /api/v1/reservations/user/{id}
      * 
      * @param {number|string} reservationId - ID of the reservation to update (must be > 0)
      * @param {Object} updateData - Data to update { bookId, reservationDate, status }
@@ -229,13 +229,13 @@ class ReservationModel {
 
             console.log('[ReservationModel] Sending request:', {
                 method: 'PUT',
-                url: `${this.apiBaseUrl}/reservations/${id}`,
+                url: `${this.apiBaseUrl}/reservations/user/${id}`,
                 body: requestData
             });
 
             // ✅ 4. Fetch with ID in URL path
             const response = await fetch(
-                `${this.apiBaseUrl}/reservations/${id}`,  // ← ID ở url path!
+                `${this.apiBaseUrl}/reservations/user/${id}`,  // ← ID ở url path!
                 {
                     method: 'PUT',
                     headers: {
