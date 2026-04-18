@@ -148,13 +148,41 @@ class ReviewController {
      * @returns {boolean} - True if valid, false otherwise
      */
     validateFormData(formData) {
-        const { rating, comment } = formData;
+        const { userId, bookId, rating, comment } = formData;
 
-        if (!rating || rating < 1 || rating > 5) {
-            this.reviewView.showErrorMessage("Vui lòng chọn điểm đánh giá (1-5)");
+        // Debug log
+        console.log('[ReviewController] Validating form data:', {
+            userId,
+            bookId,
+            rating,
+            commentLength: comment?.length,
+            localStorageUser: localStorage.getItem('user'),
+            localStorageToken: localStorage.getItem('token') ? 'EXISTS' : 'MISSING'
+        });
+
+        // Kiểm tra userId tồn tại
+        if (!userId || isNaN(userId)) {
+            const errorMsg = `Lỗi: Không lấy được ID người dùng. userId=${userId}. Vui lòng đăng nhập lại.`;
+            console.error('[ReviewController]', errorMsg);
+            this.reviewView.showErrorMessage(errorMsg);
             return false;
         }
 
+        // Kiểm tra bookId tồn tại
+        if (!bookId || isNaN(bookId)) {
+            const errorMsg = `Lỗi: Không lấy được ID sách. bookId=${bookId}. Vui lòng tải lại trang.`;
+            console.error('[ReviewController]', errorMsg);
+            this.reviewView.showErrorMessage(errorMsg);
+            return false;
+        }
+
+        // Kiểm tra rating (1-5 sao)
+        if (!rating || rating < 1 || rating > 5) {
+            this.reviewView.showErrorMessage("Vui lòng chọn điểm đánh giá (1-5 sao)");
+            return false;
+        }
+
+        // Kiểm tra comment
         if (!comment || comment.trim().length < 10) {
             this.reviewView.showErrorMessage("Bình luận phải tối thiểu 10 ký tự");
             return false;
