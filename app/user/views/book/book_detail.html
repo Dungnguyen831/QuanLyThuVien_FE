@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="../../../../assets/css/user/style.css">
     <link rel="stylesheet" href="../../../../assets/css/user/book_detail.css">
     <link rel="stylesheet" href="../../../../assets/css/user/reservations.css">
+    <link rel="stylesheet" href="../../../../assets/css/user/review.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
         rel="stylesheet">
 </head>
@@ -69,7 +70,27 @@
                 </div>
             </section>
         </main>
+
+        <!-- Review Section -->
+        <section id="reviewSection" class="review-section" style="margin-top: 60px;" data-book-id="">
+            <h2>Đánh giá sách</h2>
+
+            <div class="review-toolbar">
+                <button id="addReviewBtn" class="btn-primary btn-add-review">
+                    <i class="icon-plus"></i> Viết đánh giá
+                </button>
+            </div>
+
+            <div id="reviewForm" class="review-form-container"></div>
+            <div id="reviewList" class="review-list-container"></div>
+            <div id="reviewContainer" class="review-container"></div>
+        </section>
     </div>
+    <!-- Review Feature -->
+    <script src="../../../../app/user/models/review/ReviewModel.js"></script>
+    <script src="../../../../app/user/views/review/ReviewView.js"></script>
+    <script src="../../../../app/user/controllers/review/ReviewController.js"></script>
+
     <!-- Reservation/Wishlist Components -->
     <script src="/app/user/models/ReservationModel.js"></script>
     <script src="/app/user/models/WishlistModel.js"></script>
@@ -90,11 +111,44 @@
                 document.getElementById('navbar-container').innerHTML = html;
             });
 
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             const model = new BookDetailModel();
             const view = new BookDetailView();
             const app = new BookDetailController(model, view);
             app.init();
+
+            // Initialize Review Feature
+            const reviewSection = document.getElementById('reviewSection');
+            const bookId = getCurrentBookIdFromPage();
+
+            if (bookId && reviewSection) {
+                // Set book ID on review section
+                reviewSection.setAttribute('data-book-id', bookId);
+
+                const reviewController = new ReviewController();
+                const token = localStorage.getItem('token');
+                const addReviewBtn = document.getElementById('addReviewBtn');
+
+                if (!token && addReviewBtn) {
+                    addReviewBtn.disabled = true;
+                    addReviewBtn.title = 'Vui lòng đăng nhập để đánh giá';
+                }
+
+                await reviewController.init(bookId);
+
+                // Attach add review button event
+                if (addReviewBtn) {
+                    addReviewBtn.addEventListener('click', () => {
+                        if (!localStorage.getItem('token')) {
+                            alert('Vui lòng đăng nhập để đánh giá');
+                            return;
+                        }
+                        reviewController.handleAddReviewClick();
+                    });
+                }
+            } else {
+                console.warn('Book ID or review section not found');
+            }
         });
     </script>
 
