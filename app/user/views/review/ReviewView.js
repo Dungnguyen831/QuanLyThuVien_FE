@@ -6,21 +6,67 @@
 // ========== Helper Functions ==========
 
 /**
- * Get current user ID from localStorage
+ * Decode JWT token để lấy userId
+ * @param {string} token - JWT token
+ * @returns {object|null} - Decoded payload hoặc null
+ */
+function decodeJWT(token) {
+    try {
+        if (!token) return null;
+        const parts = token.split('.');
+        if (parts.length !== 3) return null;
+
+        const decoded = JSON.parse(atob(parts[1]));
+        return decoded;
+    } catch (error) {
+        console.error('Error decoding JWT:', error);
+        return null;
+    }
+}
+
+/**
+ * Get current user ID from localStorage or JWT token
  * @returns {number|null} - User ID or null if not logged in
  */
 function getCurrentUserIdFromSession() {
-    const userIdDirect = localStorage.getItem('userId');
-    if (userIdDirect) {
-        return parseInt(userIdDirect);
+    // Cách 1: Lấy từ localStorage (nếu backend lưu)
+    let userId = localStorage.getItem('userId');
+    if (userId) {
+        return parseInt(userId);
     }
+
+    // Cách 2: Lấy từ 'user' object (sửa từ 'currentUser')
     try {
-        const user = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        return user.id || null;
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.id) {
+            return parseInt(user.id);
+        }
+        // Nếu user object không có id, thử lấy từ userId field
+        if (user.userId) {
+            return parseInt(user.userId);
+        }
     } catch (error) {
-        console.error('Error parsing currentUser:', error);
-        return null;
+        console.error('Error parsing user from localStorage:', error);
     }
+
+    // Cách 3: Decode JWT token để lấy userId
+    const token = localStorage.getItem('token');
+    if (token) {
+        const decoded = decodeJWT(token);
+        if (decoded && decoded.sub) {
+            // 'sub' thường là user ID trong JWT
+            return parseInt(decoded.sub);
+        }
+        if (decoded && decoded.userId) {
+            return parseInt(decoded.userId);
+        }
+        if (decoded && decoded.id) {
+            return parseInt(decoded.id);
+        }
+    }
+
+    console.warn('[ReviewView] Không lấy được User ID từ localStorage hoặc JWT token');
+    return null;
 }
 
 /**
@@ -196,8 +242,8 @@ class ReviewView {
             form.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const formData = {
-                    userId: getCurrentUserIdFromSession(),
-                    bookId: getCurrentBookIdFromPage(),
+                    userId: parseInt(getCurrentUserIdFromSession()) || null,
+                    bookId: parseInt(getCurrentBookIdFromPage()) || null,
                     rating: parseInt(document.querySelector('input[name="rating"]:checked')?.value || 0),
                     comment: document.getElementById('commentInput').value
                 };
