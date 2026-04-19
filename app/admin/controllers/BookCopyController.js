@@ -4,6 +4,8 @@ class BookCopyController {
         this.view = view;
         this.parentController = parentController;
         this.currentBookId = null;
+         // Trong constructor hoặc hàm khởi tạo của Controller
+        this.view.onDeleteCopy = (id) => this.handleDeleteCopy(id);
         const modalEl = document.getElementById('bookCopyModal');
 
         if (modalEl) {
@@ -75,6 +77,24 @@ class BookCopyController {
                     this.parentController.loadBooks(); // Cập nhật lại số lượng ở bảng chính
                 }
             };
+        }
+    }
+
+   
+
+    async handleDeleteCopy(id) {
+        const success = await this.model.deleteBookCopy(id);
+        if (success) {
+            // Xóa thành công thì tải lại danh sách bản sao để cập nhật UI
+            const updatedCopies = await this.model.fetchCopiesByBookId(this.currentBookId);
+            this.view.renderCopiesToModal(updatedCopies);
+            alert("Xóa thành công bản sao id: "+id);
+            // (Tùy chọn) Cập nhật lại số lượng ở bảng danh sách sách bên ngoài
+            if (this.parentController && this.parentController.loadBooks) {
+                this.parentController.loadBooks();
+            }
+        } else {
+            alert("Xóa không thành công. Vui lòng kiểm tra lại.");
         }
     }
 }
