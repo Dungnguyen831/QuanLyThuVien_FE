@@ -68,13 +68,7 @@
                     </div>
 
                     <div class="p-4 border-top d-flex justify-content-between align-items-center">
-                        <small class="text-muted">Hiển thị <b class="text-dark">1</b> đến <b class="text-dark">10</b> trong tổng số <b class="text-dark">0</b> kết quả</small>
-                        <ul class="pagination pagination-sm mb-0">
-                            <li class="page-item disabled"><a class="page-link border-0 text-muted" href="#"><i class="fas fa-chevron-left"></i></a></li>
-                            <li class="page-item active"><a class="page-link border-0 rounded-1 px-3" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link border-0 text-dark" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link border-0 text-muted" href="#"><i class="fas fa-chevron-right"></i></a></li>
-                        </ul>
+                        
                     </div>
 
                 </div>
@@ -86,6 +80,10 @@
     
     <script src="../../../../assets/js/ComponentLoader.js"></script>
     <script src="../../../../assets/js/main.js"></script>
+
+    <script src="/app/admin/models/reservation/ReservationModel.js"></script>
+    <script src="/app/admin/views/reservation/ReservationView.js"></script>
+    <script src="/app/admin/controllers/reservation/ReservationController.js"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -105,6 +103,13 @@
                 // Cập nhật tiêu đề trên Header
                 const pageTitle = document.getElementById('page-title');
                 if(pageTitle) pageTitle.textContent = 'Quản lý đơn đặt sách';
+
+                if (typeof ReservationController !== 'undefined') {
+                const reservationApp = new ReservationController(new ReservationModel(), new ReservationView());
+                reservationApp.init();
+                } else {
+                    console.error("Không thể tải ReservationController. Hãy kiểm tra lại đường dẫn file js.");
+                }
             }, 100); 
         });
     </script>
