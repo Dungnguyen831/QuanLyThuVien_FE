@@ -9,7 +9,6 @@ class ReaderModel {
     const headers = {
       "Content-Type": "application/json",
     };
-
     if (requireToken) {
       const token = localStorage.getItem("token"); // Lấy token từ biến của bạn
       if (token) {
@@ -127,5 +126,19 @@ class ReaderModel {
       throw new Error(errData.error || "Lỗi khi xóa độc giả.");
     }
     return true;
+  }
+
+  // 7. Admin Reset mật khẩu (BẮT BUỘC có Token)
+  async resetPassword(id, onPassword) {
+    const response = await fetch(`${this.apiUrl}/${id}/password`, {
+      method: "PATCH",
+      headers: this.getHeaders(true),
+      body: JSON.stringify(onPassword),
+    });
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.error || "Lỗi khi reset mật khẩu");
+    }
+    return response.json();
   }
 }

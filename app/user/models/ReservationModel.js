@@ -31,83 +31,6 @@ class ReservationModel {
     }
 
     /**
-     * Fetch user dashboard data including stats and reservations
-     * @param {number} page - Page number (0-indexed), default: 0
-     * @param {number} size - Page size, default: 10
-     * @param {string} sort - Sort field with direction (e.g., "createdAt,desc"), default: "createdAt,desc"
-     * @returns {Promise<Object>} Dashboard data object with stats and reservations array
-     */
-    async fetchUserDashboardData(page = 0, size = 10, sort = 'createdAt,desc') {
-        try {
-            const token = localStorage.getItem('token');
-
-            if (!token) {
-                throw new Error('User not authenticated. Please login first.');
-            }
-
-            // ✅ NEW ENDPOINT: No userId in path - backend extracts from JWT
-            // Build URL with pagination parameters
-            const url = new URL(`${this.apiBaseUrl}/reservations`);
-            url.searchParams.append('page', page);
-            url.searchParams.append('size', size);
-            url.searchParams.append('sort', sort);
-
-            const response = await fetch(url.toString(), {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log('Reservation data from BE:', data);
-
-            // Handle paginated response from Spring Boot Page
-            // Backend returns either Page<ReservationResponseDTO> or EmptyPageResponse
-            if (data.content) {
-                // Page response structure
-                return {
-                    reservations: data.content,
-                    pagination: {
-                        totalElements: data.totalElements,
-                        totalPages: data.totalPages,
-                        currentPage: data.number,
-                        pageSize: data.size,
-                        empty: data.empty
-                    }
-                };
-            } else if (data.totalElements === 0) {
-                // EmptyPageResponse structure
-                return {
-                    reservations: [],
-                    pagination: {
-                        totalElements: 0,
-                        totalPages: 0,
-                        currentPage: 0,
-                        pageSize: size,
-                        empty: true
-                    },
-                    message: data.message
-                };
-            } else if (Array.isArray(data)) {
-                // Fallback: if data is already an array
-                return { reservations: data };
-            } else {
-                // Other response formats
-                return data;
-            }
-        } catch (error) {
-            console.error('Error fetching reservation from BE:', error);
-            throw error;
-        }
-    }
-
-    /**
      * Cancel a reservation
      * @param {string|number} reservationId - ID of the reservation to cancel
      * @returns {Promise<Object>} Result of cancellation
@@ -121,7 +44,7 @@ class ReservationModel {
             }
 
             // ✅ Authorization header attached
-            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${reservationId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -166,7 +89,7 @@ class ReservationModel {
             }
 
             // ✅ Authorization header attached
-            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${reservationId}`, {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -273,48 +196,86 @@ class ReservationModel {
 
     /**
      * Update an existing reservation
-     * @param {number|string} reservationId - ID of the reservation to update
-     * @param {Object} updateData - Data to update { reservationDate?, status? }
+     * ✅ CRITICAL: Sends bookId, reservationDate, status to backend
+     * ✅ SECURITY: Always validates ID > 0 before sending
+     * ✅ API: ID must be in URL path: /api/v1/reservations/user/{id}
+     * 
+     * @param {number|string} reservationId - ID of the reservation to update (must be > 0)
+     * @param {Object} updateData - Data to update { bookId, reservationDate, status }
      * @returns {Promise<Object>} Updated reservation object
      */
     async updateReservation(reservationId, updateData) {
         try {
+            // ✅ 1. Validate ID - must be positive integer
+            const id = parseInt(reservationId);
+            if (!id || id <= 0) {
+                throw new Error('ID đặt chỗ không hợp lệ. Phải là số dương.');
+            }
+
+            console.log('[ReservationModel] Updating reservation:', { id, formData: updateData });
+
+            // ✅ 2. Check authentication
             const token = localStorage.getItem('token');
-
             if (!token) {
-                throw new Error('User not authenticated.');
+                throw new Error('Phiên làm việc hết hạn. Vui lòng đăng nhập lại.');
             }
 
-            // Filter to only allowed fields
-            const allowedFields = ['reservationDate', 'status'];
-            const filteredData = {};
+            // ✅ 3. Prepare request body (bookId, reservationDate, status - NO id field!)
+            const requestData = {
+                bookId: parseInt(updateData.bookId),
+                reservationDate: updateData.reservationDate,
+                status: updateData.status
+            };
 
-            allowedFields.forEach(field => {
-                if (updateData[field] !== undefined && updateData[field] !== null) {
-                    filteredData[field] = updateData[field];
-                }
-            });
-
-            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
+            console.log('[ReservationModel] Sending request:', {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(filteredData)
+                url: `${this.apiBaseUrl}/reservations/user/${id}`,
+                body: requestData
             });
 
+            // ✅ 4. Fetch with ID in URL path
+            const response = await fetch(
+                `${this.apiBaseUrl}/reservations/user/${id}`,  // ← ID ở url path!
+                {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(requestData)
+                }
+            );
+
+            // ✅ 5. Handle different error responses
             if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                const errorMsg = errorData.message || `HTTP error! status: ${response.status}`;
-                throw new Error(errorMsg);
+                // Unauthorized - token expired
+                if (response.status === 401) {
+                    throw new Error('Phiên làm việc hết hạn. Vui lòng đăng nhập lại.');
+                }
+
+                // Bad request - validation error
+                if (response.status === 400) {
+                    const error = await response.json().catch(() => ({}));
+                    throw new Error(error.message || 'Dữ liệu không hợp lệ. Vui lòng kiểm tra lại.');
+                }
+
+                // Not found - reservation doesn't exist
+                if (response.status === 404) {
+                    throw new Error('Đặt chỗ không tồn tại hoặc không phải của bạn.');
+                }
+
+                // Other errors
+                const error = await response.json().catch(() => ({}));
+                throw new Error(error.message || `Cập nhật thất bại (${response.status})`);
             }
 
+            // ✅ 6. Parse and return success response
             const result = await response.json();
-            console.log('Reservation updated:', result);
+            console.log('[ReservationModel] Update successful:', result);
             return result;
+
         } catch (error) {
-            console.error('Error updating reservation:', error);
+            console.error('[ReservationModel] Error updating reservation:', error.message);
             throw error;
         }
     }

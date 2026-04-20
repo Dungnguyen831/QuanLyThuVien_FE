@@ -18,14 +18,12 @@ document.addEventListener("DOMContentLoaded", function () {
       isConfirmPasswordValid &&
       areTermsAgreed
     ) {
-      console.log("Form hợp lệ, đang tiến hành đăng ký...");
       const formData = new FormData(form);
       const userData = Object.fromEntries(formData.entries());
       if (window.app && typeof window.app.handleRegister === "function") {
         window.app.handleRegister(userData);
       } else {
         console.error("AuthController (app) is not available.");
-        alert("Có lỗi xảy ra, không thể đăng ký.");
       }
     } else {
       console.log("Form có lỗi, vui lòng kiểm tra lại.");
@@ -66,8 +64,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function validatePassword() {
     const input = form.querySelector('input[name="password"]');
-    if (input.value.trim().length < 8) {
-      showError(input, "Mật khẩu phải có ít nhất 8 ký tự.");
+    if (input.value.trim().length < 6) {
+      showError(input, "Mật khẩu phải có ít nhất 6 ký tự.");
       return false;
     }
     return true;
