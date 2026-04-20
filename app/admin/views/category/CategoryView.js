@@ -37,9 +37,6 @@ class CategoryView {
                     <td class="text-muted" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         ${category.description || 'Chưa có mô tả'}
                     </td>
-                    <td class="text-center fw-bold text-dark">
-                        ${category.bookCount || 0}
-                    </td>
                     <td class="text-end pe-4">
                         <div class="d-flex justify-content-end align-items-center gap-2">
                             <button class="btn btn-sm btn-light text-primary edit-btn" data-id="${category.id}" title="Chỉnh sửa">
