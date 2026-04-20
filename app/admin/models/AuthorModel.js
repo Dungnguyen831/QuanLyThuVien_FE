@@ -1,7 +1,7 @@
 class AuthorModel {
     // Hàm phụ để lấy token từ localStorage
     getHeaders() {
-        const token = localStorage.getItem('token'); // Lấy token từ key 'token' ông chụp trong ảnh
+        const token = localStorage.getItem('token');
         return {
             'Content-Type': 'application/json',
             'Authorization': `Bearer ${token}` // Đính kèm token dạng Bearer
@@ -58,7 +58,7 @@ class AuthorModel {
     }
 
    async deleteAuthor(id) {
-    const token = localStorage.getItem('token'); // Hoặc 'accessToken' tùy ông đặt tên
+    const token = localStorage.getItem('token'); 
     
     const response = await fetch(`http://localhost:8080/api/v1/authors/${id}`, {
         method: 'DELETE',

@@ -68,7 +68,8 @@ class CategoryView {
                 const id = document.getElementById('categoryId')?.value;
                 const data = {
                     name: document.getElementById('catName').value,
-                    description: document.getElementById('catDescription').value
+                    description: document.getElementById('catDescription').value,
+                    bookcount: 0, // Mặc định số lượng sách mới là 0
                 };
                 handler(id, data);
             });

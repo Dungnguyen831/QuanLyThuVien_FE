@@ -184,6 +184,9 @@ class ReservationController {
             // Fetch reservation details
             const reservation = await this.model.getReservationDetails(reservationId);
 
+            // ✅ Store current reservation for later use in form submission
+            this.currentReservation = reservation;
+
             // Create form modal in UPDATE mode
             const formModal = await ReservationForm.create({
                 reservation: reservation,
@@ -232,18 +235,24 @@ class ReservationController {
 
             try {
                 if (isUpdate) {
-                    // UPDATE existing reservation
+                    // ✅ UPDATE existing reservation
+                    // User can ONLY edit the date - bookId and status come from current reservation
+                    console.log('[ReservationController] Updating - Form data:', formData);
+                    console.log('[ReservationController] Current reservation:', this.currentReservation);
+
                     const updateData = {
-                        reservationDate: formData.reservationDate,
-                        status: formData.status
+                        bookId: this.currentReservation.bookId,  // Keep current bookId
+                        reservationDate: formData.reservationDate,  // New date from form
+                        status: this.currentReservation.status  // Keep current status
                     };
 
+                    console.log('[ReservationController] Sending update data:', updateData);
                     await this.model.updateReservation(reservationId, updateData);
 
                     // Update table row without full reload
                     this.view.updateTableRow(reservationId, {
-                        reservationDate: formData.reservationDate,
-                        status: formData.status
+                        reservationDate: formData.reservationDate
+                        // Status không update (giữ trạng thái cũ)
                     });
 
                     this.view.closeReservationModal(formModal);

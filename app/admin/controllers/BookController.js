@@ -5,6 +5,7 @@ class BookController {
         this.authors = [];
         this.categories = [];
         this.publishers = [];
+        this.shelfModel = [];
         this.currentBooks = []; // Danh sách gốc từ server
         this.filteredBooks = []; // Danh sách sau khi lọc/tìm kiếm
         this.currentPage = 1; // Trang hiện tại
@@ -19,6 +20,7 @@ class BookController {
             await this.refreshAllDatalists();
             await this.loadBooks();
             this.bindEvents();
+            
         } catch (error) {
             console.error("Lỗi khởi tạo:", error);
         }
@@ -39,15 +41,24 @@ class BookController {
     // Tải và làm mới các danh sách (author, category, publisher) cho các bộ lọc
     async refreshAllDatalists() {
         try {
-            const [authors, categories, publishers] = await Promise.all([
-                this.model.fetchAuthors(),
-                this.model.fetchCategories(),
-                this.model.fetchPublishers(),
+           // Khởi tạo các Model riêng biệt (vì bạn đã nạp các file này trong HTML)
+            const authorModel = new AuthorModel();
+            const categoryModel = new CategoryModel();
+            const publisherModel = new PublisherModel();
+            const shelfModel = new ShelfModel();
+
+            // Gọi đúng hàm fetch của từng Model
+            const [authors, categories, publishers, shelves] = await Promise.all([
+                authorModel.fetchAuthors(), // Giả sử hàm trong AuthorModel là fetchAuthors
+                categoryModel.fetchCategories(), 
+                publisherModel.fetchPublishers(),
+                shelfModel.fetchShelves(),
             ]);
+    
             this.authors = authors;
             this.categories = categories;
             this.publishers = publishers;
-
+            this.shelves = shelves; // Gán dữ liệu kệ ở đây
             // Đổ dữ liệu vào các ô Select lọc ở thanh tìm kiếm
             const filterCat = document.getElementById("filterCategory");
             const filterPub = document.getElementById("filterPublisher");
@@ -198,6 +209,24 @@ class BookController {
         });
         setupUploadPreview('bookImageFile', 'imagePreview');
         setupUploadPreview('editBookImageFile', 'editImagePreview');
+        // Danh sách các ID input cần đổ dữ liệu vào datalist khi người dùng tương tác
+        const datalistConfigs = [
+            { inputId: 'categoryInput', listId: 'categoryOptions', type: 'categories' },
+            { inputId: 'authorInput', listId: 'authorOptions', type: 'authors' },
+            { inputId: 'publisherInput', listId: 'publisherOptions', type: 'publishers' },
+            // Đừng quên thêm các ID cho form Sửa (Edit) nếu bạn cũng dùng datalist ở đó
+            { inputId: 'editCategoryInput', listId: 'editCategoryOptions', type: 'categories' },
+            { inputId: 'editAuthorInput', listId: 'editAuthorOptions', type: 'authors' },
+            { inputId: 'editPublisherInput', listId: 'editPublisherOptions', type: 'publishers' }
+        ];
+
+        datalistConfigs.forEach(({ inputId, listId, type }) => {
+            const inputEl = document.getElementById(inputId);
+            if (inputEl) {
+                // Khi người dùng nhấn vào ô input, danh sách sẽ được làm mới
+                inputEl.addEventListener('focus', () => this.populateDatalist(listId, type));
+            }
+        });
     }
     // Xử lý thêm mới sách với các bước kiểm tra dữ liệu đầu vào 
     async handleAddBook() {
@@ -206,7 +235,21 @@ class BookController {
         // BƯỚC 1: CHỈ KHI BẤM LƯU MỚI UPLOAD ẢNH
         if (this.selectedFile) {
             // Gọi model để đẩy file thật lên server
-            finalImageUrl = await this.model.uploadImage(this.selectedFile); 
+            const fileName = this.selectedFile.name;
+            // Kiểm tra xem trong danh sách sách hiện tại đã có ai dùng tên ảnh này chưa
+            const isFileExists = this.currentBooks.some(b => b.imageUrl === fileName);
+
+            if (isFileExists) {
+                finalImageUrl = fileName; 
+            } else {
+                try {
+                    // Chỉ upload nếu là ảnh hoàn toàn mới
+                    finalImageUrl = await this.model.uploadImage(this.selectedFile);
+                } catch (err) {
+                    console.error("Lỗi upload ảnh", err);
+                    finalImageUrl = fileName;
+                }
+            }
         }
         const data = this.getFormData("book");
         data.imageUrl = finalImageUrl || "default-book.jpg"; // Gán tên file đã upload thành công
@@ -322,7 +365,6 @@ class BookController {
     }
 
     // Xử lý submit form sửa sách với các bước kiểm tra dữ liệu đầu vào tương tự như thêm mới
-  // Xử lý submit form sửa sách
     async handleEditSubmit() {
         const id = document.getElementById("editBookId")?.value;
         const data = this.getFormData("edit");
@@ -330,17 +372,34 @@ class BookController {
 
         try {
             // --- 1. XỬ LÝ UPLOAD ẢNH ---
+            const currentImageUrl = document.getElementById('editBookImageUrl')?.value || "";
+
             if (this.selectedEditFile) {
-                // Chỉ upload nếu người dùng có chọn file mới
-                try {
-                    const uploadedFileName = await this.model.uploadImage(this.selectedEditFile);
-                    data.imageUrl = uploadedFileName; 
-                } catch (uploadError) {
-                    throw new Error("Không thể upload ảnh mới. Vui lòng thử lại.");
+                // Lấy tên file người dùng vừa chọn từ máy tính
+                const selectedFileName = this.selectedEditFile.name;
+    
+                // KIỂM TRẢ TRÙNG TÊN: 
+                // So sánh với ảnh cũ của chính nó HOẶC quét trong danh sách currentBooks xem có ai dùng tên này chưa
+                const isNameExists = selectedFileName === currentImageUrl || 
+                                     this.currentBooks.some(b => b.imageUrl === selectedFileName);
+    
+                if (isNameExists) {
+                    // Nếu trùng tên: Không gọi API upload, chỉ gán tên file vào data để lưu DB
+                    data.imageUrl = selectedFileName;
+                } else {
+                    // Nếu tên hoàn toàn mới: Thực hiện upload
+                    try {
+                        const uploadedFileName = await this.model.uploadImage(this.selectedEditFile);
+                        data.imageUrl = uploadedFileName; 
+                    } catch (uploadError) {
+                        // Backup: Nếu server báo lỗi (ví dụ file đã tồn tại trên server nhưng client chưa biết)
+                        // thì vẫn lấy tên file đó để lưu vào DB
+                        data.imageUrl = selectedFileName;
+                    }
                 }
             } else {
-                // Giữ lại ảnh cũ từ trường hidden nếu không đổi ảnh
-                data.imageUrl = document.getElementById('editBookImageUrl')?.value || "default-book.jpg";
+                // Nếu không chọn file mới: Giữ nguyên ảnh cũ
+                data.imageUrl = currentImageUrl || "default-book.jpg";
             }
 
             // --- 2. KIỂM TRA DỮ LIỆU (VALIDATION) ---
@@ -407,5 +466,26 @@ class BookController {
         if (!fileName) return true; // Cho phép để trống nếu không bắt buộc
         const allowedExtensions = /(\.jpg|\.png)$/i;
         return allowedExtensions.test(fileName);
+    }
+
+    populateDatalist(datalistId, type) {
+        const datalist = document.getElementById(datalistId);
+        if (!datalist) return;
+    
+        const data = this[type]; // Lấy authors, categories, hoặc publishers
+        
+        // Xóa danh sách cũ
+        datalist.innerHTML = "";
+    
+        data.forEach(item => {
+            const option = document.createElement("option");
+            // Gán ID vào value để khi chọn, ID sẽ nhảy vào ô Input
+            option.value = item.id; 
+            
+            // Hiển thị Tên bên cạnh ID để người dùng nhận diện
+            option.innerText = `Tên: ${item.name || item.title}`;
+            
+            datalist.appendChild(option);
+        });
     }
 }

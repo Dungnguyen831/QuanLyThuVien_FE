@@ -56,7 +56,6 @@ class WishlistController {
     this.view.onHeartIconClick((bookId, btn) =>
       this.handleRemoveFromWishlist(bookId, btn),
     );
-    this.view.onBorrowAll(() => this.handleBorrowAll());
   }
 
   /**
@@ -170,31 +169,6 @@ class WishlistController {
     } catch (error) {
       console.error("Error removing from wishlist:", error);
       alert("Failed to remove book from wishlist");
-    }
-  }
-
-  /**
-   * Handle borrow all available books
-   */
-  async handleBorrowAll() {
-    try {
-      const availableBooks = this.state.filteredBooks.filter(
-        (book) => book.availability === "available",
-      );
-
-      if (availableBooks.length === 0) {
-        alert("No available books to borrow");
-        return;
-      }
-
-      const bookIds = availableBooks.map((book) => book.id);
-      await this.model.borrowBooks(bookIds);
-
-      alert(`Successfully borrowed ${bookIds.length} book(s)`);
-      await this.loadWishlistData(); // Reload to update availability status
-    } catch (error) {
-      console.error("Error borrowing books:", error);
-      alert("Failed to borrow books");
     }
   }
 
