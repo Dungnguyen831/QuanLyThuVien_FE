@@ -26,7 +26,7 @@ class AuthController {
       if (result.user.role === "admin") {
         window.location.href = "/app/admin/views/dashboard/admin.html";
       } else {
-        window.location.href = "/app/user/views/home/home.html"; 
+        window.location.href = "/app/user/views/home/home.html"; // Hoặc trang chủ người dùng nếu có
       }
     } catch (error) {
       this.view.showError(error.message);

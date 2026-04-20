@@ -6,14 +6,11 @@ class ProfileView {
     this.inputEmail = document.getElementById("email");
     this.inputPhone = document.getElementById("phone");
     this.inputPassword = document.getElementById("password");
-
     // Các nút bấm
     this.btnEdit = document.getElementById("btnEdit"); // Nút mở khóa
     this.btnSave = document.getElementById("btnSave"); // Nút lưu
     this.btnCancel = document.getElementById("btnCancel"); // Nút hủy (ẩn lúc đầu)
-
     this.displayName = document.getElementById("displayName");
-
     // Mảng chứa các ô input có thể sửa được
     this.editableInputs = [
       this.inputFullName,
@@ -50,63 +47,5 @@ class ProfileView {
         }
       }
     });
-
-    // Ẩn/hiện các nút tương ứng
-    if (isEditing) {
-      this.btnEdit.classList.add("d-none"); // Ẩn nút Sửa
-      this.btnSave.classList.remove("d-none"); // Hiện nút Lưu
-      this.btnCancel.classList.remove("d-none"); // Hiện nút Hủy
-    } else {
-      this.btnEdit.classList.remove("d-none");
-      this.btnSave.classList.add("d-none");
-      this.btnCancel.classList.add("d-none");
-
-      // Khôi phục giá trị password về rỗng khi thoát chế độ sửa
-      if (this.inputPassword) this.inputPassword.value = "";
-    }
-  }
-
-  // Lắng nghe sự kiện click nút Chỉnh sửa
-  bindEdit(handler) {
-    this.btnEdit?.addEventListener("click", (e) => {
-      e.preventDefault();
-      this.setEditMode(true);
-      if (handler) handler();
-    });
-  }
-
-  // Lắng nghe sự kiện click nút Hủy
-  bindCancel(handler) {
-    this.btnCancel?.addEventListener("click", (e) => {
-      e.preventDefault();
-
-      // Phục hồi lại dữ liệu cũ
-      const originalData = JSON.parse(this.form.dataset.originalData || "{}");
-      this.fillForm(originalData); // fillForm sẽ tự động gọi setEditMode(false)
-
-      if (handler) handler();
-    });
-  }
-
-  // Lắng nghe Submit (Lưu)
-  bindSubmit(handler) {
-    this.form?.addEventListener("submit", (e) => {
-      e.preventDefault();
-      const data = {
-        full_name: this.inputFullName.value.trim(),
-        email: this.inputEmail.value,
-        phone: this.inputPhone.value.trim(),
-        password: this.inputPassword.value.trim(),
-      };
-      handler(data);
-    });
-  }
-
-  setLoading(isLoading) {
-    this.btnSave.disabled = isLoading;
-    this.btnCancel.disabled = isLoading;
-    this.btnSave.innerHTML = isLoading
-      ? '<i class="fas fa-spinner fa-spin me-2"></i>Đang lưu...'
-      : '<i class="fas fa-save me-2"></i>Lưu thay đổi';
   }
 }

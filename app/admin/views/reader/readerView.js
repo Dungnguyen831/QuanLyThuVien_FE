@@ -1,7 +1,86 @@
 class ReaderView {
   constructor() {
     this.tableBody = document.getElementById("reader-table-body");
+    this.searchInput = document.getElementById("searchInput");
+    this.filterStatus = document.getElementById("filterStatus");
   }
+  bindSearch(handler) {
+    if (!this.searchInput || !this.filterStatus) return;
+
+    // Tạo một hàm trung gian để BÓC TÁCH lấy chữ (value)
+    const handleAction = () => {
+      const keywords = this.searchInput.value; // Lấy đúng chữ đang gõ
+      const status = this.filterStatus.value; // Lấy đúng trạng thái đang chọn
+
+      // Gửi 2 cái chữ đó lên cho Controller
+      handler(keywords, status);
+    };
+
+    // Lắng nghe sự kiện
+    this.searchInput.addEventListener("input", handleAction);
+    this.filterStatus.addEventListener("change", handleAction);
+  }
+
+  bindToggleStatus(handler) {
+    this.tableBody.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-toggle-status");
+      if (btn) {
+        const id = btn.dataset.id;
+        const newStatus = btn.dataset.status;
+        handler(id, newStatus); // "Gửi tín hiệu" về cho Controller kèm theo ID và trạng thái mới
+      }
+    });
+  }
+
+  bindAddNew(handler) {
+    document
+      .getElementById("btnAddNewReader")
+      ?.addEventListener("click", () => {
+        document.getElementById("addReaderForm")?.reset();
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("addReaderModal"),
+        ).show();
+      });
+  }
+
+  // bindEvents() {
+  //   // 1. Lọc và tìm kiếm
+  //   const searchInput = document.getElementById("searchInput");
+  //   const filterStatus = document.getElementById("filterStatus");
+  //   const applyFilters = () => {
+  //     this.currentPage = 1;
+  //     this.filteredReaders = this.model.filterReaders(this.currentReaders, {
+  //       query: searchInput?.value,
+  //       status: filterStatus?.value,
+  //     });
+  //     this.renderCurrentPage();
+  //   };
+
+  //   searchInput?.addEventListener("input", applyFilters);
+  //   filterStatus?.addEventListener("change", applyFilters);
+
+  //   // 2. Lắng nghe click trên bảng (Sửa, Khóa/Mở, Xóa)
+  //   this.view.tableBody.addEventListener("click", (e) => {
+  //     const btnEdit = e.target.closest(".btn-edit-reader");
+  //     const btnDelete = e.target.closest(".btn-delete-reader");
+  //     const btnToggle = e.target.closest(".btn-toggle-status");
+
+  //     if (btnEdit) this.handleOpenEditModal(btnEdit.dataset.id);
+  //     if (btnDelete) this.handleDeleteReader(btnDelete.dataset.id);
+  //     if (btnToggle)
+  //       this.handleChangeStatus(btnToggle.dataset.id, btnToggle.dataset.status);
+  //   });
+
+  //   // 3. Nút thêm mới
+  //   document
+  //     .getElementById("btnAddNewReader")
+  //     ?.addEventListener("click", () => {
+  //       document.getElementById("addReaderForm")?.reset();
+  //       bootstrap.Modal.getOrCreateInstance(
+  //         document.getElementById("addReaderModal"),
+  //       ).show();
+  //     });
+  // }
 
   setupUIState() {
     const headerDisplay = document.getElementById("page-title");
@@ -129,6 +208,17 @@ class ReaderView {
     this.tableBody.addEventListener("click", (e) => {
       // Tìm xem người dùng có bấm trúng nút Sửa (hoặc icon bên trong nó) không
       const btn = e.target.closest(".btn-edit-reader");
+      if (btn) {
+        const id = btn.dataset.id;
+        handler(id); // "Gửi tín hiệu" về cho Controller kèm theo ID
+      }
+    });
+  }
+
+  bindDeleteReader(handler) {
+    this.tableBody.addEventListener("click", (e) => {
+      // Tìm xem người dùng có bấm trúng nút Xóa (hoặc icon bên trong nó) không
+      const btn = e.target.closest(".btn-delete-reader");
       if (btn) {
         const id = btn.dataset.id;
         handler(id); // "Gửi tín hiệu" về cho Controller kèm theo ID
