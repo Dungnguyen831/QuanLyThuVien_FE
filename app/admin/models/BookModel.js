@@ -55,6 +55,7 @@ class BookModel {
         throw new Error("Phiên đăng nhập hết hạn hoặc không có quyền!");
       }
     }
+    return await res.json();
   }
 
   async fetchBookById(id) {

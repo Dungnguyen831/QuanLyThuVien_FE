@@ -13,8 +13,6 @@
 </head>
 
 <body>
-
-  <body>
     <div id="navbar-container"></div>
     <div class="container">
       <nav class="breadcrumb">
@@ -42,27 +40,12 @@
           <h1 id="book-title" class="main-title">Đang tải...</h1>
           <p id="book-author-year" class="sub-info">...</p>
 
-          <div class="rating-row">
-            <div class="stars">★★★★★</div>
-            <span class="rating-val">4.8</span>
-            <span class="review-link">| <u>1,240 Reviews</u></span>
-          </div>
-
           <p class="book-summary" id="book-desc"></p>
 
           <div class="primary-actions">
             <button id="btn-borrow" class="btn-borrow">🛍️ Borrow Now</button>
             <button class="btn-wishlist">❤️ Add to Wishlist</button>
           </div>
-
-                <p class="book-summary" id="book-desc">
-                </p>
-
-                <div class="primary-actions">
-                    <button id="btn-borrow" class="btn-borrow">🛍️ Borrow Now</button>
-                    <button class="btn-wishlist">❤️ Add to Wishlist</button>
-                </div>
-
                 <div class="stats-grid">
                     <div class="stat-box">
                         <small>ISBN</small>
@@ -120,45 +103,65 @@
                 document.getElementById('navbar-container').innerHTML = html;
             });
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            const model = new BookDetailModel();
-            const view = new BookDetailView();
-            const app = new BookDetailController(model, view);
-            app.init();
+       document.addEventListener('DOMContentLoaded', async () => {
+    // 1. Lấy Book ID từ URL (ví dụ: book_detail.html?id=5)
+    const urlParams = new URLSearchParams(window.location.search);
+    const bookId = urlParams.get('id');
 
-            // Initialize Review Feature
-            const reviewSection = document.getElementById('reviewSection');
-            const bookId = getCurrentBookIdFromPage();
+    if (!bookId) {
+        alert("Không tìm thấy mã sách!");
+        window.location.href = "all_books.html"; // Quay lại trang danh sách
+        return;
+    }
 
-            if (bookId && reviewSection) {
-                // Set book ID on review section
-                reviewSection.setAttribute('data-book-id', bookId);
+    // 2. Khởi tạo Hiển thị chi tiết sách
+    const bookModel = new BookDetailModel();
+    const bookView = new BookDetailView();
+    const bookApp = new BookDetailController(bookModel, bookView);
+    
+    try {
+        await bookApp.init(); // Gọi API lấy thông tin sách
+    } catch (err) {
+        console.error("Lỗi khởi tạo chi tiết sách:", err);
+    }
 
-                const reviewController = new ReviewController();
-                const token = localStorage.getItem('token');
-                const addReviewBtn = document.getElementById('addReviewBtn');
+    // 3. Khởi tạo tính năng Đánh giá (Review)
+    const reviewSection = document.getElementById('reviewSection');
+    if (reviewSection) {
+        reviewSection.setAttribute('data-book-id', bookId);
 
-                if (!token && addReviewBtn) {
-                    addReviewBtn.disabled = true;
-                    addReviewBtn.title = 'Vui lòng đăng nhập để đánh giá';
-                }
+        const reviewController = new ReviewController();
+        const addReviewBtn = document.getElementById('addReviewBtn');
+        const token = localStorage.getItem('token');
 
-                await reviewController.init(bookId);
+        // Kiểm tra đăng nhập để bật/tắt nút viết đánh giá
+        if (!token && addReviewBtn) {
+            addReviewBtn.disabled = true;
+            addReviewBtn.classList.add('btn-disabled'); // Thêm class để đổi màu nút nếu cần
+            addReviewBtn.title = 'Vui lòng đăng nhập để đánh giá';
+        }
 
-                // Attach add review button event
-                if (addReviewBtn) {
-                    addReviewBtn.addEventListener('click', () => {
-                        if (!localStorage.getItem('token')) {
-                            alert('Vui lòng đăng nhập để đánh giá');
-                            return;
-                        }
-                        reviewController.handleAddReviewClick();
-                    });
-                }
-            } else {
-                console.warn('Book ID or review section not found');
+        // Tải danh sách đánh giá
+        await reviewController.init(bookId);
+
+        // Sự kiện nút Viết đánh giá
+        addReviewBtn?.addEventListener('click', () => {
+            if (!localStorage.getItem('token')) {
+                alert('Bạn phải đăng nhập mới đánh giá được nhé!');
+                return;
             }
+            reviewController.handleAddReviewClick();
         });
+    }
+
+    // 4. Load Navbar (Giữ nguyên của ông)
+    fetch('../../components/navbar.html')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('navbar-container').innerHTML = html;
+        })
+        .catch(err => console.warn("Không load được Navbar:", err));
+});
 
       document.addEventListener("DOMContentLoaded", () => {
         const model = new BookDetailModel();

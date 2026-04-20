@@ -57,21 +57,29 @@ class AuthorModel {
         return await response.json();
     }
 
-   async deleteAuthor(id) {
-    const token = localStorage.getItem('token'); 
-    
+   
+    async deleteAuthor(id) {
     const response = await fetch(`http://localhost:8080/api/v1/authors/${id}`, {
         method: 'DELETE',
-        headers: {
-            'Authorization': `Bearer ${token}`, // Thêm dòng này
-            'Content-Type': 'application/json'
-        }
+        headers: this.getHeaders()
     });
 
     if (!response.ok) {
-        const errorData = await response.json(); // Backend trả về JSON nên dùng .json()
-        throw new Error(errorData.message || "Lỗi không xác định");
+        // Thay vì chỉ quăng lỗi, hãy đọc nội dung Server trả về
+        const errorText = await response.text(); 
+        console.log("Nội dung lỗi từ Server:", errorText);
+        
+        // Nếu Server trả về JSON thì bóc tách, nếu trả về String thì lấy luôn
+        let message = "Lỗi hệ thống (500)";
+        try {
+            const errorObj = JSON.parse(errorText);
+            message = errorObj.message || message;
+        } catch (e) {
+            message = errorText; // Nếu là chuỗi thuần "Không thể xóa: Tác giả có sách..."
+        }
+        
+        throw new Error(message);
     }
     return true;
-}
+    }
 }

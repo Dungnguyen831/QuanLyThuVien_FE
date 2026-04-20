@@ -53,7 +53,7 @@ class CategoryView {
 
         const countElement = document.getElementById('total-categories-count') || document.getElementById('category-count');
         if (countElement) {
-            countElement.innerText = `Hiển thị ${categories.length} danh mục`;
+            countElement.innerText = `Hiển thị ${categories.length} thể loại`;
         }
     }
 
