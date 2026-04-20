@@ -1,48 +1,45 @@
-// File: /app/user/controllers/ProfileController.js
+// File: /app/user/controllers/profile/ProfileController.js
 class ProfileController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    // Lấy thông tin user từ LocalStorage
     this.savedUser = JSON.parse(localStorage.getItem("user") || "{}");
     this.userId = this.savedUser.id;
   }
 
+  fillForm() {
+    this.view.fillForm(this.savedUser);
+  }
+
   async init() {
     if (!this.userId) {
-      alert("Vui lòng đăng nhập để xem hồ sơ!");
-      window.location.href = "/login.html";
+      alert("Vui lòng đăng nhập để thực hiện chức năng này!");
+      window.location.href = "/app/auth/views/login.html";
       return;
     }
 
-    // 1. Dùng dữ liệu từ LocalStorage để hiện ngay lập tức (như bạn yêu cầu lúc nãy)
-    this.view.fillForm(this.savedUser);
+    //this.view.fillform(this.savedUser);
 
-    // 2. Lắng nghe các nút (Bật chế độ sửa / Hủy)
-    this.view.bindEdit();
-    this.view.bindCancel();
-
-    // 3. Xử lý khi bấm Lưu
-    this.view.bindSubmit(async (updatedData) => {
+    this.view.bindSubmit(async (formElement, updateData) => {
+      // 1. Kiểm tra Validate (Mật khẩu < 8 ký tự sẽ bị chặn ở đây)
+      if (
+        typeof PasswordValidator !== "undefined" &&
+        !PasswordValidator.validate(formElement)
+      ) {
+        return;
+      }
+      // 2. Gọi API thông qua Model
       this.view.setLoading(true);
       try {
-        // Gọi API lên Server
-        await this.model.updateReader(this.userId, updatedData);
-
-        // Cập nhật lại LocalStorage
-        const newUserToSave = {
-          ...this.savedUser,
-          fullName: updatedData.full_name,
-          phone: updatedData.phone,
-        };
-        localStorage.setItem("user", JSON.stringify(newUserToSave));
-
-        alert("Cập nhật thông tin thành công!");
-
-        // Cập nhật lại giao diện và tắt chế độ sửa
-        this.savedUser = newUserToSave;
-        this.view.fillForm(this.savedUser);
+        // GỌI ĐÚNG HÀM resetPassword CỦA USER (Chứ không gọi resetPassword của Admin)
+        await this.model.resetPassword(this.userId, updateData);
+        alert(
+          "Đổi mật khẩu thành công! Vui lòng đăng nhập lại để đảm bảo an toàn.",
+        );
+        localStorage.clear(); // Xóa tài khoản cũ đi
+        window.location.href = "/app/auth/views/login.html"; // Đá ra trang Login
       } catch (err) {
+        // Hứng lỗi (vd: Mật khẩu cũ sai)
         alert("Lỗi: " + err.message);
       } finally {
         this.view.setLoading(false);

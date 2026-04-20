@@ -15,13 +15,13 @@
   <body>
     <div class="form-card">
       <div class="form-header">
-        <h1 class="form-title">Create Account</h1>
-        <p class="form-subtitle">Please enter your details to register.</p>
+        <h1 class="form-title">Tạo Tài Khoản</h1>
+        <p class="form-subtitle">Vui lòng nhập thông tin của bạn để đăng ký.</p>
       </div>
 
       <form id="register-form">
         <div class="input-group">
-          <label>Full Name</label>
+          <label>Họ và Tên</label>
           <div class="input-field">
             <i data-lucide="user" class="input-icon"></i>
             <input type="text" name="fullName" placeholder="John Doe" />
@@ -30,7 +30,7 @@
         </div>
 
         <div class="input-group">
-          <label>Email Address</label>
+          <label>Email</label>
           <div class="input-field">
             <i data-lucide="mail" class="input-icon"></i>
             <input type="email" name="email" placeholder="john@example.com" />
@@ -39,7 +39,7 @@
         </div>
 
         <div class="input-group">
-          <label>Phone Number</label>
+          <label>Số Điện Thoại</label>
           <div class="input-field">
             <i data-lucide="phone" class="input-icon"></i>
             <input type="text" name="phone" placeholder="+1 (555) 000-0000" />
@@ -48,7 +48,7 @@
         </div>
 
         <div class="input-group">
-          <label>Password</label>
+          <label>Mật Khẩu</label>
           <div class="input-field">
             <i data-lucide="lock" class="input-icon"></i>
             <input
@@ -63,7 +63,7 @@
         </div>
 
         <div class="input-group">
-          <label>Confirm Password</label>
+          <label>Xác Nhận Mật Khẩu</label>
           <div class="input-field">
             <i data-lucide="rotate-ccw" class="input-icon"></i>
             <input
@@ -77,37 +77,16 @@
           </div>
           <span class="error-message"></span>
         </div>
-
-        <div class="checkbox-row">
-          <input type="checkbox" id="terms" />
-          <label for="terms">
-            I agree to the <a href="#">Terms of Service</a> and
-            <a href="#">Privacy Policy</a>
-          </label>
-        </div>
-
         <button type="submit" class="submit-btn">
-          Create Account <i data-lucide="arrow-right"></i>
+          Tạo Tài Khoản
+          <i data-lucide="arrow-right"></i>
         </button>
       </form>
 
       <p class="login-prompt">
-        Already have an account? <a href="#">Sign In</a>
+        Đã có tài khoản?
+        <a href="../../auth/views/login.html">Đăng nhập ngay</a>
       </p>
-
-      <div class="or-divider">
-        <span>OR JOIN WITH</span>
-      </div>
-
-      <div class="social-grid">
-        <button class="social-btn">
-          <img src="https://www.google.com/favicon.ico" alt="Google" /> Google
-        </button>
-
-        <button class="social-btn">
-          <img src="https://www.apple.com/favicon.ico" alt="Apple" /> Apple
-        </button>
-      </div>
     </div>
 
     <script src="../models/AuthModel.js"></script>
