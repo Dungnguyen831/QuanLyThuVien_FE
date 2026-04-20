@@ -1,6 +1,7 @@
 class BookController {
     constructor(model, view) {
         this.model = model;
+
         this.view = view;
         this.authors = [];
         this.categories = [];
@@ -326,6 +327,18 @@ class BookController {
         setV('editBookYear', book.publishedYear);
         setV('editTotalQty', book.totalQty);
         setV('editAvailableQty', book.availableQty);
+
+        // --- THÊM ĐOẠN NÀY ĐỂ KHÓA Ô NHẬP LIỆU ---
+        const editTotalEl = document.getElementById('editTotalQty');
+        const editAvailEl = document.getElementById('editAvailableQty');
+        if (editTotalEl) {
+            editTotalEl.readOnly = true;
+            editTotalEl.classList.add('bg-secondary-subtle'); // Đổi màu nền xám
+        }
+        if (editAvailEl) {
+            editAvailEl.readOnly = true;
+            editAvailEl.classList.add('bg-secondary-subtle');
+        }
 
         setV('editCategoryInput', book.categoryId || book.category_id);
         setV('editAuthorInput', book.authorId || book.author_id);

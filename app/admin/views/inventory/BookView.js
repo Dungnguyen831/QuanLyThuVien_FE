@@ -69,8 +69,6 @@ class BookView {
         });
     }
     // xử lý hiển thị chi tiết sách trong modal
-    // Trong BookView.js
-   // Cập nhật hàm renderBookDetailToModal trong BookView.js
     renderBookDetailToModal(book, authors, categories, publishers) {
         if (!book) return;
 
@@ -123,12 +121,7 @@ class BookView {
             return `
                 <tr data-copy-id="${c.id}"> 
                     <td>#${c.id}</td>
-                    <td>
-                        <select class="form-select form-select-sm shelf-select" data-copy-id="${c.id}">
-                            <option value="">-- Chưa xếp kệ --</option>
-                            ${shelfOptions}
-                        </select>
-                    </td> 
+                    
                     <td><code>${barcode}</code></td>
                     <td><span class="badge ${conditionClass}">${condition}</span></td>
                     <td><span class="badge ${statusClass}">${status}</span></td>
@@ -156,7 +149,7 @@ class BookView {
             };
         });
     
-        // Sự kiện đổi kệ (Sửa lỗi image_45c3a1.png)
+        // Sự kiện đổi kệ 
         tbody.querySelectorAll('.shelf-select').forEach(select => {
             select.onchange = (e) => {
                 const id = e.target.dataset.copyId;
