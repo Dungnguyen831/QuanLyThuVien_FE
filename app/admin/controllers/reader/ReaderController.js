@@ -59,30 +59,14 @@ class ReaderController {
   }
 
   bindEvents() {
-    // 1. Lọc và tìm kiếm
-    // const searchInput = document.getElementById("searchInput");
-    // const filterStatus = document.getElementById("filterStatus");
-    // const applyFilters = () => {
-    //   this.currentPage = 1;
-    //   this.filteredReaders = this.model.filterReaders(this.currentReaders, {
-    //     query: searchInput?.value,
-    //     status: filterStatus?.value,
-    //   });
-    //   this.renderCurrentPage();
-    // };
-
-    // searchInput?.addEventListener("input", applyFilters);
-    // filterStatus?.addEventListener("change", applyFilters);
-    this.view.bindSearch(this.applyFilters.bind(this));
+    this.view.bindSearch((keywords, status) => {
+      this.applyFilters(keywords, status);
+    });
     this.view.bindEditReader((id) => this.handleOpenEditModal(id));
     this.view.bindDeleteReader((id) => this.handleDeleteReader(id));
     this.view.bindToggleStatus((id, newStatus) =>
       this.handleChangeStatus(id, newStatus),
     );
-
-    // 2. Lắng nghe click trên bảng (Sửa, Khóa/Mở, Xóa)
-
-    // 3. Nút thêm mới
   }
 
   handleOpenEditModal(id) {

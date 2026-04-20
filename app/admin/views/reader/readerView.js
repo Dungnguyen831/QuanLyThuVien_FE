@@ -5,8 +5,20 @@ class ReaderView {
     this.filterStatus = document.getElementById("filterStatus");
   }
   bindSearch(handler) {
-    this.searchInput.addEventListener("input", handler);
-    this.filterStatus.addEventListener("change", handler);
+    if (!this.searchInput || !this.filterStatus) return;
+
+    // Tạo một hàm trung gian để BÓC TÁCH lấy chữ (value)
+    const handleAction = () => {
+      const keywords = this.searchInput.value; // Lấy đúng chữ đang gõ
+      const status = this.filterStatus.value; // Lấy đúng trạng thái đang chọn
+
+      // Gửi 2 cái chữ đó lên cho Controller
+      handler(keywords, status);
+    };
+
+    // Lắng nghe sự kiện
+    this.searchInput.addEventListener("input", handleAction);
+    this.filterStatus.addEventListener("change", handleAction);
   }
 
   bindToggleStatus(handler) {

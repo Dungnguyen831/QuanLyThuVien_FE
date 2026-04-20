@@ -161,3 +161,57 @@
     padding: 0 25px 35px 25px;
   }
 }
+/* =========================================
+   GIAO DIỆN ĐỔI MẬT KHẨU (BỔ SUNG)
+   ========================================= */
+
+/* Bóp nhỏ form cho cân đối */
+.profile-card-compact {
+  max-width: 550px;
+}
+
+/* Thu nhỏ banner */
+.profile-banner-sm {
+  height: 80px;
+}
+
+/* Đảo ngược màu Avatar (Nền trắng, viền/chữ tím) */
+.avatar-circle-inverse {
+  background-color: #ffffff;
+  color: #6366f1;
+  border-color: #6366f1;
+}
+
+/* Xếp dọc các ô nhập liệu */
+.form-group-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Dấu sao màu đỏ cho trường bắt buộc */
+.text-danger {
+  color: #ef4444;
+}
+
+/* Định dạng dòng chữ báo lỗi */
+.pwd-error-msg {
+  color: #ef4444;
+  font-size: 13px;
+  margin-top: -4px;
+  display: block;
+  min-height: 18px; /* Giữ khung không bị giật khi hiện lỗi */
+}
+
+/* Xếp dọc nhóm nút bấm */
+.action-buttons-vertical {
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Nút bấm kéo dài 100% */
+.btn-full-width {
+  width: 100%;
+  justify-content: center;
+  text-decoration: none;
+}

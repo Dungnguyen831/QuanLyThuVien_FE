@@ -34,42 +34,23 @@
                 <input type="text" id="fullName" class="form-control" />
               </div>
               <div class="form-group">
-                <label class="form-label">Email (Cố định)</label>
+                <label class="form-label">Email</label>
                 <input type="email" id="email" class="form-control" disabled />
               </div>
               <div class="form-group">
                 <label class="form-label">Số điện thoại</label>
                 <input type="text" id="phone" class="form-control" />
               </div>
-              <div class="form-group">
-                <label class="form-label">Đổi mật khẩu</label>
-                <input
-                  type="password"
-                  id="password"
-                  class="form-control"
-                  placeholder="Để trống nếu giữ nguyên"
-                />
-              </div>
             </div>
 
             <div class="action-buttons">
-              <button type="button" id="btnEdit" class="btn-custom btn-outline">
-                <i class="fas fa-edit"></i> Chỉnh sửa hồ sơ
-              </button>
-              <button
-                type="button"
-                id="btnCancel"
-                class="btn-custom btn-light-custom d-none"
+              <a
+                href="changePassword.html"
+                id="btnEdit"
+                class="btn-custom btn-outline"
               >
-                Hủy bỏ
-              </button>
-              <button
-                type="submit"
-                id="btnSave"
-                class="btn-custom btn-fill d-none"
-              >
-                <i class="fas fa-save"></i> Lưu thay đổi
-              </button>
+                <i class="fas fa-edit"></i> Đổi mật khẩu
+              </a>
             </div>
           </form>
         </div>
@@ -89,7 +70,7 @@
       document.addEventListener("DOMContentLoaded", () => {
         // Khởi tạo tính năng cho riêng trang Profile
         const app = new ProfileController(new ReaderModel(), new ProfileView());
-        app.init();
+        app.fillForm();
       });
     </script>
   </body>
