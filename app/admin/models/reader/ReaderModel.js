@@ -141,4 +141,18 @@ class ReaderModel {
     }
     return response.json();
   }
+
+  // 8. Cập nhật Mã sinh viên (MSV)
+  async updateMsv(id, newMsv) {
+    const response = await fetch(`${this.apiUrl}/${id}/msv`, {
+      method: "PATCH",
+      headers: this.getHeaders(true),
+      body: JSON.stringify({ msv: newMsv }),
+    });
+    if (!response.ok) {
+      const errData = await response.json();
+      throw new Error(errData.error || "Lỗi khi cập nhật Mã sinh viên");
+    }
+    return response.json();
+  }
 }

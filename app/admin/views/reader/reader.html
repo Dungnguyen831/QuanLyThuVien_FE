@@ -83,6 +83,7 @@
                     <th>HỌ VÀ TÊN</th>
                     <th>EMAIL</th>
                     <th>SỐ ĐIỆN THOẠI</th>
+                    <th>MÃ SV</th>
                     <th>VAI TRÒ</th>
                     <th>TRẠNG THÁI</th>
                     <th class="text-end pe-4">THAO TÁC</th>
@@ -215,6 +216,48 @@
                 </li>
               </ul>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="modal fade"
+      id="updateMsvModal"
+      tabindex="-1"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow">
+          <div class="modal-header bg-light border-bottom-0">
+            <h5 class="modal-title fw-bold">Cập nhật Mã sinh viên</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body p-4">
+            <input type="hidden" id="msvReaderId" />
+            <div class="mb-3">
+              <label for="newMsvInput" class="form-label fw-medium"
+                >Nhập Mã Sinh Viên mới <span class="text-danger">*</span></label
+              >
+              <input
+                type="text"
+                class="form-control"
+                id="newMsvInput"
+                placeholder="Nhập vào mã sinh viên"
+              />
+            </div>
+          </div>
+          <div class="modal-footer border-top-0">
+            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+              Hủy
+            </button>
+            <button type="button" class="btn btn-primary px-4" id="btnSaveMsv">
+              Lưu thông tin
+            </button>
           </div>
         </div>
       </div>
