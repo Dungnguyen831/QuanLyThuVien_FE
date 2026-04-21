@@ -51,30 +51,45 @@ class CategoryController {
     }
 
     async handleSave(id, data) {
-        const saveBtn = document.querySelector('#categoryForm button[type="submit"]');
-        if (saveBtn) saveBtn.disabled = true;
+    // 1. Làm sạch ID (Chuyển về số nguyên)
+    const cleanId = (id && id !== "") ? parseInt(id) : null;
 
-        try {
-            if (id && id !== "") { 
-                console.log("Đang gọi API Update danh mục ID:", id);
-                await this.model.updateCategory(id, data);
-            } else {
-                console.log("Đang gọi API Create danh mục mới");
-                await this.model.createCategory(data);
-            }
+    // 2. CHỈ lấy những trường mà Backend cần (Name & Description)
+    // Loại bỏ bookcount hoặc các trường rác khác
+    const cleanData = {
+        name: data.name,
+        description: data.description
+    };
 
-            if (this.view.modal) this.view.modal.hide();
-            
-            setTimeout(async () => {
-                await this.loadCategories(); 
-                alert("Thao tác thành công!");
-            }, 500);
+    console.log("Dữ liệu thực tế gửi đi:", cleanData);
 
-        } catch (error) {
-            alert("Lỗi: " + error.message);
-        } finally {
-            if (saveBtn) saveBtn.disabled = false;
+    const saveBtn = document.querySelector('#categoryForm button[type="submit"]');
+    if (saveBtn) saveBtn.disabled = true;
+
+    try {
+        if (cleanId) { 
+            console.log("Đang gọi API Update danh mục ID:", cleanId);
+            await this.model.updateCategory(cleanId, cleanData);
+        } else {
+            console.log("Đang gọi API Create danh mục mới");
+            await this.model.createCategory(cleanData);
         }
+
+        if (this.view.modal) this.view.modal.hide();
+        
+        // Dùng async/await trực tiếp thay vì lồng setTimeout nếu có thể
+        // Hoặc giữ nguyên nếu ông muốn tạo độ trễ cho mượt
+        setTimeout(async () => {
+            await this.loadCategories(); 
+            alert("Thao tác thành công!");
+        }, 500);
+
+    } catch (error) {
+        console.error("Lỗi API:", error);
+        alert("Lỗi: " + error.message);
+    } finally {
+        if (saveBtn) saveBtn.disabled = false;
+    }
     }
 
     async handleEdit(id) {
