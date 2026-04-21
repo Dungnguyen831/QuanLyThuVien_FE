@@ -108,8 +108,9 @@ class ReaderView {
   renderReaders(readers) {
     this.tableBody.innerHTML = "";
     if (!readers || readers.length === 0) {
+      // Đổi colspan="7" thành "8" vì mình đã thêm 1 cột MSV
       this.tableBody.innerHTML =
-        '<tr><td colspan="7" class="text-center py-4 text-muted">Không tìm thấy độc giả nào</td></tr>';
+        '<tr><td colspan="8" class="text-center py-4 text-muted">Không tìm thấy độc giả nào</td></tr>';
       return;
     }
 
@@ -132,6 +133,11 @@ class ReaderView {
         : "R";
       const avatarColor = isActive ? "bg-primary" : "bg-secondary";
 
+      // --- BỔ SUNG LOGIC XỬ LÝ CỘT MÃ SINH VIÊN (MSV) ---
+      const msvHtml = reader.msv
+        ? `<span class="fw-bold text-primary">${reader.msv}</span>`
+        : `<button class="btn btn-sm btn-outline-primary btn-update-msv" data-id="${reader.id}"><i class="fas fa-qrcode me-1"></i> Cập nhật</button>`;
+
       tr.innerHTML = `
                 <td class="ps-4 fw-bold text-dark">#${reader.id}</td>
                 <td>
@@ -148,6 +154,9 @@ class ReaderView {
                 <td>
                     <div class="small mt-1"><i class="fas fa-phone text-muted me-1"></i> ${reader.phone || "---"}</div>
                 </td>
+                
+                <td class="align-middle">${msvHtml}</td> 
+
                 <td><span class="badge rounded-pill bg-info-subtle text-info">Độc giả</span></td>
                 <td>${statusHtml}</td>
                 <td class="text-end pe-4">
@@ -224,5 +233,48 @@ class ReaderView {
         handler(id); // "Gửi tín hiệu" về cho Controller kèm theo ID
       }
     });
+  }
+
+  // Lắng nghe sự kiện bật Popup MSV và Bấm Lưu
+  bindUpdateMsv(handler) {
+    // 1. Khi bấm nút "Quét mã" trên bảng
+    this.tableBody.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-update-msv");
+      if (btn) {
+        const id = btn.dataset.id;
+        document.getElementById("msvReaderId").value = id; // Nhét ID vào form
+        document.getElementById("newMsvInput").value = ""; // Xóa trắng ô nhập cũ
+        // Bật Modal
+        const modal = new bootstrap.Modal(
+          document.getElementById("updateMsvModal"),
+        );
+        modal.show();
+
+        // Tự động focus vào ô input để sẵn sàng cho máy quét mã vạch
+        setTimeout(() => document.getElementById("newMsvInput").focus(), 500);
+      }
+    });
+
+    // 2. Khi bấm nút "Lưu thông tin" trong Popup
+    const btnSave = document.getElementById("btnSaveMsv");
+    if (btnSave) {
+      btnSave.addEventListener("click", () => {
+        const id = document.getElementById("msvReaderId").value;
+        const newMsv = document.getElementById("newMsvInput").value.trim();
+
+        if (!newMsv) {
+          alert("Vui lòng quét hoặc nhập Mã sinh viên!");
+          return;
+        }
+        handler(id, newMsv); // Gửi dữ liệu về Controller
+      });
+    }
+  }
+
+  // Hàm phụ trợ: Đóng Modal sau khi lưu thành công
+  closeMsvModal() {
+    const modalEl = document.getElementById("updateMsvModal");
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
   }
 }

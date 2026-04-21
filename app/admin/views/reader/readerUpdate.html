@@ -85,7 +85,7 @@
                 </div>
 
                 <div class="group-title fw-bold mt-2">
-                  <i class="fas fa-key me-2"></i>Tài khoản & Bảo mật
+                  <i class="fas fa-shield-alt me-2"></i>Bảo mật & Định danh
                 </div>
                 <div class="row g-4 mb-2">
                   <div class="col-md-5">
@@ -99,17 +99,24 @@
                       placeholder="Để trống nếu không muốn đổi"
                     />
                   </div>
-                  <div class="col-md-4">
-                    <label class="form-label form-label-standard"
-                      >Vai trò thẻ</label
+
+                  <div class="col-md-5">
+                    <label
+                      class="form-label form-label-standard text-primary fw-bold"
+                      >Mã sinh viên (MSV)</label
                     >
-                    <select
-                      id="roleName"
-                      class="form-select form-control-standard"
-                    >
-                      <option value="USER">Độc giả (User)</option>
-                      <option value="ADMIN">Quản trị viên (Admin)</option>
-                    </select>
+                    <div class="input-group">
+                      <span class="input-group-text bg-light border-0"
+                        ><i class="fas fa-qrcode text-muted"></i
+                      ></span>
+                      <input
+                        type="text"
+                        id="msvInput"
+                        class="form-control form-control-standard border-start-0 ps-0 bg-light"
+                        placeholder="Để trống nếu không có thẻ"
+                        readonly
+                      />
+                    </div>
                   </div>
                 </div>
 
