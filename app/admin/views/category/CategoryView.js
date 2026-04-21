@@ -37,9 +37,6 @@ class CategoryView {
                     <td class="text-muted" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
                         ${category.description || 'Chưa có mô tả'}
                     </td>
-                    <td class="text-center fw-bold text-dark">
-                        ${category.bookCount || 0}
-                    </td>
                     <td class="text-end pe-4">
                         <div class="d-flex justify-content-end align-items-center gap-2">
                             <button class="btn btn-sm btn-light text-primary edit-btn" data-id="${category.id}" title="Chỉnh sửa">
@@ -56,7 +53,7 @@ class CategoryView {
 
         const countElement = document.getElementById('total-categories-count') || document.getElementById('category-count');
         if (countElement) {
-            countElement.innerText = `Hiển thị ${categories.length} danh mục`;
+            countElement.innerText = `Hiển thị ${categories.length} thể loại`;
         }
     }
 
@@ -109,12 +106,16 @@ class CategoryView {
         }
 
         const confirmBtn = document.getElementById('confirmDeleteBtn');
-        if (confirmBtn) {
-            confirmBtn.onclick = () => {
+        confirmBtn.replaceWith(confirmBtn.cloneNode(true)); // Mẹo xóa sạch sự kiện cũ
+        const newConfirmBtn = document.getElementById('confirmDeleteBtn');
+        
+        newConfirmBtn.addEventListener('click', () => {
+            if (this.currentDeleteId) {
                 handler(this.currentDeleteId);
                 this.deleteModal.hide();
-            };
-        }
+                this.currentDeleteId = null; // Xóa id sau khi dùng xong cho sạch
+            }
+        });
     }
 
     // Mở modal để sửa

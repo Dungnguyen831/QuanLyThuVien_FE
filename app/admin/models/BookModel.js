@@ -104,18 +104,6 @@ class BookModel {
     return true;
   }
 
-  // // --- HÀM LẤY DANH MỤC HỖ TRỢ ---
-
-  // async fetchAuthors() {
-  //   return fetch("http://localhost:8080/api/v1/authors", { headers: this.getHeaders() }).then(r => r.json());
-  // }
-  // async fetchCategories() {
-  //   return fetch("http://localhost:8080/api/v1/categories", { headers: this.getHeaders() }).then(r => r.json());
-  // }
-  // async fetchPublishers() {
-  //   return fetch("http://localhost:8080/api/v1/publishers", { headers: this.getHeaders() }).then(r => r.json());
-  // }
-
   // --- XỬ LÝ UPLOAD ẢNH ---
   async uploadImage(file) {
     const formData = new FormData();

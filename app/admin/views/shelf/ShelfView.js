@@ -3,12 +3,18 @@ class ShelfView {
         this.tableBody = document.getElementById('shelf-table-body');
         this.searchInput = document.getElementById('searchInput');
         this.shelfModal = new bootstrap.Modal(document.getElementById('shelfModal'));
+        
+        // 1. Khởi tạo Modal xóa mới
+        const deleteElem = document.getElementById('deleteConfirmModal');
+        this.deleteConfirmModal = deleteElem ? new bootstrap.Modal(deleteElem) : null;
+        
         this.shelfForm = document.getElementById('shelfForm');
-        // Thêm nút khai báo nút Add ở đây để dùng cho bindEvents
         this.btnAdd = document.getElementById('btn-add-shelf');
+        
+        // Biến tạm lưu ID cần xóa
+        this.currentDeleteId = null;
     }
 
-    // --- HÀM SHOW MODAL THÊM Ở ĐÂY ---
     showModal(shelf = null) {
         if (shelf) {
             document.getElementById('modalTitle').innerText = "Cập nhật kệ sách";
@@ -23,23 +29,20 @@ class ShelfView {
         this.shelfModal.show();
     }
 
-    // Lắng nghe các hành động từ người dùng
     bindEvents(handlers) {
-        // Sự kiện tìm kiếm
+        // Tìm kiếm
         if (this.searchInput) {
             this.searchInput.addEventListener('input', (e) => {
                 handlers.handleSearch(e.target.value);
             });
         }
-        const floorFilter = document.getElementById('floorFilter');
 
-
-        // --- THÊM SỰ KIỆN NÚT "THÊM KỆ SÁCH" Ở ĐÂY ---
+        // Thêm mới
         this.btnAdd?.addEventListener('click', () => {
             this.showModal();
         });
 
-        // --- THÊM SỰ KIỆN SUBMIT FORM LƯU Ở ĐÂY ---
+        // Submit form lưu
         this.shelfForm?.addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('shelfId').value;
@@ -48,6 +51,7 @@ class ShelfView {
                 floor: document.getElementById('shelfFloor').value,
             };
             handlers.handleSave(id, shelfData);
+            this.shelfModal.hide(); // Đóng modal lưu sau khi xong
         });
 
         // Sự kiện trên bảng (Sửa/Xóa)
@@ -59,25 +63,39 @@ class ShelfView {
                 if (editBtn) {
                     handlers.handleEdit(editBtn.dataset.id);
                 }
+                
                 if (deleteBtn) {
-                    const id = deleteBtn.dataset.id;
-                    if (confirm(`Bạn có chắc muốn xóa kệ mã ${id} không?`)) {
-                        handlers.handleDelete(id);
+                    // 2. Thay vì confirm, ta gán ID và hiện Modal đẹp
+                    this.currentDeleteId = deleteBtn.dataset.id;
+                    if (this.deleteConfirmModal) {
+                        this.deleteConfirmModal.show();
                     }
                 }
             });
         }
+
+        // 3. Xử lý nút "Xác nhận xóa" trong Modal
+        const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
+        if (confirmDeleteBtn) {
+            confirmDeleteBtn.onclick = () => {
+                if (this.currentDeleteId) {
+                    handlers.handleDelete(this.currentDeleteId);
+                    this.deleteConfirmModal.hide();
+                }
+            };
+        }
+
+        // Filter tầng
         document.getElementById('floorFilter')?.addEventListener('change', (e) => {
-    // Gọi hàm handleFilter mà mình vừa thêm ở Controller
-    handlers.handleFilter(e.target.value);
-    });
+            handlers.handleFilter(e.target.value);
+        });
     }
 
     renderShelves(shelves) {
         if (!this.tableBody) return;
 
         if (shelves.length === 0) {
-            this.tableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4">Không tìm thấy kệ sách nào.</td></tr>`;
+            this.tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Không tìm thấy kệ sách nào.</td></tr>`;
             return;
         }
 
@@ -87,7 +105,7 @@ class ShelfView {
 
             return `
                 <tr class="align-middle">
-                    <td class="ps-4 fw-bold text-dark">${shelf.id}</td>
+                    <td class="ps-4 fw-bold text-dark">K-${shelf.id}</td>
                     <td>
                         <div class="d-flex align-items-center">
                             <div class="avatar-circle me-3" style="background-color: ${randomColor}20; color: ${randomColor}; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">
