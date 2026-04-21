@@ -72,8 +72,8 @@
                         </table>
                     </div>
 
-                    <div class="p-4 border-top d-flex justify-content-between align-items-center text-muted">
-                        <small>Hiển thị <b class="text-dark">1</b> nhà xuất bản</small>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <p id="total-publishers-count" class="text-muted mb-0">Hiển thị 0 nhà xuất bản</p>
                         <ul class="pagination pagination-sm mb-0">
                             <li class="page-item active"><a class="page-link" href="#">1</a></li>
                         </ul>
@@ -82,6 +82,25 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;"> <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold fs-5" id="deleteModalLabel">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-0 text-secondary">Bạn có chắc chắn muốn xóa mục này không?</p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 justify-content-end pb-4">
+                <button type="button" class="btn btn-secondary px-4 py-2 me-2 shadow-sm" 
+                        style="background-color: #6c757d; border: none; border-radius: 8px;" 
+                        data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4 py-2 shadow-sm" 
+                        style="background-color: #dc3545; border: none; border-radius: 8px;">Xác nhận xóa</button>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="modal fade" id="publisherModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -94,15 +113,15 @@
                     <input type="hidden" id="publisherId">
                     <div class="mb-3">
                         <label class="form-label">Tên nhà xuất bản</label>
-                        <input type="text" id="pubName" class="form-control" required>
+                        <input type="text" class="form-control" id="pubName" placeholder="Nhập tên nhà xuất bản..." required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Email</label>
-                        <input type="email" id="pubEmail" class="form-control">
+                        <input type="text" class="form-control" id="pubEmail" placeholder="Nhập email nhà xuất bản..." required>
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Địa chỉ</label>
-                        <input type="text" id="pubAddress" class="form-control">
+                        <input type="text" class="form-control" id="pubAddress" placeholder="Nhập địa chỉ nhà xuất bản..." required  >
                     </div>
                     <button type="submit" class="btn btn-primary w-100">Lưu lại</button>
                 </form>

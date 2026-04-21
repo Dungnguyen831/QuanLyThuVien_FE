@@ -96,24 +96,4 @@ class AuthorController {
         alert(error.message); // Thay vì alert("Không thể xóa...") cố định
     }
     }
-    handleFilters(filters) {
-    let filtered = [...this.allAuthors];
-
-    // 1. Lọc theo quốc tịch
-    if (filters.country && filters.country !== "Tất cả quốc tịch") {
-        filtered = filtered.filter(a => a.country === filters.country);
-    }
-
-    // 2. Lọc theo trạng thái
-    if (filters.status && filters.status !== "Tất cả trạng thái") {
-        filtered = filtered.filter(a => {
-            const s = (a.status || '').toLowerCase();
-            if (filters.status === "Active") return s === 'active' || s === 'đang hợp tác';
-            if (filters.status === "Inactive") return s === 'inactive' || s === 'ngừng hợp tác';
-            return true;
-        });
-    }
-
-    this.view.renderAuthors(filtered);
-    }
 }

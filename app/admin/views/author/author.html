@@ -39,19 +39,6 @@
                                     <input type="text" id="searchInput" class="form-control bg-light border-0" placeholder="Tìm kiếm theo mã, tên tác giả...">
                                 </div>
                             </div>
-                            <div class="col-md-7 d-flex gap-2 justify-content-end">
-                                <select id="filterCountry" class="form-select bg-light border-0" style="width: 180px;">
-                                    <option value="Tất cả quốc tịch" selected>Tất cả quốc tịch</option>
-                                    <option value="Việt Nam">Việt Nam</option>
-                                    <option value="Nước ngoài">Nước ngoài</option>
-                                </select>
-                                
-                                <select id="filterStatus" class="form-select bg-light border-0" style="width: 180px;">
-                                    <option value="Tất cả trạng thái" selected>Tất cả trạng thái</option>
-                                    <option value="Active">Đang hợp tác</option>
-                                    <option value="Inactive">Ngừng hợp tác</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
 
@@ -62,9 +49,6 @@
                                     <th class="ps-4 py-3">MÃ TG</th>
                                     <th>TÊN TÁC GIẢ</th>
                                     <th>TIỂU SỬ</th>
-                                    <th>QUỐC TỊCH</th>
-                                    <th>SỐ LƯỢNG SÁCH</th>
-                                    <th>TRẠNG THÁI</th>
                                     <th class="text-end pe-4">THAO TÁC</th>
                                 </tr>
                             </thead>
@@ -87,50 +71,30 @@
         </div>
     </div>
 
-    <div class="modal fade" id="authorModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="modalTitle">Thêm tác giả</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
+    <div class="modal fade" id="authorModal" tabindex="-1" aria-labelledby="modalTitle">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalTitle">Thêm tác giả</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="authorForm">
                 <div class="modal-body">
-                    <form id="authorForm">
-                        <input type="hidden" id="authorId">
-                        <div class="mb-3">
-                            <label class="form-label">Tên tác giả</label>
-                            <input type="text" class="form-control" id="authorName" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Tiểu sử</label>
-                            <textarea class="form-control" id="authorBio" rows="3"></textarea>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Quốc gia</label>
-                            <select class="form-select" id="authorCountry">
-                                <option value="Tất cả quốc tịch" selected>Tất cả quốc tịch</option>
-                                <option value="Việt Nam">Việt Nam</option>
-                                <option value="Nước ngoài">Nước ngoài</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Số lượng sách</label>
-                            <input type="number" class="form-control" id="authorBookCount" min="0" placeholder="0">
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Trạng thái</label>
-                            <select class="form-select" id="authorStatus">
-                                <option value="Tất cả trạng thái" selected>Tất cả trạng thái</option>
-                                <option value="Active">Đang hợp tác</option>
-                                <option value="Inactive">Ngừng hợp tác</option>
-                            </select>
-                        </div>
-                    </form>
+                    <input type="hidden" id="authorId">
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Tên tác giả</label>
+                        <input type="text" class="form-control" id="authorName" placeholder="Nhập tên tác giả..." required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Tiểu sử</label>
+                        <textarea class="form-control" id="authorBio" rows="4" placeholder="Mô tả ngắn về tác giả..."></textarea>
+                    </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-                    <button type="submit" id="btnSaveAuthor" form="authorForm" class="btn btn-primary">Xác nhận</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" id="btnSaveAuthor" class="btn btn-primary px-4">Xác nhận</button>
                 </div>
+            </form>
             </div>
         </div>
     </div>
