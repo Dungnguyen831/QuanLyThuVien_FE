@@ -13,12 +13,13 @@ class BookModel {
 
   // [MỚI] Hàm lọc dữ liệu tổng hợp dựa trên Search và 3 thanh Select
   filterBooks(allBooks, { query, category, publisher, status }) {
+    const q = query ? query.toLowerCase() : "";
     return allBooks.filter((book) => {
       // 1. Lọc theo từ khóa (Tên hoặc ID)
       const matchQuery =
-        !query ||
-        book.title.toLowerCase().includes(query) ||
-        book.id.toString().includes(query);
+        !q ||
+        book.title.toLowerCase().includes(q) ||
+        book.id.toString().includes(q);
 
       // 2. Lọc theo ID Thể loại (Ép về String để so sánh an toàn)
       const matchCat =
@@ -46,7 +47,7 @@ class BookModel {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        //  Authorization: `Bearer ${token}`,
       },
     });
 
@@ -54,7 +55,10 @@ class BookModel {
       if (res.status === 401 || res.status === 403) {
         throw new Error("Phiên đăng nhập hết hạn hoặc không có quyền!");
       }
+      throw new Error("Lỗi khi lấy danh sách sách");
     }
+
+    return await res.json();
   }
 
   async fetchBookById(id) {
@@ -63,7 +67,7 @@ class BookModel {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Đã thêm token
+        //Authorization: `Bearer ${token}`, // Đã thêm token
       },
     });
 
@@ -134,155 +138,6 @@ class BookModel {
       throw new Error("Lỗi khi xóa sách");
     }
     return true;
-  }
-
-  // Các hàm lấy danh sách danh mục hỗ trợ có kèm Token
-  // async fetchAuthors() {
-  //   const token = localStorage.getItem("token");
-  //   const res = await fetch("http://localhost:8080/api/v1/authors", {
-  //     headers: {
-  //       "Authorization": `Bearer ${token}`
-  //     }
-  //   });
-  //   if (!res.ok) throw new Error("Không thể tải danh sách tác giả");
-  //   return await res.json();
-  // }
-
-  // async fetchCategories() {
-  //   const token = localStorage.getItem("token");
-  //   const res = await fetch("http://localhost:8080/api/v1/categories", {
-  //     headers: {
-  //       "Authorization": `Bearer ${token}`
-  //     }
-  //   });
-  //   if (!res.ok) throw new Error("Không thể tải danh sách thể loại");
-  //   return await res.json();
-  // }
-
-  // async fetchPublishers() {
-  //   const token = localStorage.getItem("token");
-  //   const res = await fetch("http://localhost:8080/api/v1/publishers", {
-  //     headers: {
-  //       "Authorization": `Bearer ${token}`
-  //     }
-  //   });
-  //   if (!res.ok) throw new Error("Không thể tải danh sách nhà xuất bản");
-  //   return await res.json();
-  // }
-  // async fetchShelves() {
-  //   const token = localStorage.getItem("token");
-  //   const res = await fetch("http://localhost:8080/api/v1/shelves", {
-  //     headers: {
-  //       "Authorization": `Bearer ${token}`
-  //     }
-  //   });
-  //   if (!res.ok) throw new Error("Không thể tải danh sách kệ");
-  //   return await res.json();
-  // }
-
-  async fetchBookById(id) {
-    const token = localStorage.getItem("token");
-    const response = await fetch(`${this.apiUrl}/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Đã thêm token
-      },
-    });
-
-    if (!response.ok) {
-      if (response.status === 401 || response.status === 403) {
-        throw new Error("Phiên đăng nhập hết hạn hoặc không có quyền!");
-      }
-      throw new Error("Không tìm thấy sách");
-    }
-    return await response.json();
-  }
-
-  // Các hàm CRUD (Thêm, Sửa, Xóa)
-  async createBook(bookData) {
-    const token = localStorage.getItem("token");
-    const res = await fetch(this.apiUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Đưa vào ĐÚNG bên trong headers
-      },
-      body: JSON.stringify(bookData),
-    });
-
-    // Thêm check lỗi để tránh "Thành công giả"
-    if (!res.ok) {
-      if (res.status === 401 || res.status === 403) {
-        throw new Error("Lỗi 401: Bạn chưa đăng nhập hoặc không có quyền!");
-      }
-      throw new Error("Lỗi hệ thống khi thêm sách mới");
-    }
-    return await res.json();
-  }
-
-  async updateBook(id, bookData) {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${this.apiUrl}/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`, // Đã thêm token
-      },
-      body: JSON.stringify(bookData),
-    });
-
-    if (!res.ok) {
-      if (res.status === 401 || res.status === 403) {
-        throw new Error("Phiên đăng nhập hết hạn hoặc không có quyền!");
-      }
-      throw new Error("Lỗi khi cập nhật sách");
-    }
-    return await res.json();
-  }
-
-  async deleteBook(id) {
-    const token = localStorage.getItem("token");
-    const res = await fetch(`${this.apiUrl}/${id}`, {
-      method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${token}`, // Đã thêm token
-      },
-    });
-
-    if (!res.ok) {
-      if (res.status === 401 || res.status === 403) {
-        throw new Error("Phiên đăng nhập hết hạn hoặc không có quyền!");
-      }
-      throw new Error("Lỗi khi xóa sách");
-    }
-    return true;
-  }
-
-  // Các hàm lấy danh sách danh mục hỗ trợ
-  async fetchAuthors() {
-    const token = localStorage.getItem("token");
-    return fetch("http://localhost:8080/api/v1/authors", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((r) => r.json());
-  }
-  async fetchCategories() {
-    const token = localStorage.getItem("token");
-    return fetch("http://localhost:8080/api/v1/categories", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((r) => r.json());
-  }
-  async fetchPublishers() {
-    const token = localStorage.getItem("token");
-    return fetch("http://localhost:8080/api/v1/publishers", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }).then((r) => r.json());
   }
 
   // Xử lý Upload ảnh lên Server
