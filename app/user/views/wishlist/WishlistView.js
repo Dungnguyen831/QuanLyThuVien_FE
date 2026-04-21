@@ -8,7 +8,7 @@
  */
 class WishlistView {
   constructor() {
-    this.wishlistGrid = document.getElementById("wishlist-grid");
+    this.wishlistGrid = document.getElementById("wishlist-items");
     this.wishlistSubtitle = document.getElementById("wishlist-subtitle");
     this.borrowAllBtn = document.getElementById("borrow-all-btn");
     this.filterPills = document.querySelectorAll(".filter-pill");
@@ -64,9 +64,8 @@ class WishlistView {
     // Wait for all book cards to be created
     const bookCardElements = await Promise.all(bookCardPromises);
 
-    // Customize column classes for wishlist and append to grid
+    // Append to grid (Grid CSS will handle layout, no column classes needed)
     bookCardElements.forEach(bookCardElement => {
-      bookCardElement.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
       this.wishlistGrid.appendChild(bookCardElement);
     });
   }

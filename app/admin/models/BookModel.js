@@ -47,7 +47,7 @@ class BookModel {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        //  Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
 
@@ -67,7 +67,7 @@ class BookModel {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        //Authorization: `Bearer ${token}`, // Đã thêm token
+        Authorization: `Bearer ${token}`,
       },
     });
 
