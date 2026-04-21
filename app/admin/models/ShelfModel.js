@@ -23,7 +23,7 @@ class ShelfModel {
 
         // Xử lý lỗi Token hết hạn (401)
         if (response.status === 401) {
-            alert("Phiên đăng nhập hết hạn, Dương vui lòng đăng nhập lại nhé!");
+            alert("Phiên đăng nhập hết hạn, vui lòng đăng nhập lại nhé!");
             window.location.href = "/login.html"; 
             return [];
         }
