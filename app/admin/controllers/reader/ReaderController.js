@@ -37,9 +37,7 @@ class ReaderController {
       this.currentPage,
       this.itemsPerPage,
     );
-
     this.view.renderReaders(readersToShow);
-
     this.view.renderPagination(
       total,
       this.currentPage,
@@ -51,45 +49,25 @@ class ReaderController {
     );
     this.view.updatePaginationText(total, this.currentPage, this.itemsPerPage);
   }
+  applyFilters(keywords, status) {
+    this.currentPage = 1;
+    this.filteredReaders = this.model.filterReaders(this.currentReaders, {
+      query: keywords,
+      status: status,
+    });
+    this.renderCurrentPage();
+  }
 
   bindEvents() {
-    // 1. Lọc và tìm kiếm
-    const searchInput = document.getElementById("searchInput");
-    const filterStatus = document.getElementById("filterStatus");
-
-    const applyFilters = () => {
-      this.currentPage = 1;
-      this.filteredReaders = this.model.filterReaders(this.currentReaders, {
-        query: searchInput?.value,
-        status: filterStatus?.value,
-      });
-      this.renderCurrentPage();
-    };
-
-    searchInput?.addEventListener("input", applyFilters);
-    filterStatus?.addEventListener("change", applyFilters);
-
-    // 2. Lắng nghe click trên bảng (Sửa, Khóa/Mở, Xóa)
-    this.view.tableBody.addEventListener("click", (e) => {
-      const btnEdit = e.target.closest(".btn-edit-reader");
-      const btnDelete = e.target.closest(".btn-delete-reader");
-      const btnToggle = e.target.closest(".btn-toggle-status");
-
-      if (btnEdit) this.handleOpenEditModal(btnEdit.dataset.id);
-      if (btnDelete) this.handleDeleteReader(btnDelete.dataset.id);
-      if (btnToggle)
-        this.handleChangeStatus(btnToggle.dataset.id, btnToggle.dataset.status);
+    this.view.bindSearch((keywords, status) => {
+      this.applyFilters(keywords, status);
     });
-
-    // 3. Nút thêm mới
-    document
-      .getElementById("btnAddNewReader")
-      ?.addEventListener("click", () => {
-        document.getElementById("addReaderForm")?.reset();
-        bootstrap.Modal.getOrCreateInstance(
-          document.getElementById("addReaderModal"),
-        ).show();
-      });
+    this.view.bindEditReader((id) => this.handleOpenEditModal(id));
+    this.view.bindDeleteReader((id) => this.handleDeleteReader(id));
+    this.view.bindToggleStatus((id, newStatus) =>
+      this.handleChangeStatus(id, newStatus),
+    );
+    this.view.bindUpdateMsv((id, newMsv) => this.handleUpdateMsv(id, newMsv));
   }
 
   handleOpenEditModal(id) {
@@ -124,12 +102,26 @@ class ReaderController {
     }
   }
 
+  async handleUpdateMsv(id, newMsv) {
+    try {
+      // 1. Gọi API ở Model
+      await this.model.updateMsv(id, newMsv);
+
+      // 2. Báo thành công và đóng Popup
+      alert("Cập nhật Mã sinh viên thành công!");
+      this.view.closeMsvModal();
+
+      // 3. Tải lại danh sách để bảng cập nhật liền tay
+      await this.loadReaders();
+    } catch (error) {
+      alert(error.message); // Nếu trùng MSV, backend sẽ báo lỗi ra đây
+    }
+  }
+
   async initUpdatePage() {
     const id = new URLSearchParams(window.location.search).get("id");
     if (!id) return;
-
     try {
-      // Sử dụng đúng hàm fetchReaderById có sẵn trong Model của bạn
       const reader = await this.model.fetchReaderById(id);
       // Gọi View để điền dữ liệu
       this.view.fillForm(reader);

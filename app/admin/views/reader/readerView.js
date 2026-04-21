@@ -1,7 +1,86 @@
 class ReaderView {
   constructor() {
     this.tableBody = document.getElementById("reader-table-body");
+    this.searchInput = document.getElementById("searchInput");
+    this.filterStatus = document.getElementById("filterStatus");
   }
+  bindSearch(handler) {
+    if (!this.searchInput || !this.filterStatus) return;
+
+    // Tạo một hàm trung gian để BÓC TÁCH lấy chữ (value)
+    const handleAction = () => {
+      const keywords = this.searchInput.value; // Lấy đúng chữ đang gõ
+      const status = this.filterStatus.value; // Lấy đúng trạng thái đang chọn
+
+      // Gửi 2 cái chữ đó lên cho Controller
+      handler(keywords, status);
+    };
+
+    // Lắng nghe sự kiện
+    this.searchInput.addEventListener("input", handleAction);
+    this.filterStatus.addEventListener("change", handleAction);
+  }
+
+  bindToggleStatus(handler) {
+    this.tableBody.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-toggle-status");
+      if (btn) {
+        const id = btn.dataset.id;
+        const newStatus = btn.dataset.status;
+        handler(id, newStatus); // "Gửi tín hiệu" về cho Controller kèm theo ID và trạng thái mới
+      }
+    });
+  }
+
+  bindAddNew(handler) {
+    document
+      .getElementById("btnAddNewReader")
+      ?.addEventListener("click", () => {
+        document.getElementById("addReaderForm")?.reset();
+        bootstrap.Modal.getOrCreateInstance(
+          document.getElementById("addReaderModal"),
+        ).show();
+      });
+  }
+
+  // bindEvents() {
+  //   // 1. Lọc và tìm kiếm
+  //   const searchInput = document.getElementById("searchInput");
+  //   const filterStatus = document.getElementById("filterStatus");
+  //   const applyFilters = () => {
+  //     this.currentPage = 1;
+  //     this.filteredReaders = this.model.filterReaders(this.currentReaders, {
+  //       query: searchInput?.value,
+  //       status: filterStatus?.value,
+  //     });
+  //     this.renderCurrentPage();
+  //   };
+
+  //   searchInput?.addEventListener("input", applyFilters);
+  //   filterStatus?.addEventListener("change", applyFilters);
+
+  //   // 2. Lắng nghe click trên bảng (Sửa, Khóa/Mở, Xóa)
+  //   this.view.tableBody.addEventListener("click", (e) => {
+  //     const btnEdit = e.target.closest(".btn-edit-reader");
+  //     const btnDelete = e.target.closest(".btn-delete-reader");
+  //     const btnToggle = e.target.closest(".btn-toggle-status");
+
+  //     if (btnEdit) this.handleOpenEditModal(btnEdit.dataset.id);
+  //     if (btnDelete) this.handleDeleteReader(btnDelete.dataset.id);
+  //     if (btnToggle)
+  //       this.handleChangeStatus(btnToggle.dataset.id, btnToggle.dataset.status);
+  //   });
+
+  //   // 3. Nút thêm mới
+  //   document
+  //     .getElementById("btnAddNewReader")
+  //     ?.addEventListener("click", () => {
+  //       document.getElementById("addReaderForm")?.reset();
+  //       bootstrap.Modal.getOrCreateInstance(
+  //         document.getElementById("addReaderModal"),
+  //       ).show();
+  //     });
+  // }
 
   setupUIState() {
     const headerDisplay = document.getElementById("page-title");
@@ -29,8 +108,9 @@ class ReaderView {
   renderReaders(readers) {
     this.tableBody.innerHTML = "";
     if (!readers || readers.length === 0) {
+      // Đổi colspan="7" thành "8" vì mình đã thêm 1 cột MSV
       this.tableBody.innerHTML =
-        '<tr><td colspan="7" class="text-center py-4 text-muted">Không tìm thấy độc giả nào</td></tr>';
+        '<tr><td colspan="8" class="text-center py-4 text-muted">Không tìm thấy độc giả nào</td></tr>';
       return;
     }
 
@@ -53,6 +133,11 @@ class ReaderView {
         : "R";
       const avatarColor = isActive ? "bg-primary" : "bg-secondary";
 
+      // --- BỔ SUNG LOGIC XỬ LÝ CỘT MÃ SINH VIÊN (MSV) ---
+      const msvHtml = reader.msv
+        ? `<span class="fw-bold text-primary">${reader.msv}</span>`
+        : `<button class="btn btn-sm btn-outline-primary btn-update-msv" data-id="${reader.id}"><i class="fas fa-qrcode me-1"></i> Cập nhật</button>`;
+
       tr.innerHTML = `
                 <td class="ps-4 fw-bold text-dark">#${reader.id}</td>
                 <td>
@@ -69,6 +154,9 @@ class ReaderView {
                 <td>
                     <div class="small mt-1"><i class="fas fa-phone text-muted me-1"></i> ${reader.phone || "---"}</div>
                 </td>
+                
+                <td class="align-middle">${msvHtml}</td> 
+
                 <td><span class="badge rounded-pill bg-info-subtle text-info">Độc giả</span></td>
                 <td>${statusHtml}</td>
                 <td class="text-end pe-4">
@@ -134,5 +222,59 @@ class ReaderView {
         handler(id); // "Gửi tín hiệu" về cho Controller kèm theo ID
       }
     });
+  }
+
+  bindDeleteReader(handler) {
+    this.tableBody.addEventListener("click", (e) => {
+      // Tìm xem người dùng có bấm trúng nút Xóa (hoặc icon bên trong nó) không
+      const btn = e.target.closest(".btn-delete-reader");
+      if (btn) {
+        const id = btn.dataset.id;
+        handler(id); // "Gửi tín hiệu" về cho Controller kèm theo ID
+      }
+    });
+  }
+
+  // Lắng nghe sự kiện bật Popup MSV và Bấm Lưu
+  bindUpdateMsv(handler) {
+    // 1. Khi bấm nút "Quét mã" trên bảng
+    this.tableBody.addEventListener("click", (e) => {
+      const btn = e.target.closest(".btn-update-msv");
+      if (btn) {
+        const id = btn.dataset.id;
+        document.getElementById("msvReaderId").value = id; // Nhét ID vào form
+        document.getElementById("newMsvInput").value = ""; // Xóa trắng ô nhập cũ
+        // Bật Modal
+        const modal = new bootstrap.Modal(
+          document.getElementById("updateMsvModal"),
+        );
+        modal.show();
+
+        // Tự động focus vào ô input để sẵn sàng cho máy quét mã vạch
+        setTimeout(() => document.getElementById("newMsvInput").focus(), 500);
+      }
+    });
+
+    // 2. Khi bấm nút "Lưu thông tin" trong Popup
+    const btnSave = document.getElementById("btnSaveMsv");
+    if (btnSave) {
+      btnSave.addEventListener("click", () => {
+        const id = document.getElementById("msvReaderId").value;
+        const newMsv = document.getElementById("newMsvInput").value.trim();
+
+        if (!newMsv) {
+          alert("Vui lòng quét hoặc nhập Mã sinh viên!");
+          return;
+        }
+        handler(id, newMsv); // Gửi dữ liệu về Controller
+      });
+    }
+  }
+
+  // Hàm phụ trợ: Đóng Modal sau khi lưu thành công
+  closeMsvModal() {
+    const modalEl = document.getElementById("updateMsvModal");
+    const modal = bootstrap.Modal.getInstance(modalEl);
+    if (modal) modal.hide();
   }
 }
