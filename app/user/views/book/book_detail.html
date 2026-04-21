@@ -14,17 +14,19 @@
 </head>
 
 <body>
+    <div id="navbar-container"></div>
+    <div class="container">
+        <nav class="breadcrumb">
+            Home <span></span> <span id="category-path">Loading...</span>
+            <span></span> <strong id="title-path">...</strong>
+        </nav>
 
-    <body>
-        <div id="navbar-container"></div>
-        <div class="container">
-            <nav class="breadcrumb">
-                Home <span></span> <span id="category-path">Loading...</span>
-                <span></span> <strong id="title-path">...</strong>
-            </nav>
-
-            Trang Chủ <span></span> <span id="category-path">Đang tải...</span> <span></span> <strong
-                id="title-path">...</strong>
+        <main class="detail-wrap">
+            <aside class="cover-section">
+                <div class="book-cover-card">
+                    <img id="book-img" src="https://via.placeholder.com/300x450" alt="Book Cover" />
+                </div>
+            </aside>
 
             <section class="info-section">
                 <div class="labels">
@@ -35,32 +37,11 @@
                 <h1 id="book-title" class="main-title">Đang tải...</h1>
                 <p id="book-author-year" class="sub-info">...</p>
 
-                <div class="rating-row">
-                    <div class="stars">★★★★★</div>
-                    <span class="rating-val">4.8</span>
-                    <span class="review-link">| <u>1,240 Reviews</u></span>
-                </div>
-
-                <h1 id="book-title" class="main-title">Đang tải...</h1>
-                <p id="book-author-year" class="sub-info">...</p>
-
-                <div class="rating-row">
-                    <div class="stars">★★★★★</div>
-                    <span class="rating-val">4.8</span>
-                    <span class="review-link">| <u>1,240 Đánh giá</u></span>
-                </div>
-
-                <p class="book-summary" id="book-desc">
-                </p>
+                <p class="book-summary" id="book-desc"></p>
 
                 <div class="primary-actions">
-                    <button id="btn-borrow" class="btn-borrow">🛍️ Mượn Ngay</button>
-                    <button class="btn-wishlist">❤️ Thêm vào Danh sách Yêu Thích</button>
-                </div>
-
-                <div class="primary-actions">
-                    <button id="btn-borrow" class="btn-borrow">🛍️ Borrow Now</button>
-                    <button class="btn-wishlist">❤️ Add to Wishlist</button>
+                    <button id="btn-borrow" class="btn-borrow">🛍️ Mượn ngay</button>
+                    <button class="btn-wishlist">❤️ thêm vào yêu thích</button>
                 </div>
                 <div class="stats-grid">
                     <div class="stat-box">
@@ -68,105 +49,125 @@
                         <strong id="book-isbn">...</strong>
                     </div>
                     <div class="stat-box">
-                        <small>XUẤT BẢN</small>
+                        <small>Năm XB</small>
                         <strong id="book-year">...</strong>
                     </div>
                     <div class="stat-box">
-                        <small>SỐ LƯỢNG</small>
+                        <small>Số lượng</small>
                         <strong id="book-qty">...</strong>
                     </div>
                 </div>
             </section>
-            </main>
+        </main>
 
-            <!-- Review Section -->
-            <section id="reviewSection" class="review-section" style="margin-top: 60px;" data-book-id="">
-                <h2>Đánh giá sách</h2>
+        <!-- Review Section -->
+        <section id="reviewSection" class="review-section" style="margin-top: 60px;" data-book-id="">
+            <h2>Đánh giá sách</h2>
 
-                <div class="review-toolbar">
-                    <button id="addReviewBtn" class="btn-primary btn-add-review">
-                        <i class="icon-plus"></i> Viết đánh giá
-                    </button>
-                </div>
+            <div class="review-toolbar">
+                <button id="addReviewBtn" class="btn-primary btn-add-review">
+                    <i class="icon-plus"></i> Viết đánh giá
+                </button>
+            </div>
 
-                <div id="reviewForm" class="review-form-container"></div>
-                <div id="reviewList" class="review-list-container"></div>
-                <div id="reviewContainer" class="review-container"></div>
-            </section>
-        </div>
-        <!-- Review Feature -->
-        <script src="../../../../app/user/models/review/ReviewModel.js"></script>
-        <script src="../../../../app/user/views/review/ReviewView.js"></script>
-        <script src="../../../../app/user/controllers/review/ReviewController.js"></script>
+            <div id="reviewForm" class="review-form-container"></div>
+            <div id="reviewList" class="review-list-container"></div>
+            <div id="reviewContainer" class="review-container"></div>
+        </section>
+    </div>
+    <!-- Review Feature -->
+    <script src="../../../../app/user/models/review/ReviewModel.js"></script>
+    <script src="../../../../app/user/views/review/ReviewView.js"></script>
+    <script src="../../../../app/user/controllers/review/ReviewController.js"></script>
 
-        <!-- Reservation/Wishlist Components -->
-        <script src="/app/user/models/ReservationModel.js"></script>
-        <script src="/app/user/models/WishlistModel.js"></script>
-        <script src="/app/user/models/AllBooksModel.js"></script>
-        <script src="/app/user/components/BorrowForm.js"></script>
-        <script src="/app/user/components/ReservationForm.js"></script>
+    <!-- Reservation/Wishlist Components -->
+    <script src="/app/user/models/ReservationModel.js"></script>
+    <script src="/app/user/models/WishlistModel.js"></script>
+    <script src="/app/user/models/AllBooksModel.js"></script>
+    <script src="/app/user/components/BorrowForm.js"></script>
+    <script src="/app/user/components/ReservationForm.js"></script>
 
-        <!-- Book Detail -->
-        <script src="/assets/js/ImageService.js"></script>
-        <script src="/app/admin/models/BookDetailModel.js"></script>
-        <script src="/app/user/views/book/BookDetailView.js"></script>
-        <script src="/app/admin/controllers/BookDetailController.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-        <script src="../../../../assets/js/auth.js"></script>
-        <script>
+    <!-- Book Detail -->
+    <script src="../../../../assets/js/ImageService.js"></script>
+    <script src="/app/admin/models/BookDetailModel.js"></script>
+    <script src="/app/user/views/book/BookDetailView.js"></script>
+    <script src="/app/admin/controllers/BookDetailController.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../../../../assets/js/auth.js"></script>
+    <script>
+        fetch('../../components/navbar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('navbar-container').innerHTML = html;
+            });
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            // 1. Lấy Book ID từ URL (ví dụ: book_detail.html?id=5)
+            const urlParams = new URLSearchParams(window.location.search);
+            const bookId = urlParams.get('id');
+
+            if (!bookId) {
+                alert("Không tìm thấy mã sách!");
+                window.location.href = "all_books.html"; // Quay lại trang danh sách
+                return;
+            }
+
+            // 2. Khởi tạo Hiển thị chi tiết sách
+            const bookModel = new BookDetailModel();
+            const bookView = new BookDetailView();
+            const bookApp = new BookDetailController(bookModel, bookView);
+
+            try {
+                await bookApp.init(); // Gọi API lấy thông tin sách
+            } catch (err) {
+                console.error("Lỗi khởi tạo chi tiết sách:", err);
+            }
+
+            // 3. Khởi tạo tính năng Đánh giá (Review)
+            const reviewSection = document.getElementById('reviewSection');
+            if (reviewSection) {
+                reviewSection.setAttribute('data-book-id', bookId);
+
+                const reviewController = new ReviewController();
+                const addReviewBtn = document.getElementById('addReviewBtn');
+                const token = localStorage.getItem('token');
+
+                // Kiểm tra đăng nhập để bật/tắt nút viết đánh giá
+                if (!token && addReviewBtn) {
+                    addReviewBtn.disabled = true;
+                    addReviewBtn.classList.add('btn-disabled'); // Thêm class để đổi màu nút nếu cần
+                    addReviewBtn.title = 'Vui lòng đăng nhập để đánh giá';
+                }
+
+                // Tải danh sách đánh giá
+                await reviewController.init(bookId);
+
+                // Sự kiện nút Viết đánh giá
+                addReviewBtn?.addEventListener('click', () => {
+                    if (!localStorage.getItem('token')) {
+                        alert('Bạn phải đăng nhập mới đánh giá được nhé!');
+                        return;
+                    }
+                    reviewController.handleAddReviewClick();
+                });
+            }
+
+            // 4. Load Navbar (Giữ nguyên của ông)
             fetch('../../components/navbar.html')
                 .then(response => response.text())
                 .then(html => {
                     document.getElementById('navbar-container').innerHTML = html;
-                });
+                })
+                .catch(err => console.warn("Không load được Navbar:", err));
+        });
 
-            document.addEventListener('DOMContentLoaded', async () => {
-                const model = new BookDetailModel();
-                const view = new BookDetailView();
-                const app = new BookDetailController(model, view);
-                app.init();
-
-                // Initialize Review Feature
-                const reviewSection = document.getElementById('reviewSection');
-                const bookId = getCurrentBookIdFromPage();
-
-                if (bookId && reviewSection) {
-                    // Set book ID on review section
-                    reviewSection.setAttribute('data-book-id', bookId);
-
-                    const reviewController = new ReviewController();
-                    const token = localStorage.getItem('token');
-                    const addReviewBtn = document.getElementById('addReviewBtn');
-
-                    if (!token && addReviewBtn) {
-                        addReviewBtn.disabled = true;
-                        addReviewBtn.title = 'Vui lòng đăng nhập để đánh giá';
-                    }
-
-                    await reviewController.init(bookId);
-
-                    // Attach add review button event
-                    if (addReviewBtn) {
-                        addReviewBtn.addEventListener('click', () => {
-                            if (!localStorage.getItem('token')) {
-                                alert('Vui lòng đăng nhập để đánh giá');
-                                return;
-                            }
-                            reviewController.handleAddReviewClick();
-                        });
-                    }
-                } else {
-                    console.warn('Book ID or review section not found');
-                }
-            });
-
-            document.addEventListener("DOMContentLoaded", () => {
-                const model = new BookDetailModel();
-                const view = new BookDetailView();
-                const app = new BookDetailController(model, view);
-                app.init();
-            });
-        </script>
-    </body>
+        document.addEventListener("DOMContentLoaded", () => {
+            const model = new BookDetailModel();
+            const view = new BookDetailView();
+            const app = new BookDetailController(model, view);
+            app.init();
+        });
+    </script>
+</body>
 
 </html>
