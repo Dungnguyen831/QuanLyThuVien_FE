@@ -50,7 +50,7 @@ class ReviewModel {
             const json = await response.json();
             return json;
         } catch (error) {
-            console.error('[ReviewModel] Error:', error.message);
+            console.error('[ReviewModel] Lỗi:', error.message);
             throw error;
         }
     }
@@ -109,6 +109,8 @@ class ReviewModel {
             bookId: formData.bookId,
             rating: formData.rating,
             comment: formData.comment
+            // TODO: Backend cần thêm field 'fullName' vào bảng reviews trước khi uncomment dòng dưới
+            // fullName: formData.fullName || 'Anonymous'
         };
         const response = await this.fetchAPI(this.apiBaseUrl, 'POST', payload);
         console.log('[ReviewModel] createReview - New ID:', response.id, 'CreatedAt:', response.createdAt);
@@ -118,6 +120,7 @@ class ReviewModel {
     /**
      * Cập nhật review
      * PUT /api/v1/reviews/{id}
+     * Request: { userId, bookId, rating, comment }
      * Response: { id, userId, bookId, rating, comment, createdAt, updatedAt }
      */
     async updateReview(id, formData) {
@@ -126,6 +129,8 @@ class ReviewModel {
             bookId: formData.bookId,
             rating: formData.rating,
             comment: formData.comment
+            // TODO: Backend cần thêm field 'fullName' vào bảng reviews trước khi uncomment dòng dưới
+            // fullName: formData.fullName || 'Anonymous'
         };
         const response = await this.fetchAPI(`${this.apiBaseUrl}/${id}`, 'PUT', payload);
         console.log('[ReviewModel] updateReview - ID:', id, 'UpdatedAt:', response.updatedAt);

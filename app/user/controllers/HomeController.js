@@ -30,7 +30,7 @@ class HomeController {
                         : [];
                     this.view.bindWishlistBookIds(wishlistBookIds);
                 } catch (error) {
-                    console.warn('Could not load wishlist status:', error);
+                    console.warn('Không thể tải trạng thái wishlist:', error);
                 }
             }
 
@@ -47,7 +47,7 @@ class HomeController {
 
         } catch (error) {
             console.error("Lỗi ở HomeController:", error);
-            this.view.showError("Unable to load books. Please try again later.");
+            this.view.showError("Không thể tải sách. Vui lòng thử lại sau.");
         }
     }
 

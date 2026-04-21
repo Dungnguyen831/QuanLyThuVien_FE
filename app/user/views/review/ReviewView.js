@@ -19,7 +19,7 @@ function decodeJWT(token) {
         const decoded = JSON.parse(atob(parts[1]));
         return decoded;
     } catch (error) {
-        console.error('Error decoding JWT:', error);
+        console.error('Lỗi giải mã JWT:', error);
         return null;
     }
 }
@@ -46,7 +46,7 @@ function getCurrentUserIdFromSession() {
             return parseInt(user.userId);
         }
     } catch (error) {
-        console.error('Error parsing user from localStorage:', error);
+        console.error('Lỗi phân tích người dùng từ localStorage:', error);
     }
 
     // Cách 3: Decode JWT token để lấy userId
@@ -66,6 +66,29 @@ function getCurrentUserIdFromSession() {
     }
 
     console.warn('[ReviewView] Không lấy được User ID từ localStorage hoặc JWT token');
+    return null;
+}
+
+/**
+ * Get current user's full name from localStorage
+ * @returns {string|null} - User's full name or null if not available
+ */
+function getCurrentUserFullName() {
+    try {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.fullName) {
+            return user.fullName;
+        }
+        // Fallback to other possible name fields
+        if (user.name) {
+            return user.name;
+        }
+        if (user.firstName && user.lastName) {
+            return `${user.firstName} ${user.lastName}`;
+        }
+    } catch (error) {
+        console.error('Lỗi phân tích fullName người dùng từ localStorage:', error);
+    }
     return null;
 }
 
@@ -162,7 +185,7 @@ class ReviewView {
       <div class="review-card" data-review-id="${review.id}">
         <div class="review-header">
           <div class="review-user-info">
-            <h4 class="review-username">${escapeHTML(review.userName || 'Anonymous')}</h4>
+            <h4 class="review-username">${escapeHTML(review.fullName || 'Ẩn danh')}</h4>
             <span class="review-date">${formattedDate}</span>
           </div>
           <div class="review-rating">${stars}</div>
@@ -245,7 +268,8 @@ class ReviewView {
                     userId: parseInt(getCurrentUserIdFromSession()) || null,
                     bookId: parseInt(getCurrentBookIdFromPage()) || null,
                     rating: parseInt(document.querySelector('input[name="rating"]:checked')?.value || 0),
-                    comment: document.getElementById('commentInput').value
+                    comment: document.getElementById('commentInput').value,
+                    fullName: getCurrentUserFullName() || 'Anonymous'
                 };
                 this.reviewController.handleSubmitForm(formData);
             });

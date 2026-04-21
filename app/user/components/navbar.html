@@ -2,50 +2,31 @@
 <nav class="navbar">
   <div class="navbar-container">
     <a href="/app/user/views/home/home.html" class="navbar-logo">
-      <svg
-        class="logo-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect x="2" y="2" width="8" height="8" fill="#6366F1" />
-        <rect x="14" y="2" width="8" height="8" fill="#6366F1" />
-        <rect x="14" y="14" width="8" height="8" fill="#6366F1" />
-      </svg>
-      <span class="logo-text">LibrarySaaS</span>
+      <img src="https://utt.edu.vn/uploads/file-manager/images/Logo%20UTT_logo-40x60-xanh.png" alt="UTT Logo"
+        class="logo-icon" />
+      <span class="logo-text">Thư viện UTT</span>
     </a>
     <div class="navbar-search">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search for titles, authors, or ISBN..."
-      />
-    
+      <input type="text" class="search-input" id="searchInput"
+        placeholder="Tìm kiếm theo tiêu đề, tác giả hoặc ISBN..." />
+      <div class="search-suggestions" id="searchSuggestions"></div>
     </div>
     <ul class="navbar-menu">
-      <li><a href="#" class="nav-link">Browse</a></li>
-      <li><a href="#" class="nav-link">New Arrivals</a></li>
       <li>
-        <a href="/app/user/views/reservation/reservations.html" class="nav-link"
-          >Reservations</a
-        >
+        <a href="/app/user/views/home/all_books.html" class="nav-link">Books</a>
       </li>
       <li>
-        <a href="/app/user/views/wishlist/wishlist.html" class="nav-link"
-          >My Wishlist</a
-        >
+        <a href="/app/user/views/reservation/reservations.html" class="nav-link">Reservations</a>
+      </li>
+      <li>
+        <a href="/app/user/views/wishlist/wishlist.html" class="nav-link">My Wishlist</a>
       </li>
     </ul>
     <div class="navbar-actions">
-      <a href="/app/auth/views/login.html" class="nav-link login-link"
-        >Log In</a
-      >
-      <button
-        onclick="window.location.href = '/app/auth/views/register.html'"
-        class="btn btn-primary"
-      >
+      <a href="/app/auth/views/login.html" class="nav-link login-link">Log In</a>
+      <button onclick="window.location.href = '/app/auth/views/register.html'" class="btn btn-primary">
         Sign Up
       </button>
-        </div>
     </div>
+  </div>
 </nav>

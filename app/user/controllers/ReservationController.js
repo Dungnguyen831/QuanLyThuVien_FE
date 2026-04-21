@@ -25,8 +25,8 @@ class ReservationController {
             // Load and render dashboard data
             await this.loadDashboardData();
         } catch (error) {
-            console.error('Error initializing ReservationController:', error);
-            this.view.showError('Failed to load reservations. Please try again later.');
+            console.error('Lỗi khởi tạo ReservationController:', error);
+            this.view.showError('Không thể tải đặt chỗ. Vui lòng thử lại sau.');
         }
     }
 
@@ -36,6 +36,7 @@ class ReservationController {
     bindViewEvents() {
         this.view.onNewReservationClick(() => this.handleNewReservation());
         this.view.onDetailsClick((reservationId) => this.handleViewDetails(reservationId));
+        this.view.onConfirmPickupClick((reservationId) => this.handleConfirmPickup(reservationId));
         this.view.onCancelClick((reservationId) => this.handleCancelReservation(reservationId));
     }
 
@@ -48,6 +49,9 @@ class ReservationController {
             const reservations = await this.model.getUserReservationsWithBooks();
 
             if (reservations) {
+                // ✅ Store reservations for later use in edit/details operations
+                this.reservations = reservations;
+
                 // Calculate stats from reservation data
                 const stats = this._calculateStatsFromReservations(reservations);
 
@@ -58,8 +62,8 @@ class ReservationController {
                 this.view.renderReservationTable(reservations);
             }
         } catch (error) {
-            console.error('Error loading dashboard data:', error);
-            this.view.showError('Unable to load your reservations.');
+            console.error('Lỗi tải dữ liệu bảng điều khiển:', error);
+            this.view.showError('Không thể tải đặt chỗ của bạn.');
             throw error;
         }
     }
@@ -108,7 +112,7 @@ class ReservationController {
                 mode: 'selection',
                 onSubmit: async (formData) => {
                     try {
-                        console.log('Borrow form submitted:', formData);
+                        console.log('Biểu mẫu mượn đã gửi:', formData);
 
                         // Validate pickup date with business rules
                         const dateValidation = BorrowForm.validatePickupDate(formData.pickupDate);
@@ -131,7 +135,7 @@ class ReservationController {
 
                         alert('✅ Yêu cầu mượn sách thành công!\n\nVui lòng chờ xác nhận từ thư viện.');
                     } catch (error) {
-                        console.error('Error in form submission:', error);
+                        console.error('Lỗi trong gửi biểu mẫu:', error);
                         alert('Lỗi: ' + (error.message || 'Không thể tạo yêu cầu mượn sách'));
                     }
                 }
@@ -141,8 +145,8 @@ class ReservationController {
             document.body.appendChild(formModal);
 
         } catch (error) {
-            console.error('Error opening new reservation form:', error);
-            alert('Failed to open reservation form. Please try again.');
+            console.error('Lỗi mở biểu mẫu đặt chỗ mới:', error);
+            alert('Không thể mở biểu mẫu đặt chỗ. Vui lòng thử lại.');
         }
     }
 
@@ -170,19 +174,24 @@ class ReservationController {
             }
             return [];
         } catch (error) {
-            console.error('Error fetching available books:', error);
+            console.error('Lỗi tải sách sẵn có:', error);
             return [];
         }
     }
 
     /**
      * Handle edit reservation (called when user clicks edit for existing reservation)
+     * ✅ FIXED: Get reservation from this.reservations array instead of API call
      * @param {number|string} reservationId - ID of reservation to edit
      */
     async handleEditReservation(reservationId) {
         try {
-            // Fetch reservation details
-            const reservation = await this.model.getReservationDetails(reservationId);
+            // ✅ Get reservation from stored array (already fetched in loadDashboardData)
+            const reservation = this._findReservationById(reservationId);
+
+            if (!reservation) {
+                throw new Error('Không tìm thấy đặt chỗ');
+            }
 
             // ✅ Store current reservation for later use in form submission
             this.currentReservation = reservation;
@@ -202,9 +211,22 @@ class ReservationController {
             });
 
         } catch (error) {
-            console.error('Error opening edit reservation form:', error);
-            alert('Failed to load reservation for editing. Please try again.');
+            console.error('Lỗi mở biểu mẫu sửa đặt chỗ:', error);
+            alert('Không thể tải đặt chỗ để sửa. Vui lòng thử lại.');
         }
+    }
+
+    /**
+     * Find reservation by ID from stored array
+     * @private
+     * @param {number|string} reservationId - ID to search for
+     * @returns {Object|null} - Reservation object or null if not found
+     */
+    _findReservationById(reservationId) {
+        if (!this.reservations || !Array.isArray(this.reservations)) {
+            return null;
+        }
+        return this.reservations.find(r => r.id == reservationId) || null;
     }
 
     /**
@@ -231,14 +253,14 @@ class ReservationController {
             const submitBtn = form.querySelector('button[type="submit"]');
             const originalText = submitBtn.textContent;
             submitBtn.disabled = true;
-            submitBtn.textContent = 'Processing...';
+            submitBtn.textContent = 'Đang xử lý...';
 
             try {
                 if (isUpdate) {
                     // ✅ UPDATE existing reservation
                     // User can ONLY edit the date - bookId and status come from current reservation
-                    console.log('[ReservationController] Updating - Form data:', formData);
-                    console.log('[ReservationController] Current reservation:', this.currentReservation);
+                    console.log('[ReservationController] Đang cập nhật - Dữ liệu biểu mẫu:', formData);
+                    console.log('[ReservationController] Đặt chỗ hiện tại:', this.currentReservation);
 
                     const updateData = {
                         bookId: this.currentReservation.bookId,  // Keep current bookId
@@ -246,17 +268,17 @@ class ReservationController {
                         status: this.currentReservation.status  // Keep current status
                     };
 
-                    console.log('[ReservationController] Sending update data:', updateData);
+                    console.log('[ReservationController] Gửi dữ liệu cập nhật:', updateData);
                     await this.model.updateReservation(reservationId, updateData);
 
                     // Update table row without full reload
                     this.view.updateTableRow(reservationId, {
                         reservationDate: formData.reservationDate
-                        // Status không update (giữ trạng thái cũ)
+                        // Trạng thái không cập nhật (giữ trạng thái cũ)
                     });
 
                     this.view.closeReservationModal(formModal);
-                    alert('Reservation updated successfully!');
+                    alert('Đặt chỗ đã được cập nhật thành công!');
                 } else {
                     // CREATE new reservation
                     // Pass: bookId, reservationDate, status
@@ -270,7 +292,7 @@ class ReservationController {
                     await this.loadDashboardData();
 
                     this.view.closeReservationModal(formModal);
-                    alert('Reservation created successfully!');
+                    alert('Đặt chỗ đã được tạo thành công!');
                 }
             } finally {
                 // Restore button state
@@ -279,8 +301,8 @@ class ReservationController {
             }
 
         } catch (error) {
-            console.error('Error submitting reservation form:', error);
-            alert('Error: ' + (error.message || 'Failed to save reservation. Please try again.'));
+            console.error('Lỗi gửi biểu mẫu đặt chỗ:', error);
+            alert('Lỗi: ' + (error.message || 'Không thể lưu đặt chỗ. Vui lòng thử lại.'));
         }
     }
 
@@ -288,9 +310,33 @@ class ReservationController {
      * Handle view details button click
      * @param {string|number} reservationId - ID of the reservation
      */
-    handleViewDetails(reservationId) {
+    async handleViewDetails(reservationId) {
         // Open the edit form for viewing/editing details
-        this.handleEditReservation(reservationId);
+        await this.handleEditReservation(reservationId);
+    }
+
+    /**
+     * Handle confirm pickup button click
+     * @param {string|number} reservationId - ID of the reservation
+     */
+    async handleConfirmPickup(reservationId) {
+        const confirmPickup = confirm('Xác nhận rằng bạn đã lấy sách này?');
+
+        if (!confirmPickup) {
+            return;
+        }
+
+        try {
+            await this.model.confirmPickup(reservationId);
+
+            // Reload dashboard data to update reservation status and stats
+            await this.loadDashboardData();
+
+            alert('Xác nhận lấy sách thành công!');
+        } catch (error) {
+            console.error('Lỗi xác nhận lấy sách:', error);
+            alert('Không thể xác nhận lấy sách. Vui lòng thử lại.');
+        }
     }
 
     /**
@@ -298,7 +344,7 @@ class ReservationController {
      * @param {string|number} reservationId - ID of the reservation to cancel
      */
     async handleCancelReservation(reservationId) {
-        const confirmCancel = confirm('Are you sure you want to cancel this reservation?');
+        const confirmCancel = confirm('Bạn có chắc chắn muốn hủy đặt chỗ này không?');
 
         if (!confirmCancel) {
             return;
@@ -313,10 +359,10 @@ class ReservationController {
             // Reload dashboard data to update stats
             await this.loadDashboardData();
 
-            alert('Reservation cancelled successfully');
+            alert('Đặt chỗ đã được hủy thành công');
         } catch (error) {
-            console.error('Error cancelling reservation:', error);
-            alert('Failed to cancel reservation. Please try again.');
+            console.error('Lỗi hủy đặt chỗ:', error);
+            alert('Không thể hủy đặt chỗ. Vui lòng thử lại.');
         }
     }
 }

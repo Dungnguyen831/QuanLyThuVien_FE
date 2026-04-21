@@ -32,29 +32,9 @@ class BookDetailView {
         const authorName = book.authorName || `Tên Tác giả: ${book.author_name || 'Unknown'}`;
         dom.authorYear.innerText = `${authorName} •Năm tái bản  ${book.publishedYear || 'N/A'}`;
 
-        // 2. XỬ LÝ ẢNH 
-        dom.img.onerror = null;
-
-        if (book.imageUrl) {
-            // Lấy tên file từ database (ví dụ: dacnhantam.jpg)
-            const fileName = book.imageUrl.includes('/') ? book.imageUrl.split('/').pop() : book.imageUrl;
-
-            // SỬA TẠI ĐÂY: Trỏ đúng vào thư mục /img/ 
-            // Thử dùng đường dẫn tương đối chính xác từ file book_detail.html
-            dom.img.src = `../../../../assets/img/${fileName}`;
-
-            console.log("Đường dẫn ảnh đang gọi:", dom.img.src);
-        } else {
-            // Ảnh mặc định cũng phải trỏ vào thư mục img và đúng đuôi .jpg
-            dom.img.src = "../../../../assets/img/default-book.jpg";
-        } ``
-
-        // Hàm xử lý khi link ảnh trên bị chết (Ví dụ file không tồn tại trong assets)
-        dom.img.onerror = function () {
-            this.onerror = null; // NGẮT VÒNG LẶP NGAY LẬP TỨC
-            this.src = "https://img.freepik.com/free-vector/book-cover-template-design_23-2148498251.jpg";
-            console.warn("Đã dùng ảnh dự phòng.");
-        };
+        // 2. XỬ LÝ ẢNH - Sử dụng ImageService
+        const fallbackUrl = "https://img.freepik.com/free-vector/book-cover-template-design_23-2148498251.jpg";
+        ImageService.displayWithFallback('book-img', book.imageUrl, fallbackUrl);
 
         // 3. Thông số kỹ thuật
         dom.isbn.innerText = book.isbn || 'N/A';
@@ -71,12 +51,12 @@ class BookDetailView {
             const btnBorrow = document.getElementById('btn-borrow');
             if (btnBorrow) btnBorrow.disabled = false;
         } else {
-            dom.available.innerText = `● OUT OF STOCK`;
+            dom.available.innerText = `● Hết hàng`;
             dom.available.className = 'lbl text-danger bg-danger-subtle';
             const btnBorrow = document.getElementById('btn-borrow');
             if (btnBorrow) {
                 btnBorrow.disabled = true;
-                btnBorrow.innerText = "❌ Out of Stock";
+                btnBorrow.innerText = "✵ Hết hàng";
                 btnBorrow.style.opacity = "0.6";
             }
         }

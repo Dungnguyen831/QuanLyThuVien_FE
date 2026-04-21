@@ -44,7 +44,7 @@ class BookCardController {
                     return ImageService.getImageUrl(imagePath);
                 }
             } catch (error) {
-                console.warn('ImageService error, falling back to manual resolution:', error);
+                console.warn('Lỗi ImageService, quay trở lại phân giải thủ công:', error);
             }
         }
 
@@ -123,6 +123,11 @@ class BookCardController {
             return book.author.name;
         }
 
+        // Author name field from API (new field from backend)
+        if (book.author_name) {
+            return book.author_name;
+        }
+
         // Author ID fallback
         if (book.author_id || book.authorId) {
             return `Author #${book.author_id || book.authorId}`;
@@ -143,7 +148,7 @@ class BookCardController {
         const total = book.totalQty || book.total_qty || 1;
 
         if (available === 0) {
-            return '<span class="availability-badge unavailable">Out of Stock</span>';
+            return '<span class="availability-badge unavailable">Hết hàng</span>';
         } else if (available <= total * 0.2) {
             return '<span class="availability-badge low">Low Stock</span>';
         } else {
