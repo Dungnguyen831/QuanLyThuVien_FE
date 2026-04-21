@@ -67,6 +67,7 @@ class ReaderController {
     this.view.bindToggleStatus((id, newStatus) =>
       this.handleChangeStatus(id, newStatus),
     );
+    this.view.bindUpdateMsv((id, newMsv) => this.handleUpdateMsv(id, newMsv));
   }
 
   handleOpenEditModal(id) {
@@ -98,6 +99,22 @@ class ReaderController {
       } catch (err) {
         alert(err.message);
       }
+    }
+  }
+
+  async handleUpdateMsv(id, newMsv) {
+    try {
+      // 1. Gọi API ở Model
+      await this.model.updateMsv(id, newMsv);
+
+      // 2. Báo thành công và đóng Popup
+      alert("Cập nhật Mã sinh viên thành công!");
+      this.view.closeMsvModal();
+
+      // 3. Tải lại danh sách để bảng cập nhật liền tay
+      await this.loadReaders();
+    } catch (error) {
+      alert(error.message); // Nếu trùng MSV, backend sẽ báo lỗi ra đây
     }
   }
 

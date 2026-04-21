@@ -6,6 +6,7 @@ class ProfileView {
     this.inputEmail = document.getElementById("email");
     this.inputPhone = document.getElementById("phone");
     this.inputPassword = document.getElementById("password");
+    this.inputMsv = document.getElementById("msv"); // Thêm input Mã sinh viên (MSV)
     // Các nút bấm
     this.btnEdit = document.getElementById("btnEdit"); // Nút mở khóa
     this.btnSave = document.getElementById("btnSave"); // Nút lưu
@@ -25,6 +26,7 @@ class ProfileView {
     this.inputFullName.value = user.fullName || "";
     this.inputEmail.value = user.email || "";
     this.inputPhone.value = user.phone || "";
+    this.inputMsv.value = user.msv || ""; // Đổ dữ liệu MSV vào ô
     if (this.displayName) this.displayName.textContent = user.fullName;
 
     // Gán dữ liệu ban đầu vào dataset để dùng khi bấm Hủy
