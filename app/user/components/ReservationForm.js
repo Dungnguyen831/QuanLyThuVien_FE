@@ -42,11 +42,11 @@ class ReservationForm {
                 ReservationForm.templateCache = template.innerHTML;
                 return ReservationForm.templateCache;
             } else {
-                console.warn('Template element not found in ReservationForm.html');
+                console.warn('Phần tử mẫu không tìm thấy trong ReservationForm.html');
                 return '';
             }
         } catch (error) {
-            console.error('Failed to load ReservationForm template:', error);
+            console.error('Lỗi tải mẫu ReservationForm:', error);
             return '';
         }
     }
@@ -94,8 +94,8 @@ class ReservationForm {
         const { isCreateMode, reservation, availableBooks } = data;
 
         // Prepare modal title and button text
-        const modalTitle = isCreateMode ? 'New Reservation' : 'Edit Reservation';
-        const submitButtonText = isCreateMode ? '+ Create Reservation' : 'Update Reservation';
+        const modalTitle = isCreateMode ? 'Đặt Chỗ Mới' : 'Chỉnh Sửa Đặt Chỗ';
+        const submitButtonText = isCreateMode ? '+ Tạo Đặt Chỗ' : 'Cập Nhật Đặt Chỗ';
 
         // Prepare book selector (only for CREATE mode)
         let bookSelector = '';
@@ -142,13 +142,13 @@ class ReservationForm {
 
         return `
             <div class="form-group">
-                <label for="book-search">Select Book <span class="required">*</span></label>
+                <label for="book-search">Chọn Sách <span class="required">*</span></label>
                 <div class="book-search-wrapper">
                     <input 
                         type="text" 
                         id="book-search" 
                         class="form-control book-search-input" 
-                        placeholder="Type book name or author..."
+                        placeholder="Nhập tên sách hoặc tác giả..."
                         autocomplete="off"
                         required
                         data-books="${booksJson}"
@@ -156,7 +156,7 @@ class ReservationForm {
                     <input type="hidden" id="selected-book-id" name="bookId" value="">
                     <div class="book-suggestions-dropdown"></div>
                 </div>
-                <small class="form-text">Search and select a book from the list</small>
+                <small class="form-text">Tìm kiếm và chọn một sách từ danh sách</small>
             </div>
         `;
     }
@@ -319,7 +319,7 @@ class ReservationForm {
                 availableBooks = JSON.parse(booksJson);
             }
         } catch (error) {
-            console.error('Failed to parse books data:', error);
+            console.error('Lỗi phân tích dữ liệu sách:', error);
             return;
         }
 

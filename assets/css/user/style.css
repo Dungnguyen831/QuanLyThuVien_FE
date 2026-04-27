@@ -87,8 +87,8 @@ body {
 }
 
 .logo-icon {
-    width: 28px;
-    height: 28px;
+    width: 100px;
+    height: 70px;
 }
 
 .logo-text {
@@ -98,6 +98,7 @@ body {
 .navbar-search {
     flex: 1;
     max-width: 400px;
+    position: relative;
 }
 
 .search-input {
@@ -120,6 +121,79 @@ body {
     background-color: var(--bg-white);
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--bg-white);
+    border: 1px solid var(--border-light);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+    max-height: 400px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.suggestion-item {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border-light);
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: var(--bg-light);
+}
+
+.suggestion-item.no-results {
+    color: var(--text-light);
+    text-align: center;
+    cursor: default;
+    padding: 1rem;
+}
+
+.suggestion-item.no-results:hover {
+    background-color: transparent;
+}
+
+.suggestion-content {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.suggestion-title {
+    font-weight: 500;
+    color: var(--text-dark);
+    font-size: 0.875rem;
+}
+
+.suggestion-title strong {
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.suggestion-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-light);
+}
+
+.suggestion-author,
+.suggestion-isbn {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .navbar-menu {

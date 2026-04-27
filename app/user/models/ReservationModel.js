@@ -32,6 +32,7 @@ class ReservationModel {
 
     /**
      * Cancel a reservation
+     * DELETE /api/v1/reservations/{id}
      * @param {string|number} reservationId - ID of the reservation to cancel
      * @returns {Promise<Object>} Result of cancellation
      */
@@ -40,11 +41,12 @@ class ReservationModel {
             const token = localStorage.getItem('token');
 
             if (!token) {
-                throw new Error('User not authenticated.');
+                throw new Error('Người dùng chưa xác thực.');
             }
 
             // ✅ Authorization header attached
-            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${reservationId}`, {
+            // ✅ FIXED: Use /reservations/{id} endpoint from backend
+            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json',
@@ -67,20 +69,27 @@ class ReservationModel {
                 result = await response.text();
             }
 
-            console.log('Cancel reservation result:', result);
+            console.log('Kết quả hủy đặt chỗ:', result);
             return result;
         } catch (error) {
-            console.error('Error cancelling reservation:', error);
+            console.error('Lỗi hủy đặt chỗ:', error);
             throw error;
         }
     }
 
     /**
-     * Get reservation details
-     * @param {string|number} reservationId - ID of the reservation
-     * @returns {Promise<Object>} Detailed reservation data
+     * ❌ REMOVED: Get reservation details endpoint doesn't exist in backend
+     * Solution: Use getUserReservationsWithBooks() to get all reservations
+     * Then find the specific reservation by ID from the returned array
      */
-    async getReservationDetails(reservationId) {
+
+    /**
+     * Confirm pickup - update reservation status to COMPLETED
+     * PATCH /api/v1/reservations/{id}/pickup
+     * @param {string|number} reservationId - ID of the reservation
+     * @returns {Promise<Object>} Updated reservation object
+     */
+    async confirmPickup(reservationId) {
         try {
             const token = localStorage.getItem('token');
 
@@ -88,9 +97,9 @@ class ReservationModel {
                 throw new Error('User not authenticated.');
             }
 
-            // ✅ Authorization header attached
-            const response = await fetch(`${this.apiBaseUrl}/reservations/user/${reservationId}`, {
-                method: 'GET',
+            // ✅ PATCH to confirm pickup
+            const response = await fetch(`${this.apiBaseUrl}/reservations/${reservationId}/pickup`, {
+                method: 'PATCH',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
@@ -98,14 +107,15 @@ class ReservationModel {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.json().catch(() => ({}));
+                throw new Error(errorData.message || `HTTP error! status: ${response.status}`);
             }
 
             const result = await response.json();
-            console.log('Reservation details:', result);
+            console.log('[ReservationModel] Xác nhận lấy sách:', result);
             return result;
         } catch (error) {
-            console.error('Error fetching reservation details:', error);
+            console.error('[ReservationModel] Lỗi xác nhận lấy sách:', error);
             throw error;
         }
     }
@@ -122,7 +132,7 @@ class ReservationModel {
             const token = localStorage.getItem('token');
 
             if (!token) {
-                throw new Error('User not authenticated. Please login first.');
+                throw new Error('Người dùng chưa xác thực. Vui lòng đăng nhập trước.');
             }
 
             // ✅ NEW ENDPOINT: No userId in path - backend extracts from JWT
@@ -139,12 +149,12 @@ class ReservationModel {
             }
 
             const reservations = await response.json();
-            console.log('Reservations with book details from BE:', reservations);
+            console.log('Đặt chỗ với chi tiết sách từ BE:', reservations);
 
             // Return array of combined reservation+book objects
             return Array.isArray(reservations) ? reservations : [];
         } catch (error) {
-            console.error('Error fetching reservations with book details from BE:', error);
+            console.error('Lỗi tải đặt chỗ với chi tiết sách từ BE:', error);
             throw error;
         }
     }
@@ -196,9 +206,9 @@ class ReservationModel {
 
     /**
      * Update an existing reservation
+     * PUT /api/v1/reservations/{id}
      * ✅ CRITICAL: Sends bookId, reservationDate, status to backend
      * ✅ SECURITY: Always validates ID > 0 before sending
-     * ✅ API: ID must be in URL path: /api/v1/reservations/user/{id}
      * 
      * @param {number|string} reservationId - ID of the reservation to update (must be > 0)
      * @param {Object} updateData - Data to update { bookId, reservationDate, status }
@@ -220,7 +230,7 @@ class ReservationModel {
                 throw new Error('Phiên làm việc hết hạn. Vui lòng đăng nhập lại.');
             }
 
-            // ✅ 3. Prepare request body (bookId, reservationDate, status - NO id field!)
+            // ✅ 3. Prepare request body (bookId, reservationDate, status)
             const requestData = {
                 bookId: parseInt(updateData.bookId),
                 reservationDate: updateData.reservationDate,
@@ -229,13 +239,13 @@ class ReservationModel {
 
             console.log('[ReservationModel] Sending request:', {
                 method: 'PUT',
-                url: `${this.apiBaseUrl}/reservations/user/${id}`,
+                url: `${this.apiBaseUrl}/reservations/${id}`,
                 body: requestData
             });
 
             // ✅ 4. Fetch with ID in URL path
             const response = await fetch(
-                `${this.apiBaseUrl}/reservations/user/${id}`,  // ← ID ở url path!
+                `${this.apiBaseUrl}/reservations/${id}`,
                 {
                     method: 'PUT',
                     headers: {

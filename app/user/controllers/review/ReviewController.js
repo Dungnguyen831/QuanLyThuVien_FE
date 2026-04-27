@@ -28,7 +28,7 @@ class ReviewController {
             this.reviewView.renderReviewList(this.reviews);
             this.reviewView.hideLoadingState();
         } catch (error) {
-            console.error('Error loading reviews:', error);
+            console.error('Lỗi tải đánh giá:', error);
             this.reviewView.showErrorMessage("Lỗi tải danh sách đánh giá");
             this.reviewView.hideLoadingState();
         }
@@ -101,7 +101,7 @@ class ReviewController {
             this.currentEditingReviewId = null;
 
         } catch (error) {
-            console.error('Error saving review:', error);
+            console.error('Lỗi lưu đánh giá:', error);
             this.reviewView.showErrorMessage(error.message || "Lỗi khi lưu đánh giá");
         } finally {
             this.reviewView.hideLoadingState();
@@ -135,7 +135,7 @@ class ReviewController {
             this.reviewView.showSuccessMessage("Xóa đánh giá thành công");
 
         } catch (error) {
-            console.error('Error deleting review:', error);
+            console.error('Lỗi xóa đánh giá:', error);
             this.reviewView.showErrorMessage("Lỗi khi xóa đánh giá");
         } finally {
             this.reviewView.hideLoadingState();

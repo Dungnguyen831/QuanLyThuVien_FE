@@ -44,11 +44,11 @@ class BookCard {
                 BookCard.templateCache = template.innerHTML;
                 return BookCard.templateCache;
             } else {
-                console.warn('Template element not found in BookCard.html');
+                console.warn('Phần tử mẫu không tìm thấy trong BookCard.html');
                 return '';
             }
         } catch (error) {
-            console.error('Failed to load BookCard template:', error);
+            console.error('Lỗi tải mẫu BookCard:', error);
             return '';
         }
     }
@@ -117,7 +117,7 @@ class BookCard {
 
         // Create favorite button HTML (if enabled)
         const isInWishlistClass = config.isInWishlist ? 'in-wishlist' : '';
-        const btnTitle = config.isInWishlist ? 'Remove from wishlist' : 'Add to wishlist';
+        const btnTitle = config.isInWishlist ? 'Xóa khỏi danh sách yêu thích' : 'Thêm vào danh sách yêu thích';
         const favoriteButton = config.showFavoriteBtn ?
             `<button class="book-card-favorite-btn ${isInWishlistClass}" title="${btnTitle}" data-book-id="${book.id}"><i class="fas fa-heart"></i></button>` : '';
 
@@ -237,7 +237,7 @@ class BookCard {
                 detail: { bookId: book.id, inWishlist: action === 'add' }
             }));
         } catch (error) {
-            console.error('Wishlist update failed:', error);
+            console.error('Lỗi cập nhật wishlist:', error);
             alert('Failed to update wishlist. Please try again.');
         }
     }
@@ -252,12 +252,12 @@ class BookCard {
     static _updateButtonState(btn, inWishlist) {
         if (inWishlist) {
             btn.classList.add('in-wishlist');
-            btn.title = 'Remove from wishlist';
+            btn.title = 'Xóa khỏi danh sách yêu thích';
             btn.classList.add('bookcard-favorite-added');
             setTimeout(() => btn.classList.remove('bookcard-favorite-added'), 600);
         } else {
             btn.classList.remove('in-wishlist');
-            btn.title = 'Add to wishlist';
+            btn.title = 'Thêm vào danh sách yêu thích';
             btn.classList.add('bookcard-favorite-removed');
             setTimeout(() => btn.classList.remove('bookcard-favorite-removed'), 600);
         }

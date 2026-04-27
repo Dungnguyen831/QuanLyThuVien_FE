@@ -34,7 +34,7 @@ class WishlistController {
 
     // ✅ Listen for wishlist changes from other pages (e.g., home page)
     window.addEventListener('wishlistChanged', (event) => {
-      console.log('Wishlist changed from another page:', event.detail);
+      console.log('Wishlist thay đổi từ trang khác:', event.detail);
       // Reload wishlist data to reflect changes
       this.loadWishlistData();
     });
@@ -76,12 +76,12 @@ class WishlistController {
         this.applyFilterAndSort();
         await this.renderPage(); // await async render
       } else {
-        this.view.showError("Unable to load wishlist data");
+        this.view.showError("Không thể tải dữ liệu wishlist");
       }
     } catch (error) {
-      console.error("Error loading wishlist:", error);
+      console.error("Lỗi tải wishlist:", error);
       this.view.showError(
-        "Error loading your wishlist. Please try again later.",
+        "Lỗi tải wishlist của bạn. Vui lòng thử lại sau.",
       );
     }
   }
