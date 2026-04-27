@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Lịch sử mượn trả - LibrarySaaS</title>
+    <link rel="stylesheet" href="../../../../assets/css/user/style.css" />
+    <style>
+      /* Light Mode Theme Variables */
+      :root {
+        --bg-body: #f3f4f6;
+        --bg-card: #ffffff;
+        --text-main: #111827;
+        --text-muted: #6b7280;
+        --border-color: #e5e7eb;
+        --primary: #6366F1;
+        --primary-hover: #4f46e5;
+      }
+
+      body {
+        background-color: var(--bg-body);
+        color: var(--text-main);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        margin: 0;
+      }
+
+      .main-container {
+        padding: 2rem 5%;
+        max-width: 1400px;
+        margin: 0 auto;
+      }
+
+      /* Header */
+      .loans-header { margin-bottom: 2rem; }
+      .header-content { display: flex; justify-content: space-between; align-items: flex-start; }
+      .loans-title { font-size: 1.875rem; font-weight: bold; margin: 0 0 0.5rem 0; color: var(--text-main); }
+      .loans-subtitle { color: var(--text-muted); margin: 0; }
+
+      /* Stats Section */
+      .stats-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+      }
+      .stat-card {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        padding: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .stat-icon {
+        width: 48px; height: 48px;
+        border-radius: 0.5rem;
+        display: flex; justify-content: center; align-items: center;
+      }
+      .icon-blue { background: #e0e7ff; color: #4f46e5; }
+      .icon-green { background: #d1fae5; color: #059669; }
+      .icon-red { background: #fee2e2; color: #dc2626; }
+      
+      .stat-label { font-size: 0.875rem; color: var(--text-muted); margin: 0 0 0.25rem 0; font-weight: 500; }
+      .stat-value { font-size: 1.5rem; font-weight: bold; margin: 0; color: var(--text-main); }
+
+      /* Table Section */
+      .loans-table-section {
+        background-color: var(--bg-card);
+        border: 1px solid var(--border-color);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .table-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex; justify-content: space-between; align-items: center;
+      }
+      .section-title { font-size: 1.125rem; font-weight: 600; margin: 0; }
+      
+      table { width: 100%; border-collapse: collapse; text-align: left; }
+      th {
+        background-color: #f9fafb;
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        padding: 1rem 1.5rem;
+        font-weight: 600;
+        border-bottom: 1px solid var(--border-color);
+      }
+      td { padding: 1rem 1.5rem; border-bottom: 1px solid var(--border-color); color: var(--text-main); vertical-align: middle;}
+      tr:last-child td { border-bottom: none; }
+      tr:hover { background-color: #f9fafb; }
+
+      /* Badges */
+      .badge {
+        padding: 0.25rem 0.75rem;
+        border-radius: 9999px;
+        font-size: 0.75rem;
+        font-weight: 600;
+      }
+      .badge-overdue { background-color: #fee2e2; color: #991b1b; }
+      .badge-returned { background-color: #d1fae5; color: #065f46; }
+      .badge-borrowing { background-color: #e0e7ff; color: #3730a3; }
+
+      /* Action Button */
+      .btn-view {
+        background: transparent;
+        border: 1px solid var(--border-color);
+        color: var(--text-muted);
+        padding: 0.375rem 0.75rem;
+        border-radius: 0.375rem;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: 0.2s;
+        font-weight: 500;
+      }
+      .btn-view:hover { background-color: #f3f4f6; color: var(--primary); border-color: var(--primary); }
+      
+      .loan-id { font-weight: 600; color: var(--primary); }
+    </style>
+  </head>
+
+  <body>
+    <div id="navbar-container"></div>
+
+    <div id="page-loading" class="loading-overlay" style="display: none;">
+      <div class="spinner"></div>
+    </div>
+
+    <main class="main-container">
+      <div class="loans-header">
+        <div class="header-content">
+          <div class="header-info">
+            <h1 class="loans-title">Lịch sử mượn trả</h1>
+            <p class="loans-subtitle">
+              Theo dõi chi tiết các giao dịch mượn trả sách của bạn trong hệ thống.
+            </p>
+          </div>
+          </div>
+      </div>
+
+      <div class="loans-table-section">
+        <div class="table-header">
+          <h2 class="section-title">Danh sách phiếu mượn</h2>
+          </div>
+
+        <div class="table-responsive">
+          <table class="loans-table">
+            <thead>
+              <tr>
+                <th width="15%">MÃ PHIẾU</th>
+                <th width="35%">GHI CHÚ / SÁCH ĐẠI DIỆN</th>
+                <th width="15%">NGÀY MƯỢN</th>
+                <th width="20%">TRẠNG THÁI</th>
+                <th width="15%" style="text-align: right;">HÀNH ĐỘNG</th>
+              </tr>
+            </thead>
+            <tbody id="loan-table-body">
+              <tr>
+                <td class="loan-id">#MP001</td>
+                <td>
+                    <div style="font-weight: 500;">Mẫu</div>
+                    <div style="font-size: 0.85rem; color: #6b7280;">2 cuốn sách</div>
+                </td>
+                <td>10/10/2023</td>
+                <td><span class="badge badge-overdue">Có sách quá hạn</span></td>
+                <td style="text-align: right;">
+                  <button class="btn-view">👁️ Chi tiết</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-container">
+        </div>
+    </footer>
+
+    <script src="../../../../assets/js/auth.js"></script>
+    <script src="../../models/user_loan/UserLoanModel.js"></script>
+    <script src="../../views/loans/UserLoanView.js"></script> <script src="../../controllers/user_loan/UserLoanController.js"></script>
+
+    <script>
+      // Load navbar
+      fetch("../../components/navbar.html")
+        .then((response) => response.text())
+        .then((html) => {
+          document.getElementById("navbar-container").innerHTML = html;
+        });
+
+      // Khởi tạo MVC khi DOM sẵn sàng
+      document.addEventListener("DOMContentLoaded", function () {
+          const model = new UserLoanModel();
+          const view = new UserLoanView();
+          const controller = new UserLoanController(model, view);
+      });
+    </script>
+  </body>
+</html>

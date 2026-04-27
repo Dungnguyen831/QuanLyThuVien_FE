@@ -68,3 +68,11 @@
     background-color: #0d6efd;
     color: #fff;
 }
+/* Tình trạng */
+.badge-condition-new { background-color: #198754; color: white; }      /* Xanh */
+.badge-condition-damaged { background-color: #ffc107; color: black; }  /* Vàng */
+.badge-condition-lost { background-color: #dc3545; color: white; }     /* Đỏ */
+
+/* Trạng thái */
+.badge-status-available { background-color: #198754; color: white; }   /* Xanh */
+.badge-status-unavailable { background-color: #dc3545; color: white; } /* Đỏ */

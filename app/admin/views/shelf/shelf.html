@@ -39,14 +39,6 @@
                                     <input type="text" id="searchInput" class="form-control bg-light border-0" placeholder="Tìm tên kệ, vị trí...">
                                 </div>
                             </div>
-                            <div class="col-md-7 d-flex gap-2 justify-content-end">
-                                <select id="floorFilter" class="form-select bg-light border-0" style="width: 150px;">
-                                    <option value="" selected>Tất cả tầng</option>
-                                    <option value="1">Tầng 1</option>
-                                    <option value="2">Tầng 2</option>
-                                    <option value="3">Tầng 3</option>
-                                </select>
-                            </div>
                         </div>
                     </div>
 
@@ -135,5 +127,25 @@
             }
         });
     </script>
+    <div class="modal fade" id="deleteConfirmModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" style="max-width: 400px;">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold fs-5">Xác nhận xóa</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body py-4">
+                <p class="mb-0 text-secondary">Bạn có chắc chắn muốn xóa kệ sách này không?</p>
+            </div>
+            <div class="modal-footer border-top-0 pt-0 justify-content-end pb-4">
+                <button type="button" class="btn btn-secondary px-4 py-2 me-2 shadow-sm" 
+                        style="background-color: #6c757d; border: none; border-radius: 8px;" 
+                        data-bs-dismiss="modal">Hủy</button>
+                <button type="button" id="confirmDeleteBtn" class="btn btn-danger px-4 py-2 shadow-sm" 
+                        style="background-color: #dc3545; border: none; border-radius: 8px;">Xác nhận xóa</button>
+            </div>
+        </div>
+    </div>
+    </div>
 </body>
 </html>
