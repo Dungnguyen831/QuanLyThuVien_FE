@@ -160,6 +160,16 @@
                 })
                 .catch(err => console.warn("Không load được Navbar:", err));
         });
+    }
+
+    // 4. Load Navbar (Giữ nguyên của ông)
+    fetch('../../components/navbar.html')
+        .then(response => response.text())
+        .then(html => {
+            document.getElementById('navbar-container').innerHTML = html;
+        })
+        .catch(err => console.warn("Không load được Navbar:", err));
+});
 
         document.addEventListener("DOMContentLoaded", () => {
             const model = new BookDetailModel();
