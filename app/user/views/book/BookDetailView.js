@@ -16,34 +16,30 @@ class BookDetailView {
     }
 
     renderBookDetail(book) {
-        if (!book) {
-            console.error("Dữ liệu sách bị trống!");
-            return;
-        }
+    if (!book) {
+        console.error("Dữ liệu sách bị trống!");
+        return;
+    }
 
-        const { dom } = this;
+    const { dom } = this;
 
-        // 1. Thông tin văn bản
-        dom.title.innerText = book.title || 'Không rõ tiêu đề';
-        dom.titlePath.innerText = book.title || '';
-        const catName = book.categoryName || `Category ID: ${book.category_id || 'N/A'}`;
-        dom.categoryPath.innerText = catName;
-        dom.categoryLabel.innerText = catName;
-        const authorName = book.authorName || `Tên Tác giả: ${book.author_name || 'Unknown'}`;
-        dom.authorYear.innerText = `${authorName} •Năm tái bản  ${book.publishedYear || 'N/A'}`;
+    // 1. Cập nhật Tiêu đề
+    dom.title.innerText = book.title || 'Không rõ tiêu đề';
+    dom.titlePath.innerText = book.title || '';
 
         // 2. XỬ LÝ ẢNH - Sử dụng ImageService
         const fallbackUrl = "https://img.freepik.com/free-vector/book-cover-template-design_23-2148498251.jpg";
         ImageService.displayWithFallback('book-img', book.imageUrl, fallbackUrl);
 
-        // 3. Thông số kỹ thuật
-        dom.isbn.innerText = book.isbn || 'N/A';
-        dom.year.innerText = book.publishedYear || 'N/A';
-        dom.qty.innerText = book.totalQty || 0;
-        dom.desc.innerText = book.description || "Mô tả đang được cập nhật...";
+    // 5. THÔNG SỐ KỸ THUẬT
+    dom.isbn.innerText = book.isbn || 'N/A';
+    dom.year.innerText = book.publishedYear || 'N/A';
+    dom.qty.innerText = book.totalQty || 0;
+    dom.desc.innerText = book.description || 'Chưa có mô tả.';
 
-        // 4. Trạng thái mượn sách (AvailableQty - viết hoa Q nhé)
-        const stock = book.availableQty !== undefined ? book.availableQty : 0;
+    // 6. TRẠNG THÁI MƯỢN
+    const stock = book.availableQty ?? 0;
+    const btnBorrow = document.getElementById('btn-borrow');
 
         if (stock > 0) {
             dom.available.innerText = `● AVAILABLE: ${stock} BOOKS`;

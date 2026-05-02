@@ -4,68 +4,82 @@ class BookCopyController {
         this.view = view;
         this.parentController = parentController;
         this.currentBookId = null;
-         // Trong constructor hoặc hàm khởi tạo của Controller
+        this.allCopies = []; // <--- QUAN TRỌNG: Lưu dữ liệu để không bị undefined
+
         this.view.onDeleteCopy = (id) => this.handleDeleteCopy(id);
-        const modalEl = document.getElementById('bookCopyModal');
-
-        if (modalEl) {
-            modalEl.addEventListener('hidden.bs.modal', () => {
-                // 1. Tìm ô input tìm kiếm
-                const searchInput = document.getElementById('copySearchInput');
-                if (searchInput) {
-                    searchInput.value = ''; // Xóa trắng nội dung
-                }
-
-                // 2. Reset lại bảng về danh sách đầy đủ (tránh trường hợp mở lại modal vẫn bị lọc)
-                if (this.allCopies) {
-                    this.view.renderCopiesToModal(this.allCopies);
-                }
-                
-                console.log("Đã xóa ô tìm kiếm và reset bảng bản sao.");
-            });
-        }
     }
 
     async openCopyModal(bookId) {
         this.currentBookId = bookId;
-    
-        // BƯỚC 1: MỞ FORM TRƯỚC (QUAN TRỌNG NHẤT)
         const modalEl = document.getElementById('bookCopyModal');
-        if (!modalEl) {
-            alert("Không tìm thấy ID 'bookCopyModal' trong HTML. Kiểm tra lại ComponentLoader!");
-            return;
-        }
-        const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
-        modal.show(); // Lệnh này phải chạy đầu tiên!
-    
-        // BƯỚC 2: SAU ĐÓ MỚI ĐI LẤY DỮ LIỆU (LỖI CŨNG KHÔNG SAO)
+        if (!modalEl) return;
+        bootstrap.Modal.getOrCreateInstance(modalEl).show();
+
         try {
-            console.log("Đang lấy dữ liệu cho sách ID:", bookId);
-            
-            // Dùng Promise.allSettled để hễ một cái lỗi thì cái kia vẫn chạy
-            const results = await Promise.allSettled([
+            const [bookRes, copiesRes] = await Promise.allSettled([
                 this.parentController.model.fetchBookById(bookId),
                 this.model.fetchCopiesByBookId(bookId)
             ]);
-    
-            const book = results[0].status === 'fulfilled' ? results[0].value : null;
-            const copies = results[1].status === 'fulfilled' ? results[1].value : [];
-    
-            // Đổ dữ liệu ban đầu
+
+            const book = bookRes.status === 'fulfilled' ? bookRes.value : null;
+            const copies = copiesRes.status === 'fulfilled' ? copiesRes.value : [];
+            
+            // Ghi nhớ bản sao để dùng cho hàm cập nhật kệ bên dưới
+            this.allCopies = copies; 
+
             this.view.renderBookDetailToModal(book, this.parentController.authors, this.parentController.categories, this.parentController.publishers);
-            this.view.renderCopiesToModal(copies);
-    
-            // KÍCH HOẠT TÌM KIẾM: Truyền danh sách copies gốc vào để lọc
+            this.view.renderCopiesToModal(copies, this.parentController.shelves || []);
+            
+            this.bindInternalEvents(); // Kích hoạt sự kiện đổi kệ
             this.view.setupCopySearch(copies);
-    
         } catch (error) {
-            console.error("Lỗi:", error);
+            console.error("Lỗi nạp dữ liệu:", error);
         }
-    
-        this.bindInternalEvents();
     }
 
+    /**
+     * Hàm xử lý các sự kiện bên trong Modal
+     */
     bindInternalEvents() {
+        const tableBody = document.getElementById('copy-table-body');
+        if (!tableBody) return;
+
+        // Xử lý thay đổi kệ - Khớp chính xác với BookCopyRequestDTO
+        tableBody.onchange = async (e) => {
+            if (e.target.classList.contains('shelf-select')) {
+                const copyId = e.target.dataset.copyId;
+                const shelfId = e.target.value;
+
+                // 1. Tìm lại dữ liệu cũ để tránh gửi null lên Server
+                const currentCopy = this.allCopies.find(c => c.id == copyId);
+                if (!currentCopy) return;
+
+                // 2. Tạo Request Object phẳng đúng như DTO ở Backend yêu cầu
+                const requestData = {
+                    bookId: parseInt(this.currentBookId),
+                    shelfId: shelfId ? parseInt(shelfId) : null,
+                    barcode: currentCopy.barcode || currentCopy.copyBarcode,
+                    conditionStatus: currentCopy.conditionStatus || currentCopy.copyCondition,
+                    availabilityStatus: currentCopy.availabilityStatus || currentCopy.copyStatus
+                };
+
+                try {
+                    // 3. Gọi Model để thực hiện PUT/PATCH
+                    const success = await this.model.updateBookCopy(copyId, requestData);
+                    if (success) {
+                        console.log(`Bản sao ${copyId} cập nhật kệ ${shelfId} thành công.`);
+                        // Cập nhật lại bộ nhớ tạm để tránh lỗi UI
+                        currentCopy.shelfId = shelfId;
+                    } else {
+                        alert("Cập nhật kệ thất bại (Lỗi 400). Hãy kiểm tra Network tab!");
+                    }
+                } catch (err) {
+                    console.error("Lỗi:", err);
+                }
+            }
+        };
+
+        // Xử lý Bulk Create
         const btnBulk = document.getElementById('btnBulkCreate');
         if (btnBulk) {
             btnBulk.onclick = async () => {
@@ -73,28 +87,23 @@ class BookCopyController {
                 const success = await this.model.createBulk(this.currentBookId, qty);
                 if (success) {
                     const updated = await this.model.fetchCopiesByBookId(this.currentBookId);
-                    this.view.renderCopiesToModal(updated);
-                    this.parentController.loadBooks(); // Cập nhật lại số lượng ở bảng chính
+                    this.allCopies = updated;
+                    this.view.renderCopiesToModal(updated, this.parentController.shelves);
+                    if (this.parentController.loadBooks) this.parentController.loadBooks();
                 }
             };
         }
     }
 
-   
-
     async handleDeleteCopy(id) {
-        const success = await this.model.deleteBookCopy(id);
-        if (success) {
-            // Xóa thành công thì tải lại danh sách bản sao để cập nhật UI
-            const updatedCopies = await this.model.fetchCopiesByBookId(this.currentBookId);
-            this.view.renderCopiesToModal(updatedCopies);
-            alert("Xóa thành công bản sao id: "+id);
-            // (Tùy chọn) Cập nhật lại số lượng ở bảng danh sách sách bên ngoài
-            if (this.parentController && this.parentController.loadBooks) {
-                this.parentController.loadBooks();
-            }
+        if (!confirm(`Xác nhận xóa bản sao #${id}?`)) return;
+        if (await this.model.deleteBookCopy(id)) {
+            this.allCopies = this.allCopies.filter(c => c.id != id);
+            this.view.renderCopiesToModal(this.allCopies, this.parentController.shelves);
+            alert("Xóa thành công bản sao có id :" + id);
+            if (this.parentController.loadBooks) this.parentController.loadBooks();
         } else {
-            alert("Xóa không thành công. Vui lòng kiểm tra lại.");
+            alert("Xóa bản sao thất bại!" + id);
         }
     }
 }

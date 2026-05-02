@@ -1,17 +1,18 @@
 class BookController {
-  constructor(model, view) {
-    this.model = model;
-    this.view = view;
-    this.authors = [];
-    this.categories = [];
-    this.publishers = [];
-    this.shelfModel = [];
-    this.currentBooks = []; // Danh sách gốc từ server
-    this.filteredBooks = []; // Danh sách sau khi lọc/tìm kiếm
-    this.currentPage = 1; // Trang hiện tại
-    this.itemsPerPage = 10; // Số bản ghi mỗi trang
-    this.copyController = null; // Kết nối với Modal chi tiết bản sao
-  }
+    constructor(model, view) {
+        this.model = model;
+
+        this.view = view;
+        this.authors = [];
+        this.categories = [];
+        this.publishers = [];
+        this.shelfModel = [];
+        this.currentBooks = []; // Danh sách gốc từ server
+        this.filteredBooks = []; // Danh sách sau khi lọc/tìm kiếm
+        this.currentPage = 1; // Trang hiện tại
+        this.itemsPerPage = 10; // Số bản ghi mỗi trang
+        this.copyController = null; // Kết nối với Modal chi tiết bản sao
+    }
 
   // Khởi tạo hệ thống
   async init() {

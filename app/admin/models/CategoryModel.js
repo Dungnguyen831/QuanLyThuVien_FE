@@ -57,16 +57,23 @@ class CategoryModel {
     }
 
     async updateCategory(id, categoryData) {
-        const response = await fetch(`${this.apiUrl}/${id}`, {
-            method: 'PUT',
-            headers: this.getHeaders(),
-            body: JSON.stringify(categoryData)
-        });
+    // Ép kiểu ID sang số nguyên để xóa sạch mọi ký tự lạ (như dấu : hoặc khoảng trắng)
+    const cleanId = parseInt(id); 
 
-        if (!response.ok) {
-            throw new Error('Không thể cập nhật danh mục. Token có thể đã hết hạn!');
-        }
-        return await response.json();
+    // Kiểm tra nếu ID không phải là số thì báo lỗi luôn không gọi API nữa
+    if (isNaN(cleanId)) throw new Error("ID danh mục không hợp lệ");
+
+    const response = await fetch(`${this.apiUrl}/${cleanId}`, {
+        method: 'PUT',
+        headers: this.getHeaders(),
+        body: JSON.stringify(categoryData)
+    });
+
+    if (!response.ok) {
+        // Thử lấy thông báo lỗi chi tiết từ Backend trả về
+        const errorDetail = await response.json().catch(() => ({}));
+        throw new Error(errorDetail.message || 'Không thể cập nhật danh mục!');
+    }
     }
 
     async deleteCategory(id) {
