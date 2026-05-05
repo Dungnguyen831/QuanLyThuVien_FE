@@ -54,7 +54,7 @@ class UserLoanView {
             }
 
             const borrowDate = new Date(loan.borrowDate || loan.borrow_date).toLocaleDateString('vi-VN');
-            const formatId = `MP${loan.id.toString().padStart(3, '0')}`;
+            const formatId = `${loan.id.toString().padStart(3, '0')}`;
             const note = loan.note || "Phiếu mượn tại quầy";
 
             html += `

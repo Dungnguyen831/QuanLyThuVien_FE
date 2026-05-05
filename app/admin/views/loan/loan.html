@@ -44,13 +44,18 @@
                             </div>
                             <div class="modal-body p-4">
                                 <form id="add-loan-form">
-                                    <div class="mb-3">
-                                        <label class="form-label fw-medium text-muted small">Mã Độc Giả (ID)</label>
-                                        <input type="number" class="form-control" id="loan-user-id" required>
+                                    <div class="mb-3 position-relative">
+                                        <label class="form-label fw-medium text-muted small">Độc Giả (Tên hoặc ID)</label>
+                                        <input type="text" class="form-control" id="search-user-input" placeholder="Gõ tên hoặc mã độc giả..." autocomplete="off" required>
+                                        <input type="hidden" id="loan-user-id">
+                                        <ul class="dropdown-menu w-100 shadow-sm" id="user-suggest-list" style="max-height: 200px; overflow-y: auto;"></ul>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-medium text-muted small">Mã Sách (ID)</label>
-                                        <input type="number" class="form-control" id="loan-book-id" required>
+
+                                    <div class="mb-3 position-relative">
+                                        <label class="form-label fw-medium text-muted small">Sách (Tên hoặc ID)</label>
+                                        <input type="text" class="form-control" id="search-book-input" placeholder="Gõ tên hoặc mã sách..." autocomplete="off" required>
+                                        <input type="hidden" id="loan-book-id">
+                                        <ul class="dropdown-menu w-100 shadow-sm" id="book-suggest-list" style="max-height: 200px; overflow-y: auto;"></ul>
                                     </div>
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
@@ -143,11 +148,11 @@
                             <input type="text" id="search-loan-input" class="form-control bg-light border-0" placeholder="Nhập mã phiếu, tên độc giả, sách...">
                         </div>
                         
-                        <div class="filter-tabs">
-                            <div class="filter-tab active">Tất cả</div>
-                            <div class="filter-tab">Đang mượn</div>
-                            <div class="filter-tab">Đã trả</div>
-                            <div class="filter-tab">Quá hạn</div>
+                        <div class="filter-tabs" id="status-filter">
+                            <div class="filter-tab active" data-status="ALL">Tất cả</div>
+                            <div class="filter-tab" data-status="borrowing">Đang mượn</div>
+                            <div class="filter-tab" data-status="returned">Đã trả</div>
+                            <div class="filter-tab" data-status="overdue">Quá hạn</div>
                         </div>
                     </div>
 

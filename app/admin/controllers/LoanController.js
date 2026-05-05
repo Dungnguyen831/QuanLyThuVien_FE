@@ -2,52 +2,104 @@ class LoanController {
   constructor(model, view) {
     this.model = model;
     this.view = view;
-    this.allLoans = [];
+    this.allLoans = []; 
     
-    // Liên kết sự kiện tạo mới (Code cũ)
+    this.currentStatusFilter = "all"; 
+    this.currentKeyword = "";    
+    
+    this.cachedUsers = [];
+    this.cachedBooks = [];
+
+    // Liên kết sự kiện tạo mới
     this.view.bindAddLoan(this.handleAddLoan.bind(this));
     
-    // LIÊN KẾT CÁC SỰ KIỆN MỚI
+    // Liên kết các sự kiện mới
     this.view.bindTableActions(this.handleDeleteLoan.bind(this));
     this.view.bindSubmitRenew(this.handleRenewLoan.bind(this));
     this.view.bindSubmitReturn(this.handleReturnLoan.bind(this));
   }
 
   async init() {
-    await this.loadLoans(); // Tách phần load bảng ra dùng chung
+    await this.loadLoans(); 
     this.setupSearch(); 
+
+    this.cachedBooks = await this.model.fetchAllBooks();
+    this.cachedUsers = await this.model.fetchAllUsers();
+
+    // Khi click vào các tab (Tất cả, Đang mượn...)
+    this.view.bindStatusFilter((status) => {
+      this.currentStatusFilter = status;
+      this.filterLoans(); // Gọi hàm xử lý chung
+    });
+
+    this.view.bindSearchUser((keyword) => {
+      const lowerKw = keyword.toLowerCase();
+      // Dùng hàm filter của JS để tìm kiếm
+      const results = this.cachedUsers.filter(user => {
+        const idText = String(user.id).toLowerCase();
+        const nameText = String(user.fullName || user.name || "").toLowerCase();
+        return idText.includes(lowerKw) || nameText.includes(lowerKw);
+      });
+      // Gửi kết quả về View để vẽ ra màn hình
+      this.view.renderUserSuggestions(results);
+    });
+
+    // 3. Lọc Sách ngay trên Frontend
+    this.view.bindSearchBook((keyword) => {
+      const lowerKw = keyword.toLowerCase();
+      // Dùng hàm filter của JS để tìm kiếm
+      const results = this.cachedBooks.filter(book => {
+        const idText = String(book.id).toLowerCase();
+        const titleText = String(book.title || book.name || "").toLowerCase();
+        return idText.includes(lowerKw) || titleText.includes(lowerKw);
+      });
+      // Gửi kết quả về View để vẽ ra màn hình
+      this.view.renderBookSuggestions(results);
+    });
   }
 
   setupSearch() {
     const searchInput = document.getElementById('search-loan-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
-        const keyword = e.target.value.toLowerCase().trim();
-        this.handleSearch(keyword);
+        this.currentKeyword = e.target.value.toLowerCase().trim();
+        this.filterLoans(); // Gọi hàm xử lý chung thay vì tự render
       });
     }
   }
 
-  handleSearch(keyword) {
-    if (!keyword) {
-      this.view.renderLoans(this.allLoans);
-      return;
+  filterLoans() {
+    let filteredData = this.allLoans;
+
+    const currentTab = (this.currentStatusFilter || "all").toLowerCase().trim();
+
+    if (currentTab !== "all") {
+      filteredData = filteredData.filter(loan => {
+        const status = (loan.status || "").toLowerCase();
+        return status === currentTab; 
+      });
     }
 
-    const filteredLoans = this.allLoans.filter(loan => {
-      const idText = loan.id ? loan.id.toString().toLowerCase() : "";
-      const nameText = loan.userName ? loan.userName.toLowerCase() : "";
-      return idText.includes(keyword) || nameText.includes(keyword);
-    });
+    if (this.currentKeyword) {
+      filteredData = filteredData.filter(loan => {
+        const idText = loan.id ? loan.id.toString().toLowerCase() : "";
+        const nameText = (loan.userName || loan.user_name || "").toLowerCase(); 
+        return idText.includes(this.currentKeyword) || nameText.includes(this.currentKeyword);
+      });
+    }
 
-    this.view.renderLoans(filteredLoans);
+    this.view.renderLoans(filteredData);
   }
 
   async loadLoans() {
     try {
       const loans = await this.model.fetchLoans();
       this.allLoans = loans || [];
-      this.view.renderLoans(this.allLoans);
+      
+      // THAY ĐỔI QUAN TRỌNG: 
+      // Gọi filterLoans() thay vì this.view.renderLoans(this.allLoans)
+      // Để giữ nguyên tab và từ khóa hiện tại sau khi tải lại dữ liệu
+      this.filterLoans(); 
     } catch (error) {
       console.error("Lỗi khi tải danh sách:", error);
     }
@@ -58,7 +110,7 @@ class LoanController {
       await this.model.createLoan(loanData);
       alert("Tạo phiếu mượn thành công!");
       this.view.closeAddModal(); 
-      await this.loadLoans(); // Tải lại bảng
+      await this.loadLoans(); 
     } catch (error) {
       alert("Lỗi: " + error.message); 
     }
@@ -66,12 +118,10 @@ class LoanController {
 
   async handleDeleteLoan(rawId) {
     try {
-      // Làm sạch ID: Loại bỏ tất cả chữ cái, chỉ giữ lại số (Ví dụ: "MP011" -> "11")
       const cleanId = rawId.toString().replace(/\D/g, ''); 
-
-      await this.model.deleteLoan(cleanId); // Gọi API với ID chuẩn
+      await this.model.deleteLoan(cleanId);
       alert("Xóa phiếu mượn thành công!");
-      await this.loadLoans(); // Tải lại bảng
+      await this.loadLoans(); 
     } catch (error) {
       alert("Lỗi khi xóa: " + error.message);
     }
@@ -79,9 +129,7 @@ class LoanController {
 
   async handleRenewLoan(rawDetailId, requestData) {
     try {
-      // Làm sạch ID phòng trường hợp detailId cũng bị dính chữ
       const cleanDetailId = rawDetailId.toString().replace(/\D/g, '');
-
       await this.model.renewBook(cleanDetailId, requestData);
       alert("Gia hạn sách thành công!");
       this.view.closeRenewModal();
@@ -93,9 +141,7 @@ class LoanController {
 
   async handleReturnLoan(rawDetailId, requestData) {
     try {
-      // Làm sạch ID phòng trường hợp detailId cũng bị dính chữ
       const cleanDetailId = rawDetailId.toString().replace(/\D/g, '');
-
       await this.model.returnBook(cleanDetailId, requestData);
       alert("Trả sách thành công!");
       this.view.closeReturnModal();
