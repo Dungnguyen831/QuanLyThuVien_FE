@@ -52,12 +52,10 @@ class BookModel {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      }
     });
 
     if (!res.ok) {
-      if (res.status === 401 || res.status === 403) throw new Error("Hết hạn đăng nhập!");
       throw new Error("Không thể lấy danh sách sách");
     }
     
@@ -70,8 +68,7 @@ class BookModel {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      }
     });
 
     if (!response.ok) throw new Error("Không tìm thấy sách");
