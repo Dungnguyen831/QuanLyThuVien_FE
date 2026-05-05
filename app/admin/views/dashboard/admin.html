@@ -28,7 +28,7 @@
                                 <span class="badge badge-soft-success rounded-pill px-2 py-1"><i class="fas fa-arrow-trend-up me-1"></i>+5%</span>
                             </div>
                             <p class="text-muted mb-1 fs-6">Tổng số sách</p>
-                            <h3 class="fw-bold mb-0">12,450</h3>
+                            <h3 id="total-books-count" class="fw-bold mb-0">0</h3>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
@@ -38,7 +38,7 @@
                                 <span class="badge badge-soft-success rounded-pill px-2 py-1"><i class="fas fa-arrow-trend-up me-1"></i>+12%</span>
                             </div>
                             <p class="text-muted mb-1 fs-6">Sách đang mượn</p>
-                            <h3 class="fw-bold mb-0">342</h3>
+                            <h3 id="borrowed-books-count" class="fw-bold mb-0">0</h3>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
@@ -48,7 +48,7 @@
                                 <span class="badge badge-soft-success rounded-pill px-2 py-1"><i class="fas fa-arrow-trend-up me-1"></i>+2%</span>
                             </div>
                             <p class="text-muted mb-1 fs-6">Độc giả mới</p>
-                            <h3 class="fw-bold mb-0">56</h3>
+                            <h3 id="new-readers-count" class="fw-bold mb-0">0</h3>
                         </div>
                     </div>
                     <div class="col-xl-3 col-md-6">
@@ -58,7 +58,7 @@
                                 <span class="badge badge-soft-danger rounded-pill px-2 py-1"><i class="fas fa-arrow-trend-down me-1"></i>-5%</span>
                             </div>
                             <p class="text-muted mb-1 fs-6">Sách quá hạn</p>
-                            <h3 class="fw-bold mb-0">12</h3>
+                            <h3 id="overdue-books-count" class="fw-bold mb-0">0</h3>
                         </div>
                     </div>
                 </div>
@@ -207,7 +207,37 @@
             // Tự lùi ra 2 cấp (dashboard -> views -> admin) rồi chui vào components
             ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
             ComponentLoader.load('header-container', '../../components/header.html');
+             // 2. Gọi hàm lấy dữ liệu thống kê (Thêm đoạn này vào)
+        loadDashboardStats();
         });
+    async function loadDashboardStats() {
+    try {
+        const token = localStorage.getItem('token'); 
+        const response = await fetch('http://localhost:8080/api/admin/dashboard/stats', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Dữ liệu thực tế từ Backend:", data); // Dòng này cực quan trọng để kiểm tra tên trường
+
+            // Thêm toán tử || 0 để tránh lỗi 'undefined'
+            document.getElementById('total-books-count').innerText = (data.totalBooks || 0).toLocaleString();
+            document.getElementById('borrowed-books-count').innerText = (data.borrowedBooks || 0).toLocaleString();
+            document.getElementById('new-readers-count').innerText = (data.newReaders || 0).toLocaleString();
+            document.getElementById('overdue-books-count').innerText = (data.overdueBooks || 0).toLocaleString();
+            
+        } else {
+            console.error("Lỗi API:", response.status);
+        }
+    } catch (error) {
+        console.error("Không thể kết nối đến Backend:", error);
+    }
+    }
     </script>
 </body>
 </html>

@@ -33,12 +33,23 @@ class AuthorController {
     }
 
     handleSearch(query) {
-        const filtered = this.allAuthors.filter(a => 
-            a.name.toLowerCase().includes(query.toLowerCase()) || 
-            String(a.id).includes(query)
-        );
-        this.view.renderAuthors(filtered);
-    }
+    const searchTerm = query.toLowerCase().trim();
+
+    const filtered = this.allAuthors.filter(a => {
+        // 1. Tạo mã hiển thị ảo giống hệt lúc render (ví dụ: DM001)
+        const virtualId = `TG${String(a.id).padStart(3, '0')}`.toLowerCase();
+        
+        // 2. Lấy ID thuần số (ví dụ: 1)
+        const realId = String(a.id);
+
+        // 3. So khớp: Tên chứa query HOẶC Mã ảo chứa query HOẶC ID thực chứa query
+        return a.name.toLowerCase().includes(searchTerm) || 
+               virtualId.includes(searchTerm) ||
+               realId.includes(searchTerm);
+    });
+
+    this.view.renderAuthors(filtered);
+}
 
     async handleSave(id, data) {
     const saveBtn = document.querySelector('#btnSaveAuthor');
