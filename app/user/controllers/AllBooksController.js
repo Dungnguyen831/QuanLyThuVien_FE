@@ -48,7 +48,7 @@ class AllBooksController {
                         : [];
                     this.view.bindWishlistBookIds(this.state.wishlistBookIds);
                 } catch (error) {
-                    console.warn('Could not load wishlist status:', error);
+                    console.warn('Không thể tải trạng thái wishlist:', error);
                 }
             }
 
@@ -58,16 +58,24 @@ class AllBooksController {
                 this.model.fetchAllBooks()
             ]);
 
-            console.log("Fetched categories:", categories);
-            console.log("Fetched books:", books);
+            console.log("Các danh mục đã tải:", categories);
+            console.log("Các sách đã tải:", books);
 
             if (!books || books.length === 0) {
                 this.view.hideLoading();
-                this.view.showError("No books found. Please try again later.");
+                this.view.showError("Không tìm thấy sách. Vui lòng thử lại sau.");
                 return;
             }
 
-            this.state.categories = categories || [];
+            // Fallback: if categories API failed, extract from books
+            let finalCategories = categories;
+            if (!categories || categories.length === 0) {
+                console.log("Categories API thất bại hoặc trống. Trích xuất từ sách...");
+                finalCategories = this.model.extractCategoriesFromBooks(books);
+                console.log("Danh mục trích xuất từ sách:", finalCategories);
+            }
+
+            this.state.categories = finalCategories || [];
             this.state.allBooks = books;
             this.state.filteredBooks = [...this.state.allBooks];
 
@@ -84,9 +92,9 @@ class AllBooksController {
             await this.renderBooks();
 
         } catch (error) {
-            console.error("Error initializing All Books:", error);
+            console.error("Lỗi khởi tạo Tất cả sách:", error);
             this.view.hideLoading();
-            this.view.showError("Unable to load books. Please try again later.");
+            this.view.showError("Không thể tải sách. Vui lòng thử lại sau.");
         }
     }
 

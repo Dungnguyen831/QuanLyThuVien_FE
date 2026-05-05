@@ -92,14 +92,14 @@ class BorrowForm {
 
             if (template) {
                 BorrowForm.templateCache = template.innerHTML;
-                console.log('BorrowForm template loaded');
+                console.log('Mẫu BorrowForm đã được tải');
                 return BorrowForm.templateCache;
             } else {
-                console.warn('Template element not found in BorrowForm.html');
+                console.warn('Phần tử mẫu không tìm thấy trong BorrowForm.html');
                 return '';
             }
         } catch (error) {
-            console.error('Failed to load BorrowForm template:', error);
+            console.error('Lỗi tải mẫu BorrowForm:', error);
             return '';
         }
     }
@@ -279,11 +279,11 @@ class BorrowForm {
                         });
                         closeModal();
                     } catch (error) {
-                        console.error('Error in onSubmit callback:', error);
+                        console.error('Lỗi trong hàm gọi lại onSubmit:', error);
                         alert('Lỗi: ' + error.message);
                     }
                 } else {
-                    console.warn('No onSubmit callback provided');
+                    console.warn('Không có hàm gọi lại onSubmit được cung cấp');
                     closeModal();
                 }
             });

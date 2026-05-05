@@ -23,7 +23,7 @@ class AllBooksView {
         this.eventListeners = {};
 
         // Log for debugging
-        console.log("AllBooksView initialized with elements:");
+        console.log("AllBooksView khởi tạo với các phần tử:");
         console.log("- booksContainer:", this.booksContainer);
         console.log("- categoriesSidebar:", this.categoriesSidebar);
         console.log("- sortDropdown:", this.sortDropdown);
@@ -59,7 +59,7 @@ class AllBooksView {
         const errorHtml = `
             <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 <i class="fas fa-exclamation-circle me-2"></i>
-                <strong>Error:</strong> ${this.escapeHtml(message)}
+                <strong>Lỗi:</strong> ${this.escapeHtml(message)}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
         `;
@@ -74,7 +74,7 @@ class AllBooksView {
      */
     renderCategories(categories) {
         if (!this.categoriesSidebar) {
-            console.warn('Categories sidebar not found');
+            console.warn('Không tìm thấy sidebar danh mục');
             return;
         }
 
@@ -121,7 +121,7 @@ class AllBooksView {
      */
     async renderBooks(books, wishlistModel = null) {
         if (!this.booksContainer) {
-            console.warn('Books container not found');
+            console.warn('Không tìm thấy vùng chứa sách');
             return;
         }
 
@@ -129,7 +129,7 @@ class AllBooksView {
             this.booksContainer.innerHTML = `
                 <div class="col-12 text-center text-muted py-5">
                     <i class="fas fa-inbox" style="font-size: 48px; opacity: 0.3; margin-bottom: 20px; display: block;"></i>
-                    <p>No books found.</p>
+                    <p>Không tìm thấy sách.</p>
                 </div>
             `;
             return;

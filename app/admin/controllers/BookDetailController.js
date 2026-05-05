@@ -87,10 +87,10 @@ class BookDetailController {
 
             if (isInWishlist) {
                 wishlistBtn.classList.add('in-wishlist');
-                wishlistBtn.innerHTML = '❤️ Remove from Wishlist';
+                wishlistBtn.innerHTML = '❤️ Xóa khỏi danh sách yêu thích';
             } else {
                 wishlistBtn.classList.remove('in-wishlist');
-                wishlistBtn.innerHTML = '❤️ Add to Wishlist';
+                wishlistBtn.innerHTML = '❤️ Thêm vào danh sách yêu thích';
             }
         }
     }

@@ -48,7 +48,7 @@ class ReservationView {
      */
     renderReservationTable(reservations) {
         if (!reservations || reservations.length === 0) {
-            this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-message">No reservations found.</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-message">Không tìm thấy đặt chỗ.</td></tr>';
             return;
         }
 
@@ -79,6 +79,11 @@ class ReservationView {
         // Get author name or fallback to authorId
         const author = this._escapeHtml(reservation.author || `Author ID: ${reservation.authorId || 'N/A'}`);
 
+        // ✅ NEW: Show "Xác nhận lấy sách" button only if status is APPROVED
+        const pickupButton = reservation.status && reservation.status.toLowerCase() === 'approved'
+            ? `<button class="action-btn action-btn-pickup" data-action="pickup" title="Xác nhận lấy sách">LẤY SÁCH</button>`
+            : '';
+
         return `
             <tr class="reservation-row" data-reservation-id="${reservation.id}">
                 <td class="col-cover">
@@ -98,11 +103,12 @@ class ReservationView {
                 </td>
                 <td class="col-actions">
                     <div class="action-buttons">
-                        <button class="action-btn action-btn-details" data-action="details" title="View Details">
-                            DETAILS
+                        <button class="action-btn action-btn-details" data-action="details" title="Xem chi tiết">
+                            CHI TIẾT
                         </button>
-                        <button class="action-btn action-btn-cancel" data-action="cancel" title="Cancel Reservation">
-                            CANCEL
+                        ${pickupButton}
+                        <button class="action-btn action-btn-cancel" data-action="cancel" title="Hủy đặt chỗ">
+                            HủY
                         </button>
                     </div>
                 </td>
@@ -123,19 +129,19 @@ class ReservationView {
         switch (status.toLowerCase()) {
             case 'pending':
                 badgeClass += ' status-pending';
-                badgeText = 'Pending - Waiting';
+                badgeText = 'Chờ xử lý';
                 break;
             case 'approved':
                 badgeClass += ' status-approved';
-                badgeText = 'Approved';
+                badgeText = '" ĐÃ duyệt';
                 break;
             case 'cancelled':
                 badgeClass += ' status-cancelled';
-                badgeText = 'Cancelled';
+                badgeText = 'Đã hủy';
                 break;
             case 'completed':
                 badgeClass += ' status-completed';
-                badgeText = 'Completed';
+                badgeText = 'Đã hoàn thành';
                 break;
             default:
                 badgeClass += ' status-default';
@@ -188,6 +194,7 @@ class ReservationView {
      */
     _bindTableActions() {
         const detailsButtons = this.tableBody.querySelectorAll('[data-action="details"]');
+        const pickupButtons = this.tableBody.querySelectorAll('[data-action="pickup"]');
         const cancelButtons = this.tableBody.querySelectorAll('[data-action="cancel"]');
 
         detailsButtons.forEach(btn => {
@@ -195,6 +202,16 @@ class ReservationView {
                 const reservationId = e.target.closest('.reservation-row').dataset.reservationId;
                 if (this.eventListeners.onDetailsClick) {
                     this.eventListeners.onDetailsClick(reservationId);
+                }
+            });
+        });
+
+        // ✅ NEW: Bind pickup buttons
+        pickupButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const reservationId = e.target.closest('.reservation-row').dataset.reservationId;
+                if (this.eventListeners.onConfirmPickupClick) {
+                    this.eventListeners.onConfirmPickupClick(reservationId);
                 }
             });
         });
@@ -235,10 +252,18 @@ class ReservationView {
     }
 
     /**
+     * Bind confirm pickup button click event
+     * @param {Function} callback - Callback function with reservation ID
+     */
+    onConfirmPickupClick(callback) {
+        this.eventListeners.onConfirmPickupClick = callback;
+    }
+
+    /**
      * Show loading state
      */
     showLoading() {
-        this.tableBody.innerHTML = '<tr><td colspan="5" class="loading-message">Loading reservations...</td></tr>';
+        this.tableBody.innerHTML = '<tr><td colspan="5" class="loading-message">Đang tải đặt chỗ...</td></tr>';
     }
 
     /**

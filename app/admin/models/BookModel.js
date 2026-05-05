@@ -50,7 +50,10 @@ class BookModel {
   async fetchBooks() {
     const res = await fetch(this.apiUrl, {
       method: "GET",
-      headers: this.getHeaders(),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!res.ok) {
@@ -65,7 +68,10 @@ class BookModel {
   async fetchBookById(id) {
     const response = await fetch(`${this.apiUrl}/${id}`, {
       method: "GET",
-      headers: this.getHeaders(),
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!response.ok) throw new Error("Không tìm thấy sách");
