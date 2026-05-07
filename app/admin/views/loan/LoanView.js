@@ -108,8 +108,8 @@ class LoanView {
         return alert("Lỗi: Ngày hẹn trả phải sau ngày mượn!");
       }
 
-      if ((new Date(dueDate) - new Date(borrowDate)) > 2592000000) {
-        return alert("Lỗi: Thời gian mượn tối đa không được quá 30 ngày!");
+      if ((new Date(dueDate) - new Date(borrowDate)) > 1209600000) {
+        return alert("Lỗi: Thời gian mượn tối đa không được quá 14 ngày!");
       }
 
       handler({ userId, bookId, borrowDate, dueDate, note });
