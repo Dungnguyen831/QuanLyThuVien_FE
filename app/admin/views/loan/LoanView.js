@@ -97,14 +97,22 @@ class LoanView {
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
-      const loanData = {
-        userId: document.getElementById("loan-user-id").value,
-        bookId: document.getElementById("loan-book-id").value,
-        borrowDate: document.getElementById("loan-borrow-date").value,
-        dueDate: document.getElementById("loan-due-date").value,
-        note: document.getElementById("loan-note").value,
-      };
-      handler(loanData);
+      
+      const userId = document.getElementById("loan-user-id").value;
+      const bookId = document.getElementById("loan-book-id").value;
+      const borrowDate = document.getElementById("loan-borrow-date").value;
+      const dueDate = document.getElementById("loan-due-date").value;
+      const note = document.getElementById("loan-note").value;
+
+      if (dueDate <= borrowDate) {
+        return alert("Lỗi: Ngày hẹn trả phải sau ngày mượn!");
+      }
+
+      if ((new Date(dueDate) - new Date(borrowDate)) > 2592000000) {
+        return alert("Lỗi: Thời gian mượn tối đa không được quá 30 ngày!");
+      }
+
+      handler({ userId, bookId, borrowDate, dueDate, note });
     });
   }
 
@@ -166,7 +174,7 @@ class LoanView {
         note: document.getElementById("return-note").value
       };
       handler(detailId, data);
-      
+
     });
   }
 
