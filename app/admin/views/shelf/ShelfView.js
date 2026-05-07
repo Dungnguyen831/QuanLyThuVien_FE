@@ -3,16 +3,24 @@ class ShelfView {
         this.tableBody = document.getElementById('shelf-table-body');
         this.searchInput = document.getElementById('searchInput');
         this.shelfModal = new bootstrap.Modal(document.getElementById('shelfModal'));
+        this.categorySelect = document.getElementById('shelfCategory'); // Select box thể loại
         
-        // 1. Khởi tạo Modal xóa mới
         const deleteElem = document.getElementById('deleteConfirmModal');
         this.deleteConfirmModal = deleteElem ? new bootstrap.Modal(deleteElem) : null;
         
         this.shelfForm = document.getElementById('shelfForm');
         this.btnAdd = document.getElementById('btn-add-shelf');
         
-        // Biến tạm lưu ID cần xóa
         this.currentDeleteId = null;
+    }
+
+    // Đổ dữ liệu vào Dropdown (Hàm này cực kỳ quan trọng)
+    renderCategoryDropdown(categories) {
+        if (!this.categorySelect) return;
+        const options = categories.map(cat => 
+            `<option value="${cat.id}">${cat.name}</option>`
+        ).join('');
+        this.categorySelect.innerHTML = '<option value="">-- Chọn thể loại --</option>' + options;
     }
 
     showModal(shelf = null) {
@@ -20,61 +28,58 @@ class ShelfView {
             document.getElementById('modalTitle').innerText = "Cập nhật kệ sách";
             document.getElementById('shelfId').value = shelf.id;
             document.getElementById('shelfName').value = shelf.name;
-            document.getElementById('shelfFloor').value = shelf.floor; 
+            document.getElementById('shelfFloor').value = shelf.floor;
+            // FIX: Tự động chọn đúng thể loại của kệ đó khi sửa
+            if (this.categorySelect) {
+                this.categorySelect.value = shelf.categoryId || ""; 
+            }
         } else {
             document.getElementById('modalTitle').innerText = "Thêm kệ sách mới";
             this.shelfForm.reset();
             document.getElementById('shelfId').value = '';
+            if (this.categorySelect) this.categorySelect.value = "";
         }
         this.shelfModal.show();
     }
 
     bindEvents(handlers) {
-        // Tìm kiếm
         if (this.searchInput) {
             this.searchInput.addEventListener('input', (e) => {
                 handlers.handleSearch(e.target.value);
             });
         }
 
-        // Thêm mới
         this.btnAdd?.addEventListener('click', () => {
             this.showModal();
         });
 
-        // Submit form lưu
         this.shelfForm?.addEventListener('submit', (e) => {
             e.preventDefault();
             const id = document.getElementById('shelfId').value;
             const shelfData = {
                 name: document.getElementById('shelfName').value,
-                floor: document.getElementById('shelfFloor').value,
+                floor: parseInt(document.getElementById('shelfFloor').value),
+                // FIX: Lấy thêm categoryID để gửi về Backend
+                categoryID: parseInt(this.categorySelect.value) 
             };
             handlers.handleSave(id, shelfData);
-            this.shelfModal.hide(); // Đóng modal lưu sau khi xong
+            this.shelfModal.hide();
         });
 
-        // Sự kiện trên bảng (Sửa/Xóa)
         if (this.tableBody) {
             this.tableBody.addEventListener('click', (e) => {
                 const editBtn = e.target.closest('.edit-btn');
                 const deleteBtn = e.target.closest('.delete-btn');
 
-                if (editBtn) {
-                    handlers.handleEdit(editBtn.dataset.id);
-                }
+                if (editBtn) handlers.handleEdit(editBtn.dataset.id);
                 
                 if (deleteBtn) {
-                    // 2. Thay vì confirm, ta gán ID và hiện Modal đẹp
                     this.currentDeleteId = deleteBtn.dataset.id;
-                    if (this.deleteConfirmModal) {
-                        this.deleteConfirmModal.show();
-                    }
+                    if (this.deleteConfirmModal) this.deleteConfirmModal.show();
                 }
             });
         }
 
-        // 3. Xử lý nút "Xác nhận xóa" trong Modal
         const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
         if (confirmDeleteBtn) {
             confirmDeleteBtn.onclick = () => {
@@ -85,7 +90,6 @@ class ShelfView {
             };
         }
 
-        // Filter tầng
         document.getElementById('floorFilter')?.addEventListener('change', (e) => {
             handlers.handleFilter(e.target.value);
         });
@@ -95,7 +99,7 @@ class ShelfView {
         if (!this.tableBody) return;
 
         if (shelves.length === 0) {
-            this.tableBody.innerHTML = `<tr><td colspan="4" class="text-center py-4 text-muted">Không tìm thấy kệ sách nào.</td></tr>`;
+            this.tableBody.innerHTML = `<tr><td colspan="5" class="text-center py-4 text-muted">Không tìm thấy kệ sách nào.</td></tr>`;
             return;
         }
 
@@ -116,6 +120,12 @@ class ShelfView {
                     </td>
                     <td>
                         <span class="badge rounded-pill bg-light text-dark border px-3">Tầng ${shelf.floor || 1}</span>
+                    </td>
+                    <!-- FIX: THÊM CỘT HIỂN THỊ TÊN THỂ LOẠI -->
+                    <td>
+                        <span class="badge bg-info-subtle text-info border px-3">
+                            ${shelf.categoryName || 'Chưa phân loại'}
+                        </span>
                     </td>
                     <td class="text-end pe-4">
                         <button class="btn btn-sm btn-outline-primary border-0 edit-btn" data-id="${shelf.id}">

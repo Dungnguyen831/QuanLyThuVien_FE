@@ -43,12 +43,23 @@ class CategoryController {
 
     // Tìm kiếm local như AuthorController để mượt mà hơn
     handleSearch(query) {
-        const filtered = this.allCategories.filter(c => 
-            c.name.toLowerCase().includes(query.toLowerCase()) || 
-            String(c.id).includes(query)
-        );
-        this.view.renderCategories(filtered);
-    }
+    const searchTerm = query.toLowerCase().trim();
+
+    const filtered = this.allCategories.filter(c => {
+        // 1. Tạo mã hiển thị ảo giống hệt lúc render (ví dụ: DM001)
+        const virtualId = `DM${String(c.id).padStart(3, '0')}`.toLowerCase();
+        
+        // 2. Lấy ID thuần số (ví dụ: 1)
+        const realId = String(c.id);
+
+        // 3. So khớp: Tên chứa query HOẶC Mã ảo chứa query HOẶC ID thực chứa query
+        return c.name.toLowerCase().includes(searchTerm) || 
+               virtualId.includes(searchTerm) ||
+               realId.includes(searchTerm);
+    });
+
+    this.view.renderCategories(filtered);
+}
 
     async handleSave(id, data) {
     // 1. Làm sạch ID (Chuyển về số nguyên)
