@@ -1,375 +1,177 @@
 /**
- * Reservation View Class
- * Handles all rendering logic for the Reservations page including:
- * - Stats cards updates
- * - Reservation table rendering with conditional status badges
- * - Event binding
+ * ReservationView.js
+ * Hiển thị danh sách đặt chỗ, không dùng async/await trong render
+ * Code HTML cứng bằng Template Literals
+ * Uses ImageService for proper image URL handling
  */
 class ReservationView {
     constructor() {
-        // Stats elements
-        this.activeBorrowsElement = document.getElementById('active-borrows');
-        this.upcomingDueElement = document.getElementById('upcoming-due');
-        this.activeReservationsElement = document.getElementById('active-reservations');
-
-        // Table elements
         this.tableBody = document.getElementById('reservation-table-body');
-
-        // Button elements
-        this.newReservationBtn = document.getElementById('new-reservation-btn');
-
-        // Event listeners storage
-        this.eventListeners = {};
     }
 
-    /**
-     * Update the stats cards with dashboard data
-     * @param {Object} statsData - Statistics data object with activeBorrows, upcomingDue, activeReservations
-     */
-    updateStatsCards(statsData) {
-        if (!statsData) return;
 
-        if (statsData.activeBorrows !== undefined) {
-            this.activeBorrowsElement.textContent = statsData.activeBorrows;
-        }
-
-        if (statsData.upcomingDue !== undefined) {
-            this.upcomingDueElement.textContent = statsData.upcomingDue;
-        }
-
-        if (statsData.activeReservations !== undefined) {
-            this.activeReservationsElement.textContent = statsData.activeReservations;
-        }
+    renderStats(stats) {
+        if (this.activeBorrowsEl) this.activeBorrowsEl.textContent = stats.activeBorrows;
+        if (this.upcomingDueEl) this.upcomingDueEl.textContent = stats.upcomingDue;
+        if (this.activeReservationsEl) this.activeReservationsEl.textContent = stats.activeReservations;
     }
 
-    /**
-     * Render reservation table with data rows
-     * @param {Array} reservations - Array of reservation objects
-     */
-    renderReservationTable(reservations) {
+
+    renderReservations(reservations) {
+        if (!this.tableBody) return;
+
         if (!reservations || reservations.length === 0) {
-            this.tableBody.innerHTML = '<tr><td colspan="5" class="empty-message">Không tìm thấy đặt chỗ.</td></tr>';
+            this.tableBody.innerHTML = '<tr><td colspan="5">Không có đặt chỗ nào</td></tr>';
             return;
         }
 
-        this.tableBody.innerHTML = reservations.map(reservation =>
-            this._createReservationRow(reservation)
-        ).join('');
+        // Build HTML rows
+        const rows = reservations.map(res => {
+            const imageUrl = this._getImageUrl(res.cover);
+            return this._createRow(res, imageUrl);
+        }).join('');
 
-        // Bind action buttons
-        this._bindTableActions();
+        this.tableBody.innerHTML = rows;
     }
 
     /**
-     * Create a single table row for a reservation
+     * Get proper image URL using ImageService
      * @private
-     * @param {Object} reservation - Combined reservation+book object from BE
-     * @returns {string} HTML table row string
      */
-    _createReservationRow(reservation) {
-        const statusBadge = this._createStatusBadge(reservation.status);
-        const formattedDate = this._formatDate(reservation.reservationDate);
+    _getImageUrl(cover) {
+        if (!cover) return '/assets/img/default-book.jpg';
 
-        // ✅ Use ImageService to get proper image URL
-        const imageUrl = this._escapeHtml(
-            ImageService.getImageUrl(reservation.imageUrl || reservation.cover || 'default-book.jpg')
-        );
-        const title = this._escapeHtml(reservation.title || 'Unknown Title');
+        if (typeof ImageService !== 'undefined') {
+            return ImageService.getImageUrl(cover);
+        }
 
-        // Get author name or fallback to authorId
-        const author = this._escapeHtml(reservation.author || `Author ID: ${reservation.authorId || 'N/A'}`);
+        // Fallback: if cover doesn't have /assets path, add it
+        if (!cover.startsWith('/') && !cover.startsWith('http')) {
+            return `/assets/img/${cover}`;
+        }
+        return cover;
+    }
 
-        // ✅ NEW: Show "Xác nhận lấy sách" button only if status is APPROVED
-        const pickupButton = reservation.status && reservation.status.toLowerCase() === 'approved'
-            ? `<button class="action-btn action-btn-pickup" data-action="pickup" title="Xác nhận lấy sách">LẤY SÁCH</button>`
+    /**
+     * Create a single reservation row
+     * @private
+     */
+    _createRow(res, imageUrl) {
+        const title = res.title || 'Không xác định';
+        const author = res.author || res.authorName || 'Tác giả không xác định';
+
+        let currentStatus = (res.status || '').toUpperCase();
+        let pickupDateText = '-';
+
+
+        if (currentStatus === 'APPROVED' || currentStatus === 'COMPLETED') {
+            const dateString = res.reservationDate || res.updatedAt;
+            if (dateString) {
+                const dateObj = new Date(dateString);
+                pickupDateText = dateObj.toLocaleDateString('vi-VN');
+            }
+        }
+
+        // Render các trạng thái hiển thị
+        const statusBadgeClass = currentStatus.toLowerCase();
+        const statusText = this._getStatusText(currentStatus);
+        const isApproved = currentStatus === 'APPROVED';
+
+        // - Chỉ cho phép người dùng tự bấm Hủy khi đơn đang Chờ duyệt hoặc Đã duyệt
+        const cancelBtn = (currentStatus === 'PENDING' || currentStatus === 'APPROVED')
+            ? '<button class="btn-action btn-danger" data-action="cancel">Hủy</button>'
             : '';
 
-        return `
-            <tr class="reservation-row" data-reservation-id="${reservation.id}">
-                <td class="col-cover">
-                    <img src="${imageUrl}" alt="${title}" class="book-cover-thumb">
-                </td>
-                <td class="col-title">
-                    <div class="book-info">
-                        <p class="book-title">${title}</p>
-                        <p class="book-author">${author}</p>
-                    </div>
-                </td>
-                <td class="col-date">
-                    <span class="date">${formattedDate}</span>
-                </td>
-                <td class="col-status">
-                    ${statusBadge}
-                </td>
-                <td class="col-actions">
-                    <div class="action-buttons">
-                        <button class="action-btn action-btn-details" data-action="details" title="Xem chi tiết">
-                            CHI TIẾT
-                        </button>
-                        ${pickupButton}
-                        <button class="action-btn action-btn-cancel" data-action="cancel" title="Hủy đặt chỗ">
-                            HủY
-                        </button>
-                    </div>
-                </td>
-            </tr>
-        `;
+        return `<tr class="reservation-row" data-reservation-id="${res.id}">
+            <td>
+                <img 
+                    src="${imageUrl}" 
+                    alt="" 
+                    class="book-cover-thumb"
+                    onerror="this.src='/assets/img/default-book.jpg'"
+                >
+            </td>
+            <td>
+                <div>
+                    <p class="book-title">${title}</p>
+                    <p class="book-author">${author}</p>
+                </div>
+            </td>
+            <td style="font-weight: 500;">${pickupDateText}</td> 
+            <td>
+                <span class="badge badge-${statusBadgeClass}">
+                    ${statusText}
+                </span>
+            </td>
+            <td>
+                <button class="btn-action" data-action="details">Chi tiết</button>
+                ${cancelBtn}
+            </td>
+        </tr>`;
     }
 
     /**
-     * Create status badge HTML based on reservation status
-     * @private
-     * @param {string} status - Status value (PENDING, APPROVED, CANCELLED, COMPLETED)
-     * @returns {string} HTML badge string
+     * Event Delegation: Gắn listener vào cha, dùng e.target.closest()
      */
-    _createStatusBadge(status) {
-        let badgeClass = 'status-badge';
-        let badgeText = status;
+    attachEventListeners(controllerCallback) {
+        if (!this.tableBody) return;
 
-        switch (status.toLowerCase()) {
-            case 'pending':
-                badgeClass += ' status-pending';
-                badgeText = 'Chờ xử lý';
-                break;
-            case 'approved':
-                badgeClass += ' status-approved';
-                badgeText = '" ĐÃ duyệt';
-                break;
-            case 'cancelled':
-                badgeClass += ' status-cancelled';
-                badgeText = 'Đã hủy';
-                break;
-            case 'completed':
-                badgeClass += ' status-completed';
-                badgeText = 'Đã hoàn thành';
-                break;
-            default:
-                badgeClass += ' status-default';
-        }
+        this.tableBody.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-action');
+            if (!btn) return;
 
-        return `<span class="${badgeClass}">${badgeText}</span>`;
+            const action = btn.dataset.action;
+            const row = e.target.closest('.reservation-row');
+            const reservationId = row.dataset.reservationId;
+
+            const controller = controllerCallback();
+            controller.handleAction(action, reservationId);
+        });
     }
 
     /**
-     * Format date string to readable format
-     * @private
-     * @param {string} dateString - Date string in format 'YYYY-MM-DD'
-     * @returns {string} Formatted date
+     * Attach event listener to "New Reservation" button
      */
-    _formatDate(dateString) {
-        if (!dateString) return '';
+    attachNewReservationButton(controllerCallback) {
+        const newReservationBtn = document.getElementById('new-reservation-btn');
+        if (!newReservationBtn) return;
 
-        try {
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric'
-            });
-        } catch (e) {
-            return dateString;
-        }
+        newReservationBtn.addEventListener('click', async () => {
+            const controller = controllerCallback();
+            await controller.openNewReservationForm();
+        });
     }
 
     /**
-     * Escape HTML special characters to prevent XSS
-     * @private
-     * @param {string} text - Text to escape
-     * @returns {string} Escaped text
+     * Convert status to Vietnamese text
      */
-    _escapeHtml(text) {
+    _getStatusText(status) {
+        if (!status) return 'Không xác định';
+        const statusUpper = String(status).toUpperCase().trim();
         const map = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
+            'PENDING': 'Chờ duyệt',
+            'APPROVED': 'Đã duyệt',
+            'COMPLETED': 'Hoàn thành',
+            'CANCELLED': 'Đã hủy'
         };
-        return String(text).replace(/[&<>"']/g, char => map[char]);
-    }
-
-    /**
-     * Bind table action buttons
-     * @private
-     */
-    _bindTableActions() {
-        const detailsButtons = this.tableBody.querySelectorAll('[data-action="details"]');
-        const pickupButtons = this.tableBody.querySelectorAll('[data-action="pickup"]');
-        const cancelButtons = this.tableBody.querySelectorAll('[data-action="cancel"]');
-
-        detailsButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const reservationId = e.target.closest('.reservation-row').dataset.reservationId;
-                if (this.eventListeners.onDetailsClick) {
-                    this.eventListeners.onDetailsClick(reservationId);
-                }
-            });
-        });
-
-        // ✅ NEW: Bind pickup buttons
-        pickupButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const reservationId = e.target.closest('.reservation-row').dataset.reservationId;
-                if (this.eventListeners.onConfirmPickupClick) {
-                    this.eventListeners.onConfirmPickupClick(reservationId);
-                }
-            });
-        });
-
-        cancelButtons.forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const reservationId = e.target.closest('.reservation-row').dataset.reservationId;
-                if (this.eventListeners.onCancelClick) {
-                    this.eventListeners.onCancelClick(reservationId);
-                }
-            });
-        });
-    }
-
-    /**
-     * Bind new reservation button click event
-     * @param {Function} callback - Callback function when button is clicked
-     */
-    onNewReservationClick(callback) {
-        this.eventListeners.onNewReservationClick = callback;
-        this.newReservationBtn.addEventListener('click', callback);
-    }
-
-    /**
-     * Bind details button click event
-     * @param {Function} callback - Callback function with reservation ID
-     */
-    onDetailsClick(callback) {
-        this.eventListeners.onDetailsClick = callback;
-    }
-
-    /**
-     * Bind cancel button click event
-     * @param {Function} callback - Callback function with reservation ID
-     */
-    onCancelClick(callback) {
-        this.eventListeners.onCancelClick = callback;
-    }
-
-    /**
-     * Bind confirm pickup button click event
-     * @param {Function} callback - Callback function with reservation ID
-     */
-    onConfirmPickupClick(callback) {
-        this.eventListeners.onConfirmPickupClick = callback;
+        return map[statusUpper] || status;
     }
 
     /**
      * Show loading state
      */
     showLoading() {
-        this.tableBody.innerHTML = '<tr><td colspan="5" class="loading-message">Đang tải đặt chỗ...</td></tr>';
+        if (this.tableBody) {
+            this.tableBody.innerHTML = '<tr><td colspan="5">Đang tải...</td></tr>';
+        }
     }
 
     /**
-     * Show error state
-     * @param {string} message - Error message to display
+     * Show error message
      */
     showError(message) {
-        this.tableBody.innerHTML = `<tr><td colspan="5" class="error-message">${this._escapeHtml(message)}</td></tr>`;
-    }
-
-    /**
-     * Remove a row from the table
-     * @param {string|number} reservationId - ID of reservation to remove
-     */
-    removeTableRow(reservationId) {
-        const row = this.tableBody.querySelector(`[data-reservation-id="${reservationId}"]`);
-        if (row) {
-            row.style.animation = 'fadeOut 0.3s ease-out';
-            setTimeout(() => row.remove(), 300);
+        if (this.tableBody) {
+            this.tableBody.innerHTML = `<tr><td colspan="5" class="text-error">${message}</td></tr>`;
         }
-    }
-
-    /**
-     * Open reservation form modal
-     * @param {HTMLElement} formModal - Modal form element from ReservationForm.create()
-     */
-    openReservationModal(formModal) {
-        // Append modal to body
-        document.body.appendChild(formModal);
-
-        // Trigger animation
-        requestAnimationFrame(() => {
-            formModal.classList.add('show');
-        });
-    }
-
-    /**
-     * Close reservation form modal
-     * @param {HTMLElement} formModal - Modal form element to close
-     */
-    closeReservationModal(formModal) {
-        if (formModal && formModal.parentNode) {
-            formModal.classList.remove('show');
-            setTimeout(() => {
-                if (formModal.parentNode) {
-                    formModal.remove();
-                }
-            }, 300);
-        }
-    }
-
-    /**
-     * Bind form submission event
-     * @param {Function} callback - Callback function with form data
-     */
-    onReservationFormSubmit(callback) {
-        this.eventListeners.onReservationFormSubmit = callback;
-    }
-
-    /**
-     * Setup form submission handler
-     * @param {HTMLElement} formModal - Modal element containing the form
-     * @param {Function} onSubmit - Callback on form submission
-     */
-    setupFormSubmissionHandler(formModal, onSubmit) {
-        const form = formModal.querySelector('#reservation-form');
-        if (!form) return;
-
-        form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
-            if (onSubmit) {
-                await onSubmit(form);
-            }
-        });
-    }
-
-    /**
-     * Update a single reservation row in the table (without full reload)
-     * @param {string|number} reservationId - ID of reservation to update
-     * @param {Object} updatedData - Updated reservation data
-     */
-    updateTableRow(reservationId, updatedData) {
-        const row = this.tableBody.querySelector(`[data-reservation-id="${reservationId}"]`);
-        if (!row) return;
-
-        // Update cells based on updatedData
-        if (updatedData.title) {
-            const titleCell = row.querySelector('.col-title .book-title');
-            if (titleCell) titleCell.textContent = updatedData.title;
-        }
-
-        if (updatedData.reservationDate) {
-            const dateCell = row.querySelector('.col-date .date');
-            if (dateCell) dateCell.textContent = this._formatDate(updatedData.reservationDate);
-        }
-
-        if (updatedData.status) {
-            const statusCell = row.querySelector('.col-status');
-            if (statusCell) statusCell.innerHTML = this._createStatusBadge(updatedData.status);
-        }
-
-        // Highlight the updated row with animation
-        row.style.animation = 'highlightUpdate 0.6s ease-out';
-        setTimeout(() => {
-            row.style.animation = '';
-        }, 600);
     }
 }

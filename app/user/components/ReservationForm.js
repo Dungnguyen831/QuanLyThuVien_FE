@@ -103,19 +103,10 @@ class ReservationForm {
             bookSelector = ReservationForm._createBookSelector(availableBooks);
         }
 
-        // Get pickup date (extract date part from reservationDate LocalDateTime)
-        let pickupDate = ReservationForm.defaultTodayDate;
-        if (!isCreateMode && reservation) {
-            // reservationDate format: "2026-04-10T09:00:00" or "2026-04-10T09:00:00.000+07:00"
-            const reservationDateStr = reservation.reservationDate || '';
-            pickupDate = reservationDateStr.split('T')[0] || ReservationForm.defaultTodayDate;
-        }
-
         // Replace all placeholders
         let html = template
             .replace('{modalTitle}', modalTitle)
             .replace('{bookSelector}', bookSelector)
-            .replace('{pickupDate}', pickupDate)
             .replace('{submitButtonText}', submitButtonText);
 
         // Convert HTML string to DOM element
@@ -239,15 +230,11 @@ class ReservationForm {
         if (!form) return null;
 
         const formData = new FormData(form);
-        const pickupDateStr = formData.get('pickupDate'); // YYYY-MM-DD format
 
-        // Convert date to LocalDateTime format (YYYY-MM-DDTHH:mm:ss)
-        // Default time: 09:00:00 (9 AM)
-        const reservationDate = pickupDateStr ? `${pickupDateStr}T09:00:00` : null;
-
+        // NO pickup date input anymore - backend calculates borrow date automatically
         const data = {
-            bookId: parseInt(formData.get('bookId')),
-            reservationDate: reservationDate
+            bookId: parseInt(formData.get('bookId'))
+            // reservationDate is NOT sent - backend handles it
         };
 
         // For UPDATE mode, include status
@@ -259,7 +246,7 @@ class ReservationForm {
         }
 
         // Note: userId is extracted from JWT on backend, no need to send
-        // Note: notes field is not in ReservationRequestDTO, removed
+        // Note: reservationDate is NOT sent - backend sets it automatically
 
         return data;
     }
@@ -278,18 +265,7 @@ class ReservationForm {
             errors.push('Please select a book');
         }
 
-        if (!data.reservationDate) {
-            errors.push('Please select a pickup date');
-        } else {
-            // Check if date is in the past
-            const selectedDate = new Date(data.reservationDate.split('T')[0]);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (selectedDate < today) {
-                errors.push('Pickup date must be today or in the future');
-            }
-        }
+        // No date validation needed - backend handles borrow date automatically
 
         return {
             isValid: errors.length === 0,

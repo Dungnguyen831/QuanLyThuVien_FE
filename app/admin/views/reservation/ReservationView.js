@@ -10,7 +10,7 @@ class ReservationView {
             let actionHtml = '';
 
             // LOGIC HIỂN THỊ NÚT THEO TRẠNG THÁI
-            switch(res.status.toLowerCase()) {
+            switch (res.status.toLowerCase()) {
                 case 'pending':
                     statusHtml = `<span class="badge bg-warning text-dark bg-opacity-25 border border-warning px-2 py-1 rounded-pill">Chờ xử lý</span>`;
                     actionHtml = `
@@ -38,7 +38,7 @@ class ReservationView {
                     <td class="ps-4">RES${String(res.id).padStart(3, '0')}</td>
                     <td><b>${res.userName}</b><br><small>${res.userEmail}</small></td>
                     <td>${res.bookName}</td>
-                    <td>${res.reservationDate}</td>
+                    <td>${res.reservation_date}</td>
                     <td>${statusHtml}</td>
                     <td class="text-center">${actionHtml}</td>
                 </tr>`;
@@ -59,17 +59,17 @@ class ReservationView {
                             <p><b>Độc giả:</b> ${res.userName}</p>
                             <p><b>Email:</b> ${res.userEmail}</p>
                             <p><b>Sách đặt:</b> ${res.bookName}</p>
-                            <p><b>Ngày đặt:</b> ${res.reservationDate}</p>
+                            <p><b>Ngày đặt:</b> ${res.reservation_date}</p>
                             <p><b>Trạng thái:</b> <span class="text-uppercase fw-bold text-success">${res.status}</span></p>
                         </div>
                     </div>
                 </div>
             </div>`;
-        
+
         // Xóa modal cũ nếu có và thêm modal mới
         const oldModal = document.getElementById('resDetailModal');
         if (oldModal) oldModal.remove();
-        
+
         document.body.insertAdjacentHTML('beforeend', modalHtml);
         const modal = new bootstrap.Modal(document.getElementById('resDetailModal'));
         modal.show();
