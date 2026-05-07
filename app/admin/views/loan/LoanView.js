@@ -166,6 +166,7 @@ class LoanView {
         note: document.getElementById("return-note").value
       };
       handler(detailId, data);
+      
     });
   }
 
