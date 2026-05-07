@@ -23,8 +23,7 @@ class ReservationModel {
                 if (item.reservationDate) {
                     const dateObj = new Date(item.reservationDate);
                     const datePart = dateObj.toLocaleDateString('vi-VN'); 
-                    const timePart = dateObj.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-                    formattedDate = `${datePart} ${timePart}`;
+                    formattedDate = `${datePart}`;
                 }
 
                 return {

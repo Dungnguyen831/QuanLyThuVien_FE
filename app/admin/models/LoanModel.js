@@ -129,7 +129,6 @@ class LoanModel {
 // ==========================================
 // 6. HỖ TRỢ LẤY DANH SÁCH ĐỘC GIẢ VÀ SÁCH (DÙNG CHO THÊM PHIẾU MƯỢN)
 // ==========================================
-  // Lấy danh sách tất cả độc giả
   async fetchAllUsers() {
     try {
       const token = localStorage.getItem("token");
@@ -145,7 +144,6 @@ class LoanModel {
     }
   }
 
-  // Lấy danh sách tất cả sách
   async fetchAllBooks() {
     try {
       const token = localStorage.getItem("token");

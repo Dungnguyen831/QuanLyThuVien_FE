@@ -81,6 +81,32 @@
                     </div>
                 </div>
 
+                <div class="modal fade" id="viewDetailModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light pb-3">
+                                <h5 class="modal-title fw-bold text-info"><i class="fas fa-info-circle me-2"></i>Chi tiết phiếu</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4 text-center">
+                                
+                                <div class="mb-4">
+                                    <label class="text-muted small fw-bold mb-2">MÃ VẠCH (BARCODE)</label>
+                                    <div class="p-3 bg-light border rounded-3 fw-bold fs-5 text-dark" id="detail-barcode" style="letter-spacing: 2px;">
+                                    </div>
+                                </div>
+
+                                <div class="text-start">
+                                    <label class="text-muted small fw-bold mb-1">Ghi chú phiếu mượn:</label>
+                                    <p class="mb-0 bg-secondary-subtle p-3 rounded-3 text-secondary" id="detail-note" style="min-height: 60px; font-style: italic;">
+                                    </p>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="modal fade" id="renewLoanModal" tabindex="-1" aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-sm">
                         <div class="modal-content border-0 shadow">
@@ -118,6 +144,17 @@
                                 </div>
                                 <form id="return-loan-form">
                                     <input type="hidden" id="return-detail-id">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-primary small">NHẬP MÃ VẠCH ĐỐI CHIẾU</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fas fa-barcode"></i></span>
+                                            <input type="text" class="form-control fw-bold" id="return-barcode-verify" 
+                                                placeholder="Nhập mã vạch trên bìa sách..." required>
+                                        </div>
+                                        <div id="barcode-error-msg" class="text-danger small mt-1 d-none">
+                                            <i class="fas fa-exclamation-circle me-1"></i> Mã vạch không khớp với bản sao đã mượn!
+                                        </div>
+                                    </div>
                                     <div class="mb-3">
                                         <label class="form-label fw-medium text-muted small">Tình trạng sách lúc trả</label>
                                         <select class="form-select" id="return-condition" required>

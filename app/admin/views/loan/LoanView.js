@@ -40,6 +40,11 @@ class LoanView {
         const targetId = loan.loanDetailId || loan.id;
 
         let actionHtml = `<div class="d-flex justify-content-end gap-2">`;
+
+        actionHtml += `
+        <button class="btn btn-sm btn-outline-info btn-view-detail" data-id="${targetId}" title="Xem chi tiết">
+            <i class="fas fa-eye"></i>
+        </button>`;
         
         if (canReturn) {
             actionHtml += `
@@ -104,9 +109,14 @@ class LoanView {
   }
 
   // Bắt sự kiện click vào các nút trên bảng
-  bindTableActions(deleteHandler) {
+  bindTableActions(deleteHandler, viewHandler) {
     if (!this.tableBody) return;
     this.tableBody.addEventListener("click", (e) => {
+
+      const btnView = e.target.closest(".btn-view-detail");
+      if (btnView && viewHandler) {
+        viewHandler(btnView.dataset.id); 
+      }
       
       const btnDelete = e.target.closest(".btn-delete");
       if (btnDelete) {
@@ -149,7 +159,9 @@ class LoanView {
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const detailId = document.getElementById("return-detail-id").value;
+      const barcodeVerify = document.getElementById("return-barcode-verify")?.value.trim();
       const data = {
+        inputBarcode: barcodeVerify,
         conditionStatus: document.getElementById("return-condition").value,
         note: document.getElementById("return-note").value
       };
@@ -308,5 +320,30 @@ class LoanView {
         list.classList.remove("show");
       });
     });
+  }
+
+  showDetailModal(barcode, note) {
+    const barcodeEl = document.getElementById("detail-barcode");
+    const noteEl = document.getElementById("detail-note");
+
+    if (barcodeEl) {
+      barcodeEl.innerText = barcode || "Chưa có mã vạch";
+    }
+    
+    if (noteEl) {
+      if (note) {
+        noteEl.innerText = note;
+        noteEl.classList.remove('text-muted');
+      } else {
+        noteEl.innerText = "Không có ghi chú nào cho phiếu mượn này.";
+        noteEl.classList.add('text-muted');
+      }
+    }
+
+    // Bật Modal lên
+    const modalEl = document.getElementById("viewDetailModal");
+    if (modalEl) {
+      bootstrap.Modal.getOrCreateInstance(modalEl).show();
+    }
   }
 }

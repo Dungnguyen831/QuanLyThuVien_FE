@@ -14,9 +14,10 @@ class LoanController {
     this.view.bindAddLoan(this.handleAddLoan.bind(this));
     
     // Liên kết các sự kiện mới
-    this.view.bindTableActions(this.handleDeleteLoan.bind(this));
+    this.view.bindTableActions(this.handleDeleteLoan.bind(this), this.handleViewDetail.bind(this));
     this.view.bindSubmitRenew(this.handleRenewLoan.bind(this));
     this.view.bindSubmitReturn(this.handleReturnLoan.bind(this));
+
   }
 
   async init() {
@@ -96,9 +97,6 @@ class LoanController {
       const loans = await this.model.fetchLoans();
       this.allLoans = loans || [];
       
-      // THAY ĐỔI QUAN TRỌNG: 
-      // Gọi filterLoans() thay vì this.view.renderLoans(this.allLoans)
-      // Để giữ nguyên tab và từ khóa hiện tại sau khi tải lại dữ liệu
       this.filterLoans(); 
     } catch (error) {
       console.error("Lỗi khi tải danh sách:", error);
@@ -140,14 +138,31 @@ class LoanController {
   }
 
   async handleReturnLoan(rawDetailId, requestData) {
-    try {
-      const cleanDetailId = rawDetailId.toString().replace(/\D/g, '');
-      await this.model.returnBook(cleanDetailId, requestData);
-      alert("Trả sách thành công!");
-      this.view.closeReturnModal();
-      await this.loadLoans(); 
-    } catch (error) {
-      alert("Lỗi trả sách: " + error.message);
+  try {
+    const cleanDetailId = rawDetailId.toString().replace(/\D/g, '');
+    
+    const loan = this.allLoans.find(l => String(l.loanDetailId || l.id) === String(cleanDetailId));
+    if (loan && requestData.inputBarcode !== loan.barcode) {
+        document.getElementById("barcode-error-msg")?.classList.remove("d-none");
+        return; // Dừng lại nếu không khớp
+    }
+
+    await this.model.returnBook(cleanDetailId, requestData);
+
+    alert("Trả sách và đối chiếu thành công!");
+    this.view.closeReturnModal();
+    await this.loadLoans(); 
+  } catch (error) {
+    alert("Lỗi hệ thống: " + error.message);
+  }
+}
+
+  handleViewDetail(detailId) {
+    // Tìm phiếu mượn trong danh sách (this.loans hoặc tương tự)
+    const loan = this.allLoans.find(l => String(l.loanDetailId || l.id) === String(detailId));
+    if (loan) {
+        // Gửi barcode và note sang View để hiển thị
+        this.view.showDetailModal(loan.barcode, loan.note);
     }
   }
 }
