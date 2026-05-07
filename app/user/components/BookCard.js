@@ -221,24 +221,39 @@ class BookCard {
             const isInWishlist = btn.classList.contains('in-wishlist');
             const action = isInWishlist ? 'remove' : 'add';
 
-            // Call API
-            if (action === 'add') {
-                await model.addToWishlist(book.id);
-                BookCard._updateButtonState(btn, true);
-                if (callback) callback(book, true);
-            } else {
-                await model.removeFromWishlist(book.id);
-                BookCard._updateButtonState(btn, false);
-                if (callback) callback(book, false);
-            }
+            // Disable button during operation
+            btn.disabled = true;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = action === 'add' ? 'Đang thêm...' : 'Đang xóa...';
 
-            // Notify other pages
-            window.dispatchEvent(new CustomEvent('wishlistChanged', {
-                detail: { bookId: book.id, inWishlist: action === 'add' }
-            }));
+            // Call API
+            try {
+                if (action === 'add') {
+                    await model.addToWishlist(book.id);
+                    BookCard._updateButtonState(btn, true);
+                    if (callback) callback(book, true);
+                } else {
+                    await model.removeFromWishlist(book.id);
+                    BookCard._updateButtonState(btn, false);
+                    if (callback) callback(book, false);
+                }
+
+                // Notify other pages
+                window.dispatchEvent(new CustomEvent('wishlistChanged', {
+                    detail: { bookId: book.id, inWishlist: action === 'add' }
+                }));
+            } finally {
+                // Re-enable button
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
         } catch (error) {
             console.error('Lỗi cập nhật wishlist:', error);
-            alert('Failed to update wishlist. Please try again.');
+            // Show user-friendly error message
+            const message = error.message.includes('400')
+                ? 'Sách đã được cập nhật. Vui lòng tải lại trang.'
+                : 'Không thể cập nhật danh sách yêu thích. Vui lòng thử lại.';
+            alert(message);
         }
     }
 
