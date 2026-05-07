@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
     <link rel="stylesheet" href="../../../../assets/css/admin/admin-style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body class="bg-light">
 
@@ -68,75 +69,34 @@
                         <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
                             <div class="d-flex justify-content-between align-items-start mb-4">
                                 <div>
-                                    <h5 class="fw-bold mb-1">Thống kê mượn trả</h5>
-                                    <small class="text-muted">Số liệu 6 tháng gần nhất</small>
+                                <h5 class="fw-bold mb-1">Thống kê mượn trả</h5>
+                                <small class="text-muted">Số liệu 12 tháng gần nhất</small>
                                 </div>
                                 <div class="text-end">
-                                    <h4 class="fw-bold mb-0">1,240 <span class="fs-6 text-success fw-medium">+15%</span></h4>
+                                <h4 id="total-chart-count" class="fw-bold mb-0">0</h4>
                                 </div>
                             </div>
-                            <div class="d-flex align-items-end justify-content-around mt-4 pt-4" style="height: 220px; border-bottom: 2px solid #f1f5f9;">
-                                <div class="text-center"><div class="bg-primary bg-opacity-25 rounded-top" style="height: 90px; width: 45px; margin: 0 auto;"></div><small class="text-muted mt-2 d-block">T1</small></div>
-                                <div class="text-center"><div class="bg-primary bg-opacity-25 rounded-top" style="height: 120px; width: 45px; margin: 0 auto;"></div><small class="text-muted mt-2 d-block">T2</small></div>
-                                <div class="text-center"><div class="bg-primary bg-opacity-25 rounded-top" style="height: 100px; width: 45px; margin: 0 auto;"></div><small class="text-muted mt-2 d-block">T3</small></div>
-                                <div class="text-center"><div class="bg-primary bg-opacity-25 rounded-top" style="height: 150px; width: 45px; margin: 0 auto;"></div><small class="text-muted mt-2 d-block">T4</small></div>
-                                <div class="text-center"><div class="bg-primary bg-opacity-25 rounded-top" style="height: 130px; width: 45px; margin: 0 auto;"></div><small class="text-muted mt-2 d-block">T5</small></div>
-                                <div class="text-center position-relative">
-                                    <div class="bg-primary rounded-top" style="height: 180px; width: 45px; margin: 0 auto;"></div>
-                                    <span class="badge bg-dark position-absolute top-0 start-50 translate-middle mt-n2">850</span>
-                                    <small class="text-primary fw-bold mt-2 d-block">T6</small>
-                                </div>
+                            <div style="height: 250px;">
+                            <canvas id="borrowingChart"></canvas>
                             </div>
                         </div>
                     </div>
 
-                    <div class="col-xl-4">
-                        <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
-                            <h5 class="fw-bold mb-4">Top sách phổ biến</h5>
-                            
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-success bg-opacity-25 rounded me-3" style="width: 45px; height: 60px; border-left: 4px solid #198754;"></div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-0 fw-bold">Clean Code</h6>
-                                    <small class="text-muted">Robert C. Martin</small>
+                        <div class="col-xl-4">
+                            <div class="card border-0 shadow-sm rounded-4 p-4 h-100">
+                                <h5 class="fw-bold mb-4">Top sách phổ biến</h5>
+                                <!-- Nơi chứa danh sách sách -->
+                                <div id="top-books-list">
+                                    <!-- Loading hoặc placeholder -->
+                                    <p class="text-muted">Đang tải dữ liệu...</p>
                                 </div>
-                                <span class="badge bg-light text-primary fw-bold">#1</span>
-                            </div>
-
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-info bg-opacity-25 rounded me-3" style="width: 45px; height: 60px;"></div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-0 fw-bold">The Pragmatic Progr...</h6>
-                                    <small class="text-muted">Andrew Hunt</small>
-                                </div>
-                                <span class="badge bg-light text-secondary fw-bold">#2</span>
-                            </div>
-
-                            <div class="d-flex align-items-center mb-4">
-                                <div class="bg-secondary bg-opacity-25 rounded me-3" style="width: 45px; height: 60px;"></div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-0 fw-bold">Design Patterns</h6>
-                                    <small class="text-muted">Erich Gamma</small>
-                                </div>
-                                <span class="badge bg-light text-secondary fw-bold">#3</span>
-                            </div>
-
-                            <div class="d-flex align-items-center">
-                                <div class="bg-primary bg-opacity-25 rounded me-3" style="width: 45px; height: 60px;"></div>
-                                <div class="flex-grow-1">
-                                    <h6 class="mb-0 fw-bold">Refactoring</h6>
-                                    <small class="text-muted">Martin Fowler</small>
-                                </div>
-                                <span class="badge bg-light text-secondary fw-bold">#4</span>
                             </div>
                         </div>
-                    </div>
                 </div>
 
                 <div class="card border-0 shadow-sm rounded-4 p-4">
                     <div class="d-flex justify-content-between align-items-center mb-4">
                         <h5 class="fw-bold mb-0">Trạng thái mượn trả gần đây</h5>
-                        <button class="btn btn-outline-secondary btn-sm fw-medium"><i class="fas fa-filter me-2"></i>Bộ lọc</button>
                     </div>
                     <div class="table-responsive">
                         <table class="table table-borderless table-custom align-middle mb-0">
@@ -147,49 +107,14 @@
                                     <th class="pb-3">NGƯỜI MƯỢN</th>
                                     <th class="pb-3">NGÀY MƯỢN</th>
                                     <th class="pb-3">TRẠNG THÁI</th>
-                                    <th class="text-end pb-3">HÀNH ĐỘNG</th>
                                 </tr>
                             </thead>
-                            <tbody>
+                            <tbody id="recent-loans-list">
+                                <!-- Dữ liệu mượn trả sẽ được load vào đây từ API -->
                                 <tr>
-                                    <td class="text-muted py-3">BK001</td>
-                                    <td class="fw-bold text-dark py-3">Clean Code: A Handbook of Agile...</td>
-                                    <td class="py-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle badge-soft-primary me-2">A</div>
-                                            <span>Nguyễn Văn A</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-muted py-3">12/10/2023</td>
-                                    <td class="py-3"><span class="badge badge-soft-warning rounded-pill px-3 py-1">Đang mượn</span></td>
-                                    <td class="text-end py-3"><button class="btn btn-link text-muted p-0"><i class="fas fa-ellipsis-v"></i></button></td>
+                                    <td colspan="7" class="text-center text-muted py-4">Đang tải dữ liệu...</td>
                                 </tr>
-                                <tr>
-                                    <td class="text-muted py-3">BK002</td>
-                                    <td class="fw-bold text-dark py-3">The Pragmatic Programmer</td>
-                                    <td class="py-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle badge-soft-purple me-2" style="background-color: rgba(111, 66, 193, 0.1); color: #6f42c1;">B</div>
-                                            <span>Trần Thị B</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-muted py-3">10/10/2023</td>
-                                    <td class="py-3"><span class="badge badge-soft-danger rounded-pill px-3 py-1">Quá hạn</span></td>
-                                    <td class="text-end py-3"><button class="btn btn-link text-muted p-0"><i class="fas fa-ellipsis-v"></i></button></td>
-                                </tr>
-                                <tr>
-                                    <td class="text-muted py-3">BK003</td>
-                                    <td class="fw-bold text-dark py-3">Design Patterns: Elements of...</td>
-                                    <td class="py-3">
-                                        <div class="d-flex align-items-center">
-                                            <div class="avatar-circle badge-soft-success me-2">C</div>
-                                            <span>Lê Văn C</span>
-                                        </div>
-                                    </td>
-                                    <td class="text-muted py-3">14/10/2023</td>
-                                    <td class="py-3"><span class="badge badge-soft-warning rounded-pill px-3 py-1">Đang mượn</span></td>
-                                    <td class="text-end py-3"><button class="btn btn-link text-muted p-0"><i class="fas fa-ellipsis-v"></i></button></td>
-                                </tr>
+                                
                             </tbody>
                         </table>
                     </div>
@@ -207,9 +132,134 @@
             // Tự lùi ra 2 cấp (dashboard -> views -> admin) rồi chui vào components
             ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
             ComponentLoader.load('header-container', '../../components/header.html');
-             // 2. Gọi hàm lấy dữ liệu thống kê (Thêm đoạn này vào)
+             // 2. Gọi hàm lấy dữ liệu thống kê và dữ liệu biểu đồ
         loadDashboardStats();
+        loadChartData();
+        loadTopBooks();
+        loadRecentLoans();
         });
+        async function loadRecentLoans() {
+    try {
+        const response = await fetch('http://localhost:8080/api/v1/loans/recent', {
+            headers: { 'Authorization': 'Bearer ' + localStorage.getItem('token') }
+        });
+        const loans = await response.json();
+        renderRecentLoans(loans);
+    } catch (error) {
+        console.error('Lỗi khi lấy danh sách mượn trả:', error);
+    }
+}
+
+function renderRecentLoans(loans) {
+    const container = document.getElementById('recent-loans-list'); // Đảm bảo ID này khớp với thẻ <tbody> trong HTML
+    container.innerHTML = '';
+
+    loans.forEach(loan => {
+        const [bookCode, title, readerName, borrowDate, status] = loan;
+        
+        // Logic màu sắc cho Trạng thái
+        let statusClass = 'bg-warning text-dark'; // Mặc định: Đang mượn
+        if (status === 'Quá hạn') statusClass = 'bg-danger-subtle text-danger';
+        if (status === 'Đã trả') statusClass = 'bg-success-subtle text-success';
+
+        const row = `
+            <tr>
+                <td class="text-muted small">${bookCode}</td>
+                <td><span class="fw-bold text-truncate d-block" style="max-width: 200px;">${title}</span></td>
+                <td>
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-2" 
+                             style="width: 30px; height: 30px; font-size: 12px; border: 1px solid #eee;">
+                             ${readerName.charAt(0)}
+                        </div>
+                        <span>${readerName}</span>
+                    </div>
+                </td>
+                <td class="text-muted">${new Date(borrowDate).toLocaleDateString('vi-VN')}</td>
+                <td><span class="badge ${statusClass} rounded-pill px-3">${status}</span></td>
+                <td>
+                    <button class="btn btn-link text-muted p-0"><i class="bi bi-three-dots-vertical"></i></button>
+                </td>
+            </tr>
+        `;
+        container.innerHTML += row;
+    });
+}
+        async function loadTopBooks() {
+    try {
+        const response = await fetch('http://localhost:8080/api/v1/books/top-popular', {
+            headers: {
+                'Authorization': 'Bearer ' + localStorage.getItem('token')
+            }
+        });
+        const books = await response.json();
+        console.log("Dữ liệu nhận được:", books); // Kiểm tra dữ liệu nhận được từ API
+        renderTopBooks(books);
+    } catch (error) {
+        console.error('Lỗi khi lấy top sách:', error);
+    }
+    }
+
+function renderTopBooks(books) {
+    const container = document.getElementById('top-books-list');
+    container.innerHTML = ''; // Xóa nội dung cũ
+
+    // Mảng màu sắc cho icon sách để nhìn cho đa dạng (giống ảnh mẫu)
+    const colors = [
+        { bg: '#d1e7dd', border: '#198754' }, // Xanh lá
+        { bg: '#cff4fc', border: '#0dcaf0' }, // Xanh dương nhạt
+        { bg: '#e2e3e5', border: '#6c757d' }, // Xám
+        { bg: '#cfe2ff', border: '#0d6efd' }  // Xanh dương
+    ];
+
+    books.forEach((book, index) => {
+        const title = book[0]; 
+        const author = book[1];
+        const color = colors[index % colors.length];
+        const bookHtml = `
+            <div class="d-flex align-items-center mb-4">
+                <div class="me-3 fw-bold text-muted" style="width: 25px;">
+                    #${index + 1}
+                </div>
+                <div class="rounded me-3" 
+                     style="width: 45px; height: 60px; background-color: ${color.bg}; border-left: 4px solid ${color.border};">
+                </div>
+                <div class="flex-grow-1">
+                    <h6 class="mb-0 fw-bold text-truncate" style="max-width: 150px;">${title}</h6>
+                    <small class="text-muted">${author}</small>
+                </div>
+            </div>
+        `;
+        container.innerHTML += bookHtml;
+    });
+    }
+        async function loadChartData() {
+    // Lấy token từ nơi ông lưu khi login (ví dụ localStorage)
+    const token = localStorage.getItem('token'); 
+
+    try {
+        const response = await fetch('http://localhost:8080/api/admin/dashboard/chart', {
+            method: 'GET',
+            headers: {
+                'Authorization': `Bearer ${token}`, // Gửi kèm token
+                'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.status === 401) {
+            console.error("Lỗi 401: Token không hợp lệ hoặc hết hạn!");
+            return;
+        }
+
+        const data = await response.json();
+        
+        if (Array.isArray(data)) {
+            renderChart(data); // Tách hàm render ra cho sạch code
+        }
+    } catch (error) {
+        console.error("Lỗi kết nối:", error);
+    }
+    }
     async function loadDashboardStats() {
     try {
         const token = localStorage.getItem('token'); 
@@ -236,7 +286,62 @@
         }
     } catch (error) {
         console.error("Không thể kết nối đến Backend:", error);
+        }
     }
+    // Hàm vẽ biểu đồ sử dụng thư viện Chart.js
+function renderChart(data) {
+    if (!data || data.length === 0) {
+        console.warn("Dữ liệu API biểu đồ trống!");
+        return;
+    }
+
+    const ctx = document.getElementById('borrowingChart').getContext('2d');
+    const labels = data.map(item => item.label); // Lấy trường "label" (03/2026, 04/2026...)
+    const values = data.map(item => item.value); // Lấy trường "value" (1, 3, 1...)
+
+    // Tính tổng để hiển thị ở góc (nếu cần)
+    const total = values.reduce((a, b) => a + b, 0);
+    const totalElement = document.getElementById('total-chart-count');
+    if (totalElement) totalElement.innerText = total.toLocaleString();
+
+    // Xóa biểu đồ cũ nếu đã tồn tại để tránh lỗi ghi đè (tùy chọn)
+    if (window.myChart) {
+        window.myChart.destroy();
+    }
+
+    // Tạo biểu đồ đường (Line Chart)
+    window.myChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Lượt mượn sách',
+                data: values,
+                borderColor: '#4e73df',
+                backgroundColor: 'rgba(78, 115, 223, 0.1)',
+                fill: true,
+                tension: 0.4, // Tạo độ cong cho đường kẻ
+                borderWidth: 3,
+                pointRadius: 4,
+                pointBackgroundColor: '#4e73df'
+            }]
+        },
+        options: {
+            maintainAspectRatio: false,
+            plugins: {
+                legend: { display: false } // Ẩn chú thích cho gọn
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { stepSize: 1 }
+                },
+                x: {
+                    grid: { display: false }
+                }
+            }
+        }
+    });
     }
     </script>
 </body>
