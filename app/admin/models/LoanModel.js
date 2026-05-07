@@ -124,4 +124,38 @@ class LoanModel {
         throw error;
     }
   }
+
+
+// ==========================================
+// 6. HỖ TRỢ LẤY DANH SÁCH ĐỘC GIẢ VÀ SÁCH (DÙNG CHO THÊM PHIẾU MƯỢN)
+// ==========================================
+  async fetchAllUsers() {
+    try {
+      const token = localStorage.getItem("token");
+      // Sửa lại URL cho đúng với API của bạn
+      const res = await fetch("http://localhost:8080/api/v1/users", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (error) {
+      console.error("Lỗi tải danh sách độc giả:", error);
+      return [];
+    }
+  }
+
+  async fetchAllBooks() {
+    try {
+      const token = localStorage.getItem("token");
+      // Sửa lại URL cho đúng với API của bạn
+      const res = await fetch("http://localhost:8080/api/v1/books", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (!res.ok) return [];
+      return await res.json();
+    } catch (error) {
+      console.error("Lỗi tải danh sách sách:", error);
+      return [];
+    }
+  }
 }
