@@ -23,17 +23,14 @@ class BookDetailModel {
             const response = await fetch(`${this.apiUrl}/${id}`, {
                 method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
-                    // Chèn Token vào đây để vượt qua lớp bảo mật JWT của Spring Boot
-                    'Authorization': `Bearer ${token}`
+                    'Content-Type': 'application/json'
                 }
             });
 
             // Nếu Token hết hạn hoặc không có Token, server sẽ trả về 401 hoặc 403
             if (response.status === 401 || response.status === 403) {
                 console.error("Token hết hạn hoặc không hợp lệ!");
-                // Có thể điều hướng người dùng về trang login nếu cần
-                // window.location.href = '/login.html';
+
                 return null;
             }
 

@@ -143,7 +143,14 @@ class BookDetailController {
                         );
 
                         console.log('Reservation created:', result);
-                        alert('✅ Yêu cầu mượn sách thành công!\n\nVui lòng chờ xác nhận từ thư viện.');
+
+                        // Extract barcode from result if available
+                        const barcode = result?.bookCopyBarcode || result?.barcode || 'N/A';
+                        const successMessage = barcode && barcode !== 'N/A'
+                            ? `✅ Yêu cầu mượn sách thành công!\n\n📦 Mã barcode: ${barcode}\n\nVui lòng chờ xác nhận từ thư viện.`
+                            : '✅ Yêu cầu mượn sách thành công!\n\nVui lòng chờ xác nhận từ thư viện.';
+
+                        alert(successMessage);
                     } catch (error) {
                         console.error('Error in form submission:', error);
                         alert('Lỗi: ' + (error.message || 'Không thể tạo yêu cầu mượn sách'));
