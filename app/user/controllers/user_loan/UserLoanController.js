@@ -29,6 +29,8 @@ class UserLoanController {
             // Đưa dữ liệu cho View vẽ ra
             this.view.renderLoans(loans);
 
+            this.view.bindViewDetails();
+
         } catch (error) {
             // Nếu Model lấy lỗi (token hết hạn, mất mạng...) thì báo View in ra lỗi
             this.view.showError(error.message);

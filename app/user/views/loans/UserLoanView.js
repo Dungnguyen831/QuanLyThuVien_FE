@@ -13,10 +13,12 @@ class UserLoanView {
     }
 
     showError(message) {
-        this.tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#dc3545;">${message}</td></tr>`;
+        if (this.tbody) {
+            this.tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; color:#dc3545;">${message}</td></tr>`;
+        }
     }
 
-    // Hàm nhận dữ liệu mảng và in ra bảng
+    // Hàm nhận dữ liệu mảng phẳng từ API và in ra bảng
     renderLoans(loans) {
         if (!loans || loans.length === 0) {
             this.tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;">Bạn chưa có lịch sử mượn sách nào.</td></tr>`;
@@ -24,50 +26,42 @@ class UserLoanView {
         }
 
         let html = '';
-        const today = new Date();
 
         loans.forEach(loan => {
-            // Phân tích trạng thái
-            let hasOverdue = false;
-            let hasBorrowing = false;
-            let totalBooks = 0;
-
-            if (loan.loanDetails) {
-                totalBooks = loan.loanDetails.length;
-                loan.loanDetails.forEach(detail => {
-                    if (detail.status === 'borrowing') {
-                        hasBorrowing = true;
-                        const dueDate = new Date(detail.dueDate || detail.due_date);
-                        if (dueDate < today) hasOverdue = true;
-                    }
-                });
-            }
-
-            // Tạo Badge
+            // 1. Phân tích trạng thái để chọn Badge
             let badgeHtml = '';
-            if (hasOverdue) {
-                badgeHtml = `<span class="badge badge-overdue">Có sách quá hạn</span>`;
-            } else if (hasBorrowing) {
-                badgeHtml = `<span class="badge badge-borrowing">Đang mượn</span>`;
+            const statusStr = (loan.status || "").toLowerCase();
+            
+            if (statusStr === "borrowing") {
+                badgeHtml = `<span class="badge bg-primary" style="padding: 6px 10px; border-radius: 6px;">Đang mượn</span>`;
+            } else if (statusStr === "returned") {
+                badgeHtml = `<span class="badge bg-success" style="padding: 6px 10px; border-radius: 6px;">Đã trả</span>`;
+            } else if (statusStr === "overdue") {
+                badgeHtml = `<span class="badge bg-danger" style="padding: 6px 10px; border-radius: 6px;">Quá hạn</span>`;
             } else {
-                badgeHtml = `<span class="badge badge-returned">Đã trả hết</span>`;
+                badgeHtml = `<span class="badge bg-secondary">${loan.status}</span>`;
             }
 
-            const borrowDate = new Date(loan.borrowDate || loan.borrow_date).toLocaleDateString('vi-VN');
-            const formatId = `${loan.id.toString().padStart(3, '0')}`;
-            const note = loan.note || "Phiếu mượn tại quầy";
+            // 2. Xác định ngày hiển thị: Đã trả thì hiện Ngày Trả, Chưa trả thì hiện Hẹn Trả
+            const displayDate = (loan.returnDate && loan.returnDate !== "-") ? loan.returnDate : loan.dueDate;
+            
+            // 3. Xử lý ID (API đang trả về dạng String như "MP001", nếu là số thì dùng padStart)
+            const displayId = loan.id.toString().startsWith("MP") ? loan.id : `#MP${loan.id.toString().padStart(3, '0')}`;
 
+            // 4. Gắn dữ liệu vào các attribute (data-*) để Modal đọc được
             html += `
                 <tr>
-                    <td class="loan-id">#${formatId}</td>
-                    <td>
-                        <div style="font-weight: 500;">${note}</div>
-                        <div style="font-size: 0.85rem; color: #6b7280;">${totalBooks} cuốn sách</div>
-                    </td>
-                    <td>${borrowDate}</td>
+                    <td class="loan-id fw-bold text-primary">${displayId}</td>
+                    <td style="font-weight: 500;">${loan.bookName}</td>
+                    <td>${displayDate}</td>
                     <td>${badgeHtml}</td>
                     <td style="text-align: right;">
-                        <button class="btn-view" onclick="window.viewLoanDetails(${loan.id})">👁️ Chi tiết</button>
+                        <button class="btn-view-detail btn btn-sm btn-outline-info" 
+                            data-barcode="${loan.barcode || 'Chưa cập nhật'}" 
+                            data-borrow="${loan.borrowDate || 'Chưa cập nhật'}" 
+                            data-note="${loan.note || 'Không có ghi chú.'}">
+                            👁️ Chi tiết
+                        </button>
                     </td>
                 </tr>
             `;
@@ -75,9 +69,34 @@ class UserLoanView {
 
         this.tbody.innerHTML = html;
     }
-}
 
-window.viewLoanDetails = function(loanId) {
-    console.log("Xem chi tiết phiếu mượn ID:", loanId);
-    alert(`Tính năng xem chi tiết các cuốn sách trong phiếu #${loanId} sẽ hiển thị ở Popup!`);
+    // Hàm gắn sự kiện click cho bảng (chuẩn MVC, không dùng window.function)
+    bindViewDetails() {
+        if (!this.tbody) return;
+        
+        this.tbody.addEventListener("click", (e) => {
+            const btn = e.target.closest(".btn-view-detail");
+            if (!btn) return;
+
+            // 1. Lấy dữ liệu ẩn từ thẻ button
+            const barcode = btn.getAttribute("data-barcode");
+            const borrowDate = btn.getAttribute("data-borrow");
+            const note = btn.getAttribute("data-note");
+
+            // 2. Đổ dữ liệu vào Modal (ID này lấy từ file HTML ở bước trước)
+            const barcodeEl = document.getElementById("modal-barcode");
+            const borrowDateEl = document.getElementById("modal-borrow-date");
+            const noteEl = document.getElementById("modal-note");
+
+            if(barcodeEl) barcodeEl.innerText = barcode;
+            if(borrowDateEl) borrowDateEl.innerText = borrowDate;
+            if(noteEl) noteEl.innerText = note;
+
+            // 3. Gọi Bootstrap Modal hiện lên
+            const modalElement = document.getElementById("loanDetailModal");
+            if (modalElement) {
+                bootstrap.Modal.getOrCreateInstance(modalElement).show();
+            }
+        });
+    }
 }
