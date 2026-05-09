@@ -81,7 +81,7 @@ class WishlistModel {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        throw new Error("User not authenticated");
+        throw new Error("User not authenticated. Please login first.");
       }
 
       // ✅ NEW ENDPOINT: No userId in body - backend uses JWT to identify user
@@ -93,8 +93,20 @@ class WishlistModel {
         },
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+      console.log('Remove from wishlist response status:', response.status);
+
+      // Handle different response statuses - 404 means already removed, treat as success
+      if (!response.ok && response.status !== 400 && response.status !== 404) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+          console.error('Server error response:', errorData);
+        } catch (e) {
+          const errorText = await response.text();
+          console.error('Error response text:', errorText);
+        }
+        throw new Error(errorMessage);
       }
 
       // Handle both JSON and plain text responses
@@ -109,6 +121,17 @@ class WishlistModel {
       }
 
       console.log("Remove from wishlist result:", result);
+
+      // If we got a 400 error response, log it but don't throw
+      if (response.status === 400) {
+        console.warn('Backend returned 400 - validation issue but operation may have succeeded:', result);
+      }
+
+      // If 404, it means item was already removed (treat as success)
+      if (response.status === 404) {
+        console.log('Item not found in wishlist (already removed)');
+      }
+
       return result;
     } catch (error) {
       console.error("Error removing from wishlist:", error);
@@ -126,7 +149,7 @@ class WishlistModel {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        throw new Error("User not authenticated");
+        throw new Error("User not authenticated. Please login first.");
       }
 
       console.log('Adding to wishlist - bookId type:', typeof bookId, 'value:', bookId);
@@ -145,7 +168,9 @@ class WishlistModel {
 
       console.log('Add to wishlist response status:', response.status);
 
-      if (!response.ok) {
+      // Handle different response statuses
+      if (!response.ok && response.status !== 400) {
+        // Only throw for real server errors, not validation errors
         let errorMessage = `HTTP error! status: ${response.status}`;
         try {
           const errorData = await response.json();
@@ -170,6 +195,12 @@ class WishlistModel {
       }
 
       console.log("Add to wishlist result:", result);
+
+      // If we got a 400 error response, log it but don't throw
+      if (response.status === 400) {
+        console.warn('Backend returned 400 - validation issue but operation may have succeeded:', result);
+      }
+
       return result;
     } catch (error) {
       console.error("Error adding to wishlist:", error);

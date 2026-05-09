@@ -12,7 +12,6 @@ class WishlistView {
     this.wishlistSubtitle = document.getElementById("wishlist-subtitle");
     this.borrowAllBtn = document.getElementById("borrow-all-btn");
     this.filterPills = document.querySelectorAll(".filter-pill");
-    this.sortDropdown = document.getElementById("sort-dropdown");
     this.paginationNumbers = document.getElementById("pagination-numbers");
     this.paginationPrev = document.getElementById("pagination-prev");
     this.paginationNext = document.getElementById("pagination-next");
@@ -219,16 +218,6 @@ class WishlistView {
     });
   }
 
-  /**
-   * Bind sort dropdown change events
-   * @param {Function} callback - Callback function when sort changes
-   */
-  onSortChange(callback) {
-    this.eventListeners.sortChange = callback;
-    this.sortDropdown.addEventListener("change", (e) => {
-      callback(e.target.value);
-    });
-  }
 
   /**
    * Bind pagination page button clicks

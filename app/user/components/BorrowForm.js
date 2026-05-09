@@ -152,9 +152,8 @@ class BorrowForm {
      * @returns {HTMLElement} - Populated modal element
      */
     static _populateTemplate(template, mode, book, books) {
-        // Replace basic placeholders
-        let html = template
-            .replace('{pickupDate}', BorrowForm.defaultTodayDate);
+        // Pickup date is no longer in template - removed
+        let html = template;
 
         // Convert HTML string to DOM element
         const wrapper = document.createElement('div');
@@ -218,11 +217,7 @@ class BorrowForm {
      * @param {Function} onSubmit - Submit callback
      */
     static _setupEventListeners(modal, mode, book, books, onSubmit) {
-        // Set default date to today
-        const pickupDateInput = modal.querySelector('#pickup-date');
-        if (pickupDateInput) {
-            pickupDateInput.value = BorrowForm.defaultTodayDate;
-        }
+        // Pickup date is no longer used - removed from form
 
         // Close button
         const closeBtn = modal.querySelector('.modal-close-btn');
@@ -251,7 +246,6 @@ class BorrowForm {
             form.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                const pickupDate = form.querySelector('#pickup-date').value;
                 let bookId;
 
                 if (mode === 'single') {
@@ -266,16 +260,11 @@ class BorrowForm {
                     }
                 }
 
-                if (!pickupDate || pickupDate === '') {
-                    alert('Vui lòng chọn ngày nhận sách');
-                    return;
-                }
-
                 if (onSubmit) {
                     try {
                         await onSubmit({
-                            bookId: parseInt(bookId),
-                            pickupDate: pickupDate
+                            bookId: parseInt(bookId)
+                            // Pickup date is no longer sent - backend handles it automatically
                         });
                         closeModal();
                     } catch (error) {

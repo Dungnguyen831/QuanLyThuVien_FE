@@ -5,7 +5,7 @@ class BookModel {
   }
 
   // --- HÀM LỌC VÀ PHÂN TRANG (Xử lý cục bộ) ---
-  
+
   getBooksByPage(filteredList, page, itemsPerPage) {
     const start = (page - 1) * itemsPerPage;
     const end = start + itemsPerPage;
@@ -16,8 +16,8 @@ class BookModel {
     const q = query ? query.toLowerCase() : "";
     return allBooks.filter((book) => {
       // 1. Lọc theo từ khóa
-      const matchQuery = !q || 
-        book.title.toLowerCase().includes(q) || 
+      const matchQuery = !q ||
+        book.title.toLowerCase().includes(q) ||
         book.id.toString().includes(q);
 
       // 2. Lọc theo Thể loại (Thống nhất dùng categoryId)
@@ -51,14 +51,14 @@ class BookModel {
     const res = await fetch(this.apiUrl, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
-      }
+        "Content-Type": "application/json"
+      },
     });
 
     if (!res.ok) {
       throw new Error("Không thể lấy danh sách sách");
     }
-    
+
     this.allBooks = await res.json(); // QUAN TRỌNG: Phải gán dữ liệu vào đây
     return this.allBooks;
   }
@@ -67,8 +67,8 @@ class BookModel {
     const response = await fetch(`${this.apiUrl}/${id}`, {
       method: "GET",
       headers: {
-        "Content-Type": "application/json",
-      }
+        "Content-Type": "application/json"
+      },
     });
 
     if (!response.ok) throw new Error("Không tìm thấy sách");

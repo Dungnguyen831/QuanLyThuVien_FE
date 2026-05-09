@@ -1,122 +1,136 @@
 /**
- * ReviewController.js - Handle business logic for Book Reviews
- * Manages review state, user interactions, and coordinates between Model and View
+ * ReviewController.js
+ * Xử lý logic: Model -> View
  */
-
 class ReviewController {
     constructor() {
-        this.reviewModel = new ReviewModel();
-        this.reviewView = new ReviewView(this);
+        this.model = new ReviewModel();
+        this.view = new ReviewView();
+        this.reviews = [];
         this.currentBookId = null;
         this.currentUserId = null;
-        this.reviews = [];
-        this.currentEditingReviewId = null;
     }
 
     /**
-     * Initialize review controller - call when book detail page loads
-     * @param {number} bookId - The book ID to load reviews for
+     * Khởi tạo: Load reviews, render bằng View
      */
     async init(bookId) {
         this.currentBookId = bookId;
-        this.currentUserId = getCurrentUserIdFromSession();
+        this.currentUserId = this._getCurrentUserId();
 
-        this.reviewView.showLoadingState();
+        // Setup form callbacks FIRST (before showing any content)
+        this.view.onFormSubmit((formData) => this.handleSubmitForm(formData));
+        this.view.onFormCancel(() => this.handleCancelForm());
+
         try {
-            // Lấy reviews của sách này từ backend
-            this.reviews = await this.reviewModel.getReviewsByBookId(bookId);
-            this.reviewView.renderReviewList(this.reviews);
-            this.reviewView.hideLoadingState();
+            this.view.showLoading();
+            const data = await this.model.getReviewsByBookId(bookId);
+            this.reviews = Array.isArray(data) ? data : [];
+            this.view.renderReviews(this.reviews, this.currentUserId);
+            this.view.attachEventListeners(() => this);
         } catch (error) {
-            console.error('Lỗi tải đánh giá:', error);
-            this.reviewView.showErrorMessage("Lỗi tải danh sách đánh giá");
-            this.reviewView.hideLoadingState();
+            this.view.showError('Lỗi tải đánh giá: ' + error.message);
+            console.error('Error loading reviews:', error);
         }
     }
 
     /**
-     * Handle add review button click
+     * Lấy userId từ localStorage hoặc JWT
      */
-    handleAddReviewClick() {
-        this.currentEditingReviewId = null;
-        this.reviewView.renderReviewForm(null); // Empty form
+    _getCurrentUserId() {
+        const userId = localStorage.getItem('userId');
+        if (userId) return parseInt(userId);
+
+        try {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.id) return parseInt(user.id);
+        } catch (e) { }
+
+        return null;
     }
 
     /**
-     * Handle edit review button click
-     * @param {number} reviewId - Review ID to edit
+     * Xử lý hành động từ View
      */
-    handleEditReviewClick(reviewId) {
-        const review = this.reviews.find(r => r.id == reviewId);
-        if (review && review.userId == this.currentUserId) {
-            this.currentEditingReviewId = reviewId;
-            this.reviewView.renderReviewForm(review); // Pre-fill form
-        } else {
-            this.reviewView.showErrorMessage("Bạn không có quyền sửa đánh giá này");
+    async handleAction(action, reviewId) {
+        try {
+            if (action === 'edit') {
+                const review = this.reviews.find(r => r.id == reviewId);
+                if (review && review.userId == this.currentUserId) {
+                    this.view.showForm(review);
+                } else {
+                    alert('Bạn không có quyền sửa đánh giá này');
+                }
+            } else if (action === 'delete') {
+                if (confirm('Xóa đánh giá này?')) {
+                    await this.model.deleteReview(reviewId);
+                    alert('Xóa thành công');
+                    await this.init(this.currentBookId); // Reload
+                }
+            }
+        } catch (error) {
+            alert('Lỗi: ' + error.message);
         }
     }
 
     /**
-     * Handle cancel form
-     */
-    handleCancelForm() {
-        this.currentEditingReviewId = null;
-        this.reviewView.hideReviewForm();
-    }
-
-    /**
-     * Handle form submission (add or update review)
-     * @param {Object} formData - Form data { userId, bookId, rating, comment }
+     * Xử lý gửi form
      */
     async handleSubmitForm(formData) {
-        // Validation
-        if (!this.validateFormData(formData)) {
-            return;
-        }
-
-        this.reviewView.showLoadingState();
         try {
-            if (this.currentEditingReviewId) {
-                // Update existing review
-                const updatedReview = await this.reviewModel.updateReview(
-                    this.currentEditingReviewId,
-                    formData
-                );
-                // Update reviews array
-                this.reviews = this.reviews.map(r =>
-                    r.id == this.currentEditingReviewId ? updatedReview : r
-                );
-                this.reviewView.showSuccessMessage("Cập nhật đánh giá thành công");
+            if (formData.id) {
+                // Update
+                await this.model.updateReview(formData.id, {
+                    userId: this.currentUserId,
+                    bookId: this.currentBookId,
+                    rating: formData.rating,
+                    comment: formData.comment
+                });
+                alert('Cập nhật thành công');
             } else {
-                // Create new review
-                const newReview = await this.reviewModel.createReview(formData);
-                this.reviews.push(newReview);
-                this.reviewView.showSuccessMessage("Thêm đánh giá thành công");
+                // Create
+                await this.model.createReview({
+                    userId: this.currentUserId,
+                    bookId: this.currentBookId,
+                    rating: formData.rating,
+                    comment: formData.comment
+                });
+                alert('Thêm đánh giá thành công');
             }
-
-            // Refresh review list
-            const bookReviews = this.reviews.filter(r => r.bookId == this.currentBookId);
-            this.reviewView.renderReviewList(bookReviews);
-            this.reviewView.hideReviewForm();
-            this.currentEditingReviewId = null;
-
+            this.view.hideForm();
+            await this.init(this.currentBookId); // Reload
         } catch (error) {
-            console.error('Lỗi lưu đánh giá:', error);
-            this.reviewView.showErrorMessage(error.message || "Lỗi khi lưu đánh giá");
-        } finally {
-            this.reviewView.hideLoadingState();
+            alert('Lỗi: ' + error.message);
         }
     }
 
     /**
-     * Handle delete review
-     * @param {number} reviewId - Review ID to delete
+     * Xử lý hủy form
+     */
+    handleCancelForm() {
+        this.view.hideForm();
+    }
+
+    /**
+     * Xử lý bấm nút "Viết đánh giá"
+     */
+    handleAddReviewClick() {
+        if (!this.currentUserId) {
+            alert('Vui lòng đăng nhập để viết đánh giá');
+            return;
+        }
+        this.view.showForm();
+    }
+
+    /**
+     * Xóa đánh giá
+     * @param {number} reviewId - ID của đánh giá cần xóa
      */
     async handleDeleteReview(reviewId) {
         const review = this.reviews.find(r => r.id == reviewId);
 
         if (review && review.userId != this.currentUserId) {
-            this.reviewView.showErrorMessage("Bạn không có quyền xóa đánh giá này");
+            alert("Bạn không có quyền xóa đánh giá này");
             return;
         }
 
@@ -124,75 +138,62 @@ class ReviewController {
             return;
         }
 
-        this.reviewView.showLoadingState();
         try {
-            await this.reviewModel.deleteReview(reviewId);
+            await this.model.deleteReview(reviewId);
             this.reviews = this.reviews.filter(r => r.id != reviewId);
-
-            // Refresh review list
-            const bookReviews = this.reviews.filter(r => r.bookId == this.currentBookId);
-            this.reviewView.renderReviewList(bookReviews);
-            this.reviewView.showSuccessMessage("Xóa đánh giá thành công");
-
+            alert("Xóa đánh giá thành công");
+            await this.init(this.currentBookId); // Reload danh sách
         } catch (error) {
             console.error('Lỗi xóa đánh giá:', error);
-            this.reviewView.showErrorMessage("Lỗi khi xóa đánh giá");
-        } finally {
-            this.reviewView.hideLoadingState();
+            alert("Lỗi khi xóa đánh giá");
         }
     }
 
     /**
-     * Validate form data
-     * @param {Object} formData - Form data to validate
-     * @returns {boolean} - True if valid, false otherwise
+     * Kiểm tra dữ liệu form
+     * @param {Object} formData - Dữ liệu form cần kiểm tra
+     * @returns {boolean} - True nếu hợp lệ, False nếu không
      */
     validateFormData(formData) {
         const { userId, bookId, rating, comment } = formData;
 
-        // Debug log
         console.log('[ReviewController] Validating form data:', {
             userId,
             bookId,
             rating,
-            commentLength: comment?.length,
-            localStorageUser: localStorage.getItem('user'),
-            localStorageToken: localStorage.getItem('token') ? 'EXISTS' : 'MISSING'
+            commentLength: comment?.length
         });
 
-        // Kiểm tra userId tồn tại
+        // Kiểm tra userId
         if (!userId || isNaN(userId)) {
-            const errorMsg = `Lỗi: Không lấy được ID người dùng. userId=${userId}. Vui lòng đăng nhập lại.`;
-            console.error('[ReviewController]', errorMsg);
-            this.reviewView.showErrorMessage(errorMsg);
+            alert(`Lỗi: Không lấy được ID người dùng. Vui lòng đăng nhập lại.`);
             return false;
         }
 
-        // Kiểm tra bookId tồn tại
+        // Kiểm tra bookId
         if (!bookId || isNaN(bookId)) {
-            const errorMsg = `Lỗi: Không lấy được ID sách. bookId=${bookId}. Vui lòng tải lại trang.`;
-            console.error('[ReviewController]', errorMsg);
-            this.reviewView.showErrorMessage(errorMsg);
+            alert(`Lỗi: Không lấy được ID sách. Vui lòng tải lại trang.`);
             return false;
         }
 
         // Kiểm tra rating (1-5 sao)
         if (!rating || rating < 1 || rating > 5) {
-            this.reviewView.showErrorMessage("Vui lòng chọn điểm đánh giá (1-5 sao)");
+            alert("Vui lòng chọn điểm đánh giá (1-5 sao)");
             return false;
         }
 
         // Kiểm tra comment
         if (!comment || comment.trim().length < 10) {
-            this.reviewView.showErrorMessage("Bình luận phải tối thiểu 10 ký tự");
+            alert("Bình luận phải tối thiểu 10 ký tự");
             return false;
         }
 
         if (comment.length > 500) {
-            this.reviewView.showErrorMessage("Bình luận không được vượt quá 500 ký tự");
+            alert("Bình luận không được vượt quá 500 ký tự");
             return false;
         }
 
         return true;
     }
 }
+
