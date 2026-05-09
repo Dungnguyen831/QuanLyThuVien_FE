@@ -19,7 +19,6 @@ class UserLoanModel {
             }
 
             const responseData = await response.json();
-            // Xử lý linh hoạt cấu trúc trả về từ Spring Boot
             return responseData.data || responseData.content || responseData; 
 
         } catch (error) {
