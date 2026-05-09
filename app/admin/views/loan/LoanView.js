@@ -55,7 +55,7 @@ class LoanView {
         
         if (canRenew) {
             actionHtml += `
-            <button class="btn btn-sm btn-outline-primary btn-renew" data-id="${targetId}" title="Gia hạn">
+            <button class="btn btn-sm btn-outline-primary btn-renew" data-id="${targetId}" data-due-date="${loan.dueDate}" title="Gia hạn">
                 <i class="fas fa-calendar-plus"></i>
             </button>`;
         }
@@ -87,7 +87,6 @@ class LoanView {
       .join("");
   }
 
-  // Bắt sự kiện form Tạo mới
   bindAddLoan(handler) {
     const form = document.getElementById("add-loan-form");
     if (!form) return;
@@ -95,14 +94,46 @@ class LoanView {
     const borrowDateInput = document.getElementById("loan-borrow-date");
     if (borrowDateInput) borrowDateInput.valueAsDate = new Date();
 
+    const searchBookInput = document.getElementById("search-book-input");
+    const barcodeInput = document.getElementById("loan-barcode");
+    const hiddenBookId = document.getElementById("loan-book-id");
+
+    if (searchBookInput && barcodeInput) {
+      searchBookInput.addEventListener("input", (e) => {
+        if (e.target.value.trim() !== "") {
+          barcodeInput.disabled = true;
+          barcodeInput.value = ""; // Xóa trắng ô mã vạch cho an toàn
+        } else {
+          barcodeInput.disabled = false; // Mở lại nếu xóa hết chữ
+        }
+      });
+
+      // Khi quét/gõ vào ô Mã Vạch -> Khóa ô Tìm Đầu Sách
+      barcodeInput.addEventListener("input", (e) => {
+        if (e.target.value.trim() !== "") {
+          searchBookInput.disabled = true;
+          searchBookInput.value = ""; // Xóa chữ ở ô tìm kiếm
+          if (hiddenBookId) hiddenBookId.value = ""; // Xóa luôn ID sách đang lưu ngầm
+        } else {
+          searchBookInput.disabled = false; // Mở lại nếu xóa hết mã vạch
+        }
+      });
+    }
+    // ===================================================
+
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       
       const userId = document.getElementById("loan-user-id").value;
-      const bookId = document.getElementById("loan-book-id").value;
-      const borrowDate = document.getElementById("loan-borrow-date").value;
+      const bookId = hiddenBookId.value;
+      const borrowDate = borrowDateInput.value;
       const dueDate = document.getElementById("loan-due-date").value;
       const note = document.getElementById("loan-note").value;
+      const barcode = barcodeInput.value.trim();
+
+      if (!bookId && !barcode) {
+        return alert("Lỗi: Vui lòng chọn Đầu sách hoặc nhập Mã vạch cụ thể để tạo phiếu mượn!");
+      }
 
       if (dueDate <= borrowDate) {
         return alert("Lỗi: Ngày hẹn trả phải sau ngày mượn!");
@@ -112,7 +143,7 @@ class LoanView {
         return alert("Lỗi: Thời gian mượn tối đa không được quá 14 ngày!");
       }
 
-      handler({ userId, bookId, borrowDate, dueDate, note });
+      handler({ userId, bookId, borrowDate, dueDate, note, barcode });
     });
   }
 
@@ -124,6 +155,7 @@ class LoanView {
       const btnView = e.target.closest(".btn-view-detail");
       if (btnView && viewHandler) {
         viewHandler(btnView.dataset.id); 
+        return;
       }
       
       const btnDelete = e.target.closest(".btn-delete");
@@ -132,18 +164,34 @@ class LoanView {
         if (confirm("Bạn có chắc chắn muốn xóa phiếu mượn này?")) {
           deleteHandler(id);
         }
+        return;
       }
 
       const btnRenew = e.target.closest(".btn-renew");
       if (btnRenew) {
         document.getElementById("renew-detail-id").value = btnRenew.dataset.id;
-        new bootstrap.Modal(document.getElementById("renewLoanModal")).show();
+    
+        let oldDueDate = btnRenew.dataset.dueDate; 
+        
+        if (oldDueDate && oldDueDate.includes("/")) {
+            // Cắt ra và đảo ngược lại thành "2023-10-25"
+            const parts = oldDueDate.split("/");
+            const formattedDate = `${parts[2]}-${parts[1]}-${parts[0]}`; 
+            
+            const dateInput = document.getElementById("renew-new-date");
+            dateInput.value = formattedDate;
+            dateInput.min = formattedDate; 
+        }
+
+        bootstrap.Modal.getOrCreateInstance(document.getElementById("renewLoanModal")).show(); 
+        return;
       }
 
       const btnReturn = e.target.closest(".btn-return");
       if (btnReturn) {
         document.getElementById("return-detail-id").value = btnReturn.dataset.id;
         new bootstrap.Modal(document.getElementById("returnLoanModal")).show();
+        return;
       }
     });
   }

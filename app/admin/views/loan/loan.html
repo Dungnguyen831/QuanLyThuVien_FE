@@ -50,13 +50,22 @@
                                         <input type="hidden" id="loan-user-id">
                                         <ul class="dropdown-menu w-100 shadow-sm" id="user-suggest-list" style="max-height: 200px; overflow-y: auto;"></ul>
                                     </div>
-
                                     <div class="mb-3 position-relative">
-                                        <label class="form-label fw-medium text-muted small">Sách (Tên hoặc ID)</label>
-                                        <input type="text" class="form-control" id="search-book-input" placeholder="Gõ tên hoặc mã sách..." autocomplete="off" required>
+                                        <label class="form-label fw-bold text-primary small">1. Mượn theo Đầu sách (Tự động lấy cuốn sẵn có trong kho)</label>
+                                        <input type="text" class="form-control" id="search-book-input" placeholder="Gõ tên hoặc mã sách..." autocomplete="off">
                                         <input type="hidden" id="loan-book-id">
                                         <ul class="dropdown-menu w-100 shadow-sm" id="book-suggest-list" style="max-height: 200px; overflow-y: auto;"></ul>
                                     </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold text-success small">2. Mượn theo Mã vạch (Nhập thủ công)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fas fa-barcode"></i></span>
+                                            <input type="text" class="form-control border-start-0" id="loan-barcode" placeholder="Nhập hoặc quét mã vạch vật lý..." autocomplete="off">
+                                        </div>
+                                        <div class="form-text" style="font-size: 0.75rem;">Hệ thống sẽ ưu tiên mượn đúng cuốn sách có mã vạch này.</div>
+                                    </div>
+
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label fw-medium text-muted small">Ngày mượn</label>
@@ -129,6 +138,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="modal fade" id="returnLoanModal" tabindex="-1" aria-hidden="true">
