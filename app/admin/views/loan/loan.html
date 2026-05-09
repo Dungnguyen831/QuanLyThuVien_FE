@@ -245,7 +245,7 @@
             ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
             ComponentLoader.load('header-container', '../../components/header.html');
             
-            // Xử lý Active Menu (Đợi 100ms để Sidebar load xong)
+            // Xử lý Active Menu 
             setTimeout(() => {
                 document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
                 const loanMenu = document.querySelector('#sidebar-wrapper a[href="../loan/loan.html"]');

@@ -10,14 +10,13 @@ class LoanModel {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, // Có Token
+          "Authorization": `Bearer ${token}`, 
         },
       });
       if (!response.ok) throw new Error("Lỗi kết nối API lấy danh sách");
       return await response.json();
     } catch (error) {
       console.error("Không thể lấy dữ liệu:", error);
-      // Tạm thời trả về mảng rỗng để bảng không bị sập nếu lỗi API
       return []; 
     }
   }
@@ -32,13 +31,12 @@ class LoanModel {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}` // ĐÃ THÊM TOKEN CHO AN TOÀN
+          "Authorization": `Bearer ${token}` 
         },
         body: JSON.stringify(loanData),
       });
 
       if (!response.ok) {
-         // Lấy câu thông báo lỗi từ Backend (Ví dụ: "Độc giả đang nợ phạt")
          const errorMsg = await response.text(); 
          throw new Error(errorMsg);
       }
@@ -147,7 +145,6 @@ class LoanModel {
   async fetchAllBooks() {
     try {
       const token = localStorage.getItem("token");
-      // Sửa lại URL cho đúng với API của bạn
       const res = await fetch("http://localhost:8080/api/v1/books", {
         headers: { "Authorization": `Bearer ${token}` }
       });

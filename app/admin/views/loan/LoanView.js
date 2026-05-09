@@ -108,7 +108,6 @@ class LoanView {
         }
       });
 
-      // Khi quét/gõ vào ô Mã Vạch -> Khóa ô Tìm Đầu Sách
       barcodeInput.addEventListener("input", (e) => {
         if (e.target.value.trim() !== "") {
           searchBookInput.disabled = true;
@@ -119,7 +118,6 @@ class LoanView {
         }
       });
     }
-    // ===================================================
 
     form.addEventListener("submit", (e) => {
       e.preventDefault();
@@ -263,8 +261,6 @@ class LoanView {
     document.getElementById("return-loan-form").reset();
   }
 
-  // --- THÊM VÀO LOANVIEW.JS ---
-
   bindSearchUser(handler) {
     const input = document.getElementById("search-user-input");
     let timeout = null;
@@ -272,7 +268,7 @@ class LoanView {
 
     input.addEventListener("focus", (e) => {
       const keyword = e.target.value.trim();
-      handler(keyword); // Gửi từ khóa (lúc này có thể đang rỗng "") về Controller
+      handler(keyword); 
     });
 
     input.addEventListener("input", (e) => {
@@ -326,8 +322,6 @@ class LoanView {
       });
     });
   }
-
-  // >>> BẠN LÀM TƯƠNG TỰ 2 HÀM TRÊN CHO SÁCH (bindSearchBook và renderBookSuggestions) <<<
 
   bindSearchBook(handler) {
     const input = document.getElementById("search-book-input");
