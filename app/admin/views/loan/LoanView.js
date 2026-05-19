@@ -37,6 +37,7 @@ class LoanView {
           canRenew = false; 
         }
 
+        
         const targetId = loan.loanDetailId || loan.id;
 
         let actionHtml = `<div class="d-flex justify-content-end gap-2">`;

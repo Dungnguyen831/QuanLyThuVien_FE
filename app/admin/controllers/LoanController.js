@@ -72,6 +72,7 @@ class LoanController {
         const status = (loan.status || "").toLowerCase();
         return status === currentTab; 
       });
+      
     }
 
     if (this.currentKeyword) {
