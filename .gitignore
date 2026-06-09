@@ -22,3 +22,5 @@ yarn-error.log*
 
 # 5. [TÙY CHỌN] File Database (Cơ sở dữ liệu)
 # *.sql
+assets/img/
+assets/images/

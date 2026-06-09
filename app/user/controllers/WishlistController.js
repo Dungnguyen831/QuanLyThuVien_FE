@@ -25,42 +25,15 @@ class WishlistController {
     this.init();
   }
 
-  /**
-   * Initialize the controller and bind all events
-   */
-  init() {
-    this.bindViewEvents();
-    this.loadWishlistData();
 
-    // ✅ Listen for wishlist changes from other pages (e.g., home page)
+  init() {
+    this.loadWishlistData();
     window.addEventListener('wishlistChanged', (event) => {
-      console.log('Wishlist changed from another page:', event.detail);
-      // Reload wishlist data to reflect changes
+      console.log('Wishlist thay đổi từ trang khác:', event.detail);
       this.loadWishlistData();
     });
   }
 
-  /**
-   * Bind all view events to controller methods
-   */
-  bindViewEvents() {
-    this.view.onFilterChange((filterValue) =>
-      this.handleFilterChange(filterValue),
-    );
-    this.view.onSortChange((sortValue) => this.handleSortChange(sortValue));
-    this.view.onPaginationClick((pageNumber) =>
-      this.handlePageChange(pageNumber),
-    );
-    this.view.onPaginationPrev(() => this.handlePaginationPrev());
-    this.view.onPaginationNext(() => this.handlePaginationNext());
-    this.view.onHeartIconClick((bookId, btn) =>
-      this.handleRemoveFromWishlist(bookId, btn),
-    );
-  }
-
-  /**
-   * Load wishlist data from model
-   */
   async loadWishlistData() {
     if (!checkAuth()) return;
     try {
@@ -76,12 +49,12 @@ class WishlistController {
         this.applyFilterAndSort();
         await this.renderPage(); // await async render
       } else {
-        this.view.showError("Unable to load wishlist data");
+        this.view.showError("Không thể tải dữ liệu wishlist");
       }
     } catch (error) {
-      console.error("Error loading wishlist:", error);
+      console.error("Lỗi tải wishlist:", error);
       this.view.showError(
-        "Error loading your wishlist. Please try again later.",
+        "Lỗi tải wishlist của bạn. Vui lòng thử lại sau.",
       );
     }
   }

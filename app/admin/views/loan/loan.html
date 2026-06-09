@@ -44,14 +44,28 @@
                             </div>
                             <div class="modal-body p-4">
                                 <form id="add-loan-form">
-                                    <div class="mb-3">
-                                        <label class="form-label fw-medium text-muted small">Mã Độc Giả (ID)</label>
-                                        <input type="number" class="form-control" id="loan-user-id" required>
+                                    <div class="mb-3 position-relative">
+                                        <label class="form-label fw-medium text-muted small">Độc Giả (Tên hoặc ID)</label>
+                                        <input type="text" class="form-control" id="search-user-input" placeholder="Gõ tên hoặc mã độc giả..." autocomplete="off" required>
+                                        <input type="hidden" id="loan-user-id">
+                                        <ul class="dropdown-menu w-100 shadow-sm" id="user-suggest-list" style="max-height: 200px; overflow-y: auto;"></ul>
                                     </div>
-                                    <div class="mb-3">
-                                        <label class="form-label fw-medium text-muted small">Mã Sách (ID)</label>
-                                        <input type="number" class="form-control" id="loan-book-id" required>
+                                    <div class="mb-3 position-relative">
+                                        <label class="form-label fw-bold text-primary small">1. Mượn theo Đầu sách (Tự động lấy cuốn sẵn có trong kho)</label>
+                                        <input type="text" class="form-control" id="search-book-input" placeholder="Gõ tên hoặc mã sách..." autocomplete="off">
+                                        <input type="hidden" id="loan-book-id">
+                                        <ul class="dropdown-menu w-100 shadow-sm" id="book-suggest-list" style="max-height: 200px; overflow-y: auto;"></ul>
                                     </div>
+
+                                    <div class="mb-4">
+                                        <label class="form-label fw-bold text-success small">2. Mượn theo Mã vạch (Nhập thủ công)</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fas fa-barcode"></i></span>
+                                            <input type="text" class="form-control border-start-0" id="loan-barcode" placeholder="Nhập hoặc quét mã vạch vật lý..." autocomplete="off">
+                                        </div>
+                                        <div class="form-text" style="font-size: 0.75rem;">Hệ thống sẽ ưu tiên mượn đúng cuốn sách có mã vạch này.</div>
+                                    </div>
+
                                     <div class="row">
                                         <div class="col-md-6 mb-3">
                                             <label class="form-label fw-medium text-muted small">Ngày mượn</label>
@@ -71,6 +85,32 @@
                             <div class="modal-footer border-top-0 pt-0">
                                 <button type="button" class="btn btn-white border text-secondary fw-medium" data-bs-dismiss="modal">Hủy</button>
                                 <button type="submit" form="add-loan-form" class="btn btn-primary fw-medium px-4">Xác nhận tạo</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="modal fade" id="viewDetailModal" tabindex="-1" aria-hidden="true">
+                    <div class="modal-dialog modal-dialog-centered modal-sm">
+                        <div class="modal-content border-0 shadow">
+                            <div class="modal-header bg-light pb-3">
+                                <h5 class="modal-title fw-bold text-info"><i class="fas fa-info-circle me-2"></i>Chi tiết phiếu</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body p-4 text-center">
+                                
+                                <div class="mb-4">
+                                    <label class="text-muted small fw-bold mb-2">MÃ VẠCH (BARCODE)</label>
+                                    <div class="p-3 bg-light border rounded-3 fw-bold fs-5 text-dark" id="detail-barcode" style="letter-spacing: 2px;">
+                                    </div>
+                                </div>
+
+                                <div class="text-start">
+                                    <label class="text-muted small fw-bold mb-1">Ghi chú phiếu mượn:</label>
+                                    <p class="mb-0 bg-secondary-subtle p-3 rounded-3 text-secondary" id="detail-note" style="min-height: 60px; font-style: italic;">
+                                    </p>
+                                </div>
+
                             </div>
                         </div>
                     </div>
@@ -98,6 +138,7 @@
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div class="modal fade" id="returnLoanModal" tabindex="-1" aria-hidden="true">
@@ -113,6 +154,17 @@
                                 </div>
                                 <form id="return-loan-form">
                                     <input type="hidden" id="return-detail-id">
+                                    <div class="mb-3">
+                                        <label class="form-label fw-bold text-primary small">NHẬP MÃ VẠCH ĐỐI CHIẾU</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text bg-light"><i class="fas fa-barcode"></i></span>
+                                            <input type="text" class="form-control fw-bold" id="return-barcode-verify" 
+                                                placeholder="Nhập mã vạch trên bìa sách..." required>
+                                        </div>
+                                        <div id="barcode-error-msg" class="text-danger small mt-1 d-none">
+                                            <i class="fas fa-exclamation-circle me-1"></i> Mã vạch không khớp với bản sao đã mượn!
+                                        </div>
+                                    </div>
                                     <div class="mb-3">
                                         <label class="form-label fw-medium text-muted small">Tình trạng sách lúc trả</label>
                                         <select class="form-select" id="return-condition" required>
@@ -143,11 +195,11 @@
                             <input type="text" id="search-loan-input" class="form-control bg-light border-0" placeholder="Nhập mã phiếu, tên độc giả, sách...">
                         </div>
                         
-                        <div class="filter-tabs">
-                            <div class="filter-tab active">Tất cả</div>
-                            <div class="filter-tab">Đang mượn</div>
-                            <div class="filter-tab">Đã trả</div>
-                            <div class="filter-tab">Quá hạn</div>
+                        <div class="filter-tabs" id="status-filter">
+                            <div class="filter-tab active" data-status="ALL">Tất cả</div>
+                            <div class="filter-tab" data-status="borrowing">Đang mượn</div>
+                            <div class="filter-tab" data-status="returned">Đã trả</div>
+                            <div class="filter-tab" data-status="overdue">Quá hạn</div>
                         </div>
                     </div>
 
@@ -193,7 +245,7 @@
             ComponentLoader.load('sidebar-container', '../../components/sidebar.html');
             ComponentLoader.load('header-container', '../../components/header.html');
             
-            // Xử lý Active Menu (Đợi 100ms để Sidebar load xong)
+            // Xử lý Active Menu 
             setTimeout(() => {
                 document.querySelectorAll('#sidebar-wrapper .list-group-item').forEach(el => el.classList.remove('active'));
                 const loanMenu = document.querySelector('#sidebar-wrapper a[href="../loan/loan.html"]');
@@ -212,5 +264,6 @@
             }
         });
     </script>
+    
 </body>
 </html>

@@ -2,13 +2,13 @@ class ReservationController {
     constructor(model, view) {
         this.model = model;
         this.view = view;
-        this.allReservations = []; 
+        this.allReservations = [];
     }
 
     async init() {
         await this.loadReservations();
-        this.setupFilters();          
-        this.setupEventListeners();   
+        this.setupFilters();
+        this.setupEventListeners();
     }
 
     async loadReservations() {
@@ -39,20 +39,20 @@ class ReservationController {
 
         if (keyword) {
             const normalizedKeyword = keyword.toLowerCase()
-                                             .normalize('NFD')
-                                             .replace(/[\u0300-\u036f]/g, '')
-                                             .trim();
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .trim();
 
             filteredData = filteredData.filter(res => {
                 const nameText = res.userName ? res.userName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : "";
                 const bookNameText = res.bookName ? res.bookName.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '') : "";
-                const bookIdText = res.bookId ? String(res.bookId) : ""; 
+                const bookIdText = res.bookId ? String(res.bookId) : "";
                 const reservationIdText = res.id ? `res${String(res.id).padStart(3, '0')}` : "";
 
                 return reservationIdText.includes(normalizedKeyword) ||
-                       nameText.includes(normalizedKeyword) || 
-                       bookIdText.includes(normalizedKeyword) || 
-                       bookNameText.includes(normalizedKeyword);
+                    nameText.includes(normalizedKeyword) ||
+                    bookIdText.includes(normalizedKeyword) ||
+                    bookNameText.includes(normalizedKeyword);
             });
         }
 
@@ -71,21 +71,21 @@ class ReservationController {
             const btn = e.target.closest("button");
             if (!btn) return;
 
-            const id = btn.dataset.id; 
-            
+            const id = btn.dataset.id;
+
             if (btn.classList.contains("btn-approve")) {
                 await this.updateStatus(id, "approved");
-            } 
+            }
             else if (btn.classList.contains("btn-cancel")) {
-                if(confirm("Bạn có chắc chắn muốn hủy đơn này?")) {
+                if (confirm("Bạn có chắc chắn muốn hủy đơn này?")) {
                     await this.updateStatus(id, "cancelled");
                 }
-            } 
+            }
             else if (btn.classList.contains("btn-deliver")) {
-                if(confirm("Xác nhận đã giao sách cho độc giả? Hệ thống sẽ tự động tạo phiếu mượn.")) {
+                if (confirm("Xác nhận đã giao sách cho độc giả? Hệ thống sẽ tự động tạo phiếu mượn.")) {
                     try {
                         const token = localStorage.getItem("token");
-                        
+
                         // Gọi API chuyển đổi từ Phiếu đặt -> Phiếu mượn
                         const response = await fetch(`http://localhost:8080/api/v1/loans/from-reservation/${id}`, {
                             method: "POST",
@@ -102,15 +102,15 @@ class ReservationController {
                         }
 
                         alert(responseText); // Hiện câu "Giao sách và tạo phiếu mượn thành công!"
-                        
+
                         // Tải lại bảng để cập nhật trạng thái phiếu đặt sang "Đã hoàn thành"
                         await this.loadReservations();
-                        
+
                         // Mẹo UX: Chạy lại bộ lọc hiện tại
                         const searchInput = document.getElementById('search-reservation-input');
                         const statusSelect = document.querySelector('.filter-select');
                         this.processFilter(
-                            searchInput ? searchInput.value : '', 
+                            searchInput ? searchInput.value : '',
                             statusSelect ? statusSelect.value : ''
                         );
 
@@ -119,7 +119,7 @@ class ReservationController {
                         console.error("Lỗi:", error);
                     }
                 }
-            } 
+            }
             else if (btn.classList.contains("btn-detail")) {
                 const detail = await this.model.getReservationDetail(id);
                 this.view.showDetailModal(detail);
@@ -133,13 +133,13 @@ class ReservationController {
             const result = await this.model.updateStatus(id, status);
             if (result) {
                 alert("Cập nhật trạng thái thành công!");
-                await this.loadReservations(); 
-                
+                await this.loadReservations();
+
                 // Mẹo UX: Tự động chạy lại bộ lọc hiện tại sau khi tải dữ liệu mới
                 const searchInput = document.getElementById('search-reservation-input');
                 const statusSelect = document.querySelector('.filter-select');
                 this.processFilter(
-                    searchInput ? searchInput.value : '', 
+                    searchInput ? searchInput.value : '',
                     statusSelect ? statusSelect.value : ''
                 );
             }

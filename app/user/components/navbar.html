@@ -2,68 +2,42 @@
 <nav class="navbar">
   <div class="navbar-container">
     <a href="/app/user/views/home/home.html" class="navbar-logo">
-      <svg
-        class="logo-icon"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <rect x="2" y="2" width="8" height="8" fill="#6366F1" />
-        <rect x="14" y="2" width="8" height="8" fill="#6366F1" />
-        <rect x="14" y="14" width="8" height="8" fill="#6366F1" />
-      </svg>
-      <span class="logo-text">LibrarySaaS</span>
+      <img src="https://utt.edu.vn/uploads/file-manager/images/Logo%20UTT_logo-40x60-xanh.png" alt="UTT Logo"
+        class="logo-icon" />
+      <span class="logo-text">Thư viện UTT</span>
     </a>
     <div class="navbar-search">
-      <input
-        type="text"
-        class="search-input"
-        placeholder="Search for titles, authors, or ISBN..."
-      />
+      <input type="text" class="search-input" placeholder="Search for titles, authors, or ISBN..." />
     </div>
     <ul class="navbar-menu">
-      <li><a href="#" class="nav-link">Browse</a></li>
-      <li><a href="#" class="nav-link">New Arrivals</a></li>
+      <li><a href="/app/user/views/home/all_books.html" class="nav-link">Sách</a></li>
       <li>
-        <a href="/app/user/views/reservation/reservations.html" class="nav-link"
-          >Reservations</a
-        >
+        <a href="/app/user/views/reservation/reservations.html" class="nav-link">Đặt sách</a>
       </li>
       <li>
-        <a href="/app/user/views/wishlist/wishlist.html" class="nav-link"
-          >My Wishlist</a
-        >
+        <a href="/app/user/views/wishlist/wishlist.html" class="nav-link">Sách yêu thích</a>
+      </li>
+      <li>
+        <a href="/app/user/views/loans/loans.html" class="nav-link">Phiếu mượn của tôi</a>
       </li>
     </ul>
     <div class="navbar-actions">
-      <div
-        id="guest-view"
-        style="display: flex; gap: 15px; align-items: center"
-      >
-        <a href="/app/auth/views/login.html" class="nav-link login-link"
-          >Log In</a
-        >
-        <button
-          onclick="window.location.href = '/app/auth/views/register.html'"
-          class="btn btn-primary"
-        >
+      <div id="guest-view" style="display: flex; gap: 15px; align-items: center">
+        <a href="/app/auth/views/login.html" class="nav-link login-link">Log In</a>
+        <button onclick="window.location.href = '/app/auth/views/register.html'" class="btn btn-primary">
           Sign Up
         </button>
       </div>
 
       <div id="user-view" style="display: none; align-items: center; gap: 15px">
-        <a
-          href="/app/user/views/profile/profile.html"
-          style="
+        <a href="/app/user/views/profile/profile.html" style="
             display: flex;
             align-items: center;
             text-decoration: none;
             gap: 10px;
             cursor: pointer;
-          "
-        >
-          <div
-            style="
+          ">
+          <div style="
               width: 35px;
               height: 35px;
               border-radius: 50%;
@@ -74,18 +48,13 @@
               align-items: center;
               font-weight: bold;
               font-size: 16px;
-            "
-          >
+            ">
             <span id="user-avatar-text">U</span>
           </div>
-          <span id="user-display-name" style="color: #333; font-weight: 500"
-            >User</span
-          >
+          <span id="user-display-name" style="color: #333; font-weight: 500">User</span>
         </a>
 
-        <button
-          onclick="handleLogout()"
-          style="
+        <button onclick="handleLogout()" style="
             background: none;
             border: 1px solid #dc3545;
             color: #dc3545;
@@ -93,8 +62,7 @@
             border-radius: 4px;
             cursor: pointer;
             transition: 0.3s;
-          "
-        >
+          ">
           Logout
         </button>
       </div>

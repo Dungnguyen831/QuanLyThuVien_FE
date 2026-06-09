@@ -49,12 +49,22 @@ class PublisherController {
     }
 
     // Xử lý Tìm kiếm (Filter ngay trên mảng hiện có cho nhanh)
-    async handleSearch(keyword) {
-        const all = await this.model.fetchPublishers();
-        const filtered = all.filter(p => 
-            p.name.toLowerCase().includes(keyword.toLowerCase()) || 
-            p.id.toString().includes(keyword)
-        );
-        this.view.renderPublishers(filtered);
-    }
+    handleSearch(query) {
+    const searchTerm = query.toLowerCase().trim();
+
+    const filtered = this.allPublishers.filter(p => {
+        // 1. Tạo mã hiển thị ảo giống hệt lúc render (ví dụ: DM001)
+        const virtualId = `NXB${String(p.id).padStart('3')}`.toLowerCase();
+        
+        // 2. Lấy ID thuần số (ví dụ: 1)
+        const realId = String(p.id);
+
+        // 3. So khớp: Tên chứa query HOẶC Mã ảo chứa query HOẶC ID thực chứa query
+        return p.name.toLowerCase().includes(searchTerm) || 
+               virtualId.includes(searchTerm) ||
+               realId.includes(searchTerm);
+    });
+
+    this.view.renderPublishers(filtered);
+}
 }

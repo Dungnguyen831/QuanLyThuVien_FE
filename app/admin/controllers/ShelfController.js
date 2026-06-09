@@ -1,15 +1,22 @@
 class ShelfController {
-    constructor(model, view) {
+    constructor(model, view, categoryModel) {
         this.model = model;
         this.view = view;
         this.currentSearch = "";
         this.currentFloor = "";
+        this.categoryModel = categoryModel;
     }
 
     async init() {
         // Load dữ liệu lần đầu
         await this.loadShelves();
-
+        // Load danh sách Thể loại để đổ vào Dropdown trong Modal
+        try {
+            const categories = await this.categoryModel.fetchCategories();
+            this.view.renderCategoryDropdown(categories); // Hàm này ông viết thêm ở ShelfView
+        } catch (error) {
+            console.error("Lỗi load categories:", error);
+        }
         // Gắn sự kiện
         this.view.bindEvents({
             handleSearch: (name) => this.loadShelves(name),

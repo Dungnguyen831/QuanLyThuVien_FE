@@ -42,11 +42,11 @@ class ReservationForm {
                 ReservationForm.templateCache = template.innerHTML;
                 return ReservationForm.templateCache;
             } else {
-                console.warn('Template element not found in ReservationForm.html');
+                console.warn('Phần tử mẫu không tìm thấy trong ReservationForm.html');
                 return '';
             }
         } catch (error) {
-            console.error('Failed to load ReservationForm template:', error);
+            console.error('Lỗi tải mẫu ReservationForm:', error);
             return '';
         }
     }
@@ -94,8 +94,8 @@ class ReservationForm {
         const { isCreateMode, reservation, availableBooks } = data;
 
         // Prepare modal title and button text
-        const modalTitle = isCreateMode ? 'New Reservation' : 'Edit Reservation';
-        const submitButtonText = isCreateMode ? '+ Create Reservation' : 'Update Reservation';
+        const modalTitle = isCreateMode ? 'Đặt Chỗ Mới' : 'Chỉnh Sửa Đặt Chỗ';
+        const submitButtonText = isCreateMode ? '+ Tạo Đặt Chỗ' : 'Cập Nhật Đặt Chỗ';
 
         // Prepare book selector (only for CREATE mode)
         let bookSelector = '';
@@ -103,19 +103,10 @@ class ReservationForm {
             bookSelector = ReservationForm._createBookSelector(availableBooks);
         }
 
-        // Get pickup date (extract date part from reservationDate LocalDateTime)
-        let pickupDate = ReservationForm.defaultTodayDate;
-        if (!isCreateMode && reservation) {
-            // reservationDate format: "2026-04-10T09:00:00" or "2026-04-10T09:00:00.000+07:00"
-            const reservationDateStr = reservation.reservationDate || '';
-            pickupDate = reservationDateStr.split('T')[0] || ReservationForm.defaultTodayDate;
-        }
-
         // Replace all placeholders
         let html = template
             .replace('{modalTitle}', modalTitle)
             .replace('{bookSelector}', bookSelector)
-            .replace('{pickupDate}', pickupDate)
             .replace('{submitButtonText}', submitButtonText);
 
         // Convert HTML string to DOM element
@@ -142,13 +133,13 @@ class ReservationForm {
 
         return `
             <div class="form-group">
-                <label for="book-search">Select Book <span class="required">*</span></label>
+                <label for="book-search">Chọn Sách <span class="required">*</span></label>
                 <div class="book-search-wrapper">
                     <input 
                         type="text" 
                         id="book-search" 
                         class="form-control book-search-input" 
-                        placeholder="Type book name or author..."
+                        placeholder="Nhập tên sách hoặc tác giả..."
                         autocomplete="off"
                         required
                         data-books="${booksJson}"
@@ -156,7 +147,7 @@ class ReservationForm {
                     <input type="hidden" id="selected-book-id" name="bookId" value="">
                     <div class="book-suggestions-dropdown"></div>
                 </div>
-                <small class="form-text">Search and select a book from the list</small>
+                <small class="form-text">Tìm kiếm và chọn một sách từ danh sách</small>
             </div>
         `;
     }
@@ -239,15 +230,11 @@ class ReservationForm {
         if (!form) return null;
 
         const formData = new FormData(form);
-        const pickupDateStr = formData.get('pickupDate'); // YYYY-MM-DD format
 
-        // Convert date to LocalDateTime format (YYYY-MM-DDTHH:mm:ss)
-        // Default time: 09:00:00 (9 AM)
-        const reservationDate = pickupDateStr ? `${pickupDateStr}T09:00:00` : null;
-
+        // NO pickup date input anymore - backend calculates borrow date automatically
         const data = {
-            bookId: parseInt(formData.get('bookId')),
-            reservationDate: reservationDate
+            bookId: parseInt(formData.get('bookId'))
+            // reservationDate is NOT sent - backend handles it
         };
 
         // For UPDATE mode, include status
@@ -259,7 +246,7 @@ class ReservationForm {
         }
 
         // Note: userId is extracted from JWT on backend, no need to send
-        // Note: notes field is not in ReservationRequestDTO, removed
+        // Note: reservationDate is NOT sent - backend sets it automatically
 
         return data;
     }
@@ -278,18 +265,7 @@ class ReservationForm {
             errors.push('Please select a book');
         }
 
-        if (!data.reservationDate) {
-            errors.push('Please select a pickup date');
-        } else {
-            // Check if date is in the past
-            const selectedDate = new Date(data.reservationDate.split('T')[0]);
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-
-            if (selectedDate < today) {
-                errors.push('Pickup date must be today or in the future');
-            }
-        }
+        // No date validation needed - backend handles borrow date automatically
 
         return {
             isValid: errors.length === 0,
@@ -319,7 +295,7 @@ class ReservationForm {
                 availableBooks = JSON.parse(booksJson);
             }
         } catch (error) {
-            console.error('Failed to parse books data:', error);
+            console.error('Lỗi phân tích dữ liệu sách:', error);
             return;
         }
 

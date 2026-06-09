@@ -8,11 +8,10 @@
  */
 class WishlistView {
   constructor() {
-    this.wishlistGrid = document.getElementById("wishlist-grid");
+    this.wishlistGrid = document.getElementById("wishlist-items");
     this.wishlistSubtitle = document.getElementById("wishlist-subtitle");
     this.borrowAllBtn = document.getElementById("borrow-all-btn");
     this.filterPills = document.querySelectorAll(".filter-pill");
-    this.sortDropdown = document.getElementById("sort-dropdown");
     this.paginationNumbers = document.getElementById("pagination-numbers");
     this.paginationPrev = document.getElementById("pagination-prev");
     this.paginationNext = document.getElementById("pagination-next");
@@ -27,7 +26,7 @@ class WishlistView {
   async renderWishlistBooks(books, wishlistModel = null) {
     if (!books || books.length === 0) {
       this.wishlistGrid.innerHTML =
-        '<div class="empty-state">No books in your wishlist yet.</div>';
+        '<div class="empty-state">Chưa có sách nào trong danh sách yêu thích của bạn.</div>';
       return;
     }
 
@@ -40,6 +39,10 @@ class WishlistView {
         showFavoriteBtn: true,
         isInWishlist: true, // ✅ All books on wishlist page are in wishlist
         wishlistModel: wishlistModel, // ✅ Pass model to handle remove
+        onCardClick: (bookData) => {
+          // ✅ Navigate to book detail page when card is clicked
+          window.location.href = `../book/book_detail.html?id=${bookData.id}`;
+        },
         onFavoriteClick: (bookData) => {
           // ✅ BookCard already called removeFromWishlist, skip API call
           if (this.eventListeners.removeFromWishlist) {
@@ -60,9 +63,8 @@ class WishlistView {
     // Wait for all book cards to be created
     const bookCardElements = await Promise.all(bookCardPromises);
 
-    // Customize column classes for wishlist and append to grid
+    // Append to grid (Grid CSS will handle layout, no column classes needed)
     bookCardElements.forEach(bookCardElement => {
-      bookCardElement.className = 'col-12 col-sm-6 col-md-4 col-lg-3';
       this.wishlistGrid.appendChild(bookCardElement);
     });
   }
@@ -82,7 +84,7 @@ class WishlistView {
    */
   _escapeHtml(text) {
     if (!text) {
-      console.warn("⚠️ Missing field in book data:", text);
+      console.warn("⚠️ Trường bị thiếu trong dữ liệu sách:", text);
       return "";
     }
     const map = {
@@ -100,8 +102,8 @@ class WishlistView {
    * @param {number} count - Total number of items in wishlist
    */
   updateItemsCounter(count) {
-    const itemText = count === 1 ? "item" : "items";
-    this.wishlistSubtitle.textContent = `You have ${count} ${itemText} saved for later exploration.`;
+    const itemText = count === 1 ? "mục" : "mục";
+    this.wishlistSubtitle.textContent = `Bạn có ${count} ${itemText} được lưu để khám phá sau.`;
   }
 
   /**
@@ -216,16 +218,6 @@ class WishlistView {
     });
   }
 
-  /**
-   * Bind sort dropdown change events
-   * @param {Function} callback - Callback function when sort changes
-   */
-  onSortChange(callback) {
-    this.eventListeners.sortChange = callback;
-    this.sortDropdown.addEventListener("change", (e) => {
-      callback(e.target.value);
-    });
-  }
 
   /**
    * Bind pagination page button clicks
@@ -287,7 +279,7 @@ class WishlistView {
    */
   showLoading() {
     this.wishlistGrid.innerHTML =
-      '<div class="loading-state">Loading your wishlist...</div>';
+      '<div class="loading-state">Đang tải danh sách yêu thích của bạn...</div>';
   }
 
   /**

@@ -34,7 +34,7 @@ class HomeView {
         const errorHtml = `
             <div class="alert alert-danger alert-dismissible fade show" role="alert" style="margin: 20px; border-radius: 12px;">
                 <i class="fas fa-exclamation-circle me-2"></i>
-                <strong>Error:</strong> ${message}
+                <strong>Lỗi:</strong> ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
@@ -52,7 +52,7 @@ class HomeView {
         this.hideLoading();
 
         if (!this.newArrivalsContainer) {
-            console.warn('New arrivals container not found');
+            console.warn('Không tìm thấy vùng chứa sản phẩm mới');
             return;
         }
 
@@ -83,7 +83,7 @@ class HomeView {
      */
     async renderMostPopular(books) {
         if (!this.mostPopularContainer) {
-            console.warn('Most popular container not found');
+            console.warn('Không tìm thấy vùng chứa sản phẩm phổ biến');
             return;
         }
 
