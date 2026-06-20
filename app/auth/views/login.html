@@ -70,6 +70,11 @@
                         <span>Đăng Nhập Bảng Điều Khiển</span>
                         <span class="btn-arrow">→</span>
                     </button>
+                    <div id="g_id_onload"
+                        data-client_id="851430632309-79v84amkorbv3qvnu1j1vev9n1il2s4b.apps.googleusercontent.com"
+                        data-callback="handleGoogleLogin">
+                    </div>
+                    <div class="g_id_signin" data-type="standard"></div>
                 </form>
 
                 <!-- Footer -->
@@ -83,10 +88,15 @@
                 </div>
             </div>
         </div>
+        <!-- Chỗ này để hiển thị cái nút "Sign in with Google" xịn xò -->
+
     <!-- Nhúng các file JS của mô hình MVC -->
     <script src="../models/AuthModel.js"></script>
     <script src="AuthView.js"></script>
     <script src="../controllers/AuthController.js"></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Khởi tạo AuthController để trang bắt đầu hoạt động

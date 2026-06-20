@@ -6,6 +6,7 @@ class AuthController {
     // Liên kết các sự kiện từ View về Controller
     this.view.bindLogin(this.handleLogin.bind(this));
     this.view.bindRegister(this.handleRegister.bind(this));
+    window.handleGoogleLogin = this.handleGoogleLogin.bind(this);
   }
 
   // Xử lý logic Đăng nhập
@@ -31,6 +32,27 @@ class AuthController {
     } catch (error) {
       this.view.showError(error.message);
     }
+  }
+
+  handleGoogleLogin(response) {
+    // response.credential chính là ID Token mà Google cấp
+    const googleToken = response.credential;
+    // Gửi Token này xuống Backend của bác để kiểm tra
+    fetch("http://localhost:8080/api/v1/auth/google", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ token: googleToken }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // Backend xác nhận OK và trả về JWT của hệ thống bác!
+        localStorage.setItem("token", data.accessToken);
+        alert("Đăng nhập Google thành công!");
+        window.location.href = "/app/user/views/home/home.html";
+      })
+      .catch((error) => console.error("Lỗi đăng nhập:", error));
   }
 
   // ✅ NEW: Xử lý logic Đăng xuất (Logout)

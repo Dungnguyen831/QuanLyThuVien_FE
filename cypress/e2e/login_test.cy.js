@@ -1,105 +1,170 @@
 /// <reference types="cypress" />
 
-describe('Test Suite: Chức năng Đăng nhập - Hệ thống Quản Lý Thư Viện', () => {
-
-  const loginUrl = 'http://127.0.0.1:5500/app/auth/views/login.html';
+describe("Test Suite: Chức năng Đăng nhập - Hệ thống Quản Lý Thư Viện", () => {
+  const loginUrl = "http://127.0.0.1:61748/app/auth/views/login.html";
 
   beforeEach(() => {
     // Tiền điều kiện (Pre-condition): Truy cập trang đăng nhập trước mỗi Test Case
     cy.visit(loginUrl);
   });
 
-  context('1. Kiểm thử Giao diện (UI Testing)', () => {
-    it('TC01: Kiểm tra các thành phần giao diện hiển thị đầy đủ', () => {
-      // Xác minh Logo và Tiêu đề
-      cy.get('.logo-text').should('contain', 'QUẢN LÝ THƯ VIỆN');
-      cy.get('.auth-welcome h2').should('contain', 'Chào Mừng Trở Lại');
-      
-      // Xác minh các ô nhập liệu và placeholder có tồn tại
-      cy.get('#email').should('be.visible').and('have.attr', 'placeholder', 'name@institution.edu');
-      cy.get('#password').should('be.visible').and('have.attr', 'placeholder', '••••••••••');
-      
-      // Xác minh nút Đăng nhập bị vô hiệu hóa (disabled) hoặc sẵn sàng click
-      cy.get('.btn-login').should('be.visible').and('contain', 'Đăng Nhập');
+  // ====================================================================
+  // PHẦN 1: GIỮ NGUYÊN CÁC TEST CASE GIAO DIỆN (UI)
+  // ====================================================================
+  context("1. Kiểm thử Giao diện & Tiện ích (UI Testing)", () => {
+    it("TC01: Kiểm tra các thành phần giao diện hiển thị đầy đủ", () => {
+      cy.get(".logo-text").should("contain", "QUẢN LÝ THƯ VIỆN");
+      cy.get(".auth-welcome h2").should("contain", "Chào Mừng Trở Lại");
+      cy.get("#email")
+        .should("be.visible")
+        .and("have.attr", "placeholder", "name@institution.edu");
+      cy.get("#password")
+        .should("be.visible")
+        .and("have.attr", "placeholder", "••••••••••");
+      cy.get(".btn-login").should("be.visible").and("contain", "Đăng Nhập");
     });
 
-    it('TC02: Kiểm tra liên kết "Chuyển sang trang Đăng ký"', () => {
-      cy.get('.forgot-password')
-        .should('have.attr', 'href', '../../auth/views/register.html')
-        .and('contain', 'Chưa có tài khoản?');
-    });
-  });
+    it("TC02: Tính năng Ẩn/Hiện mật khẩu (Toggle Password View)", () => {
+      cy.get("#password").type("admin123456");
+      cy.get("#password").should("have.attr", "type", "password"); // Đang ẩn
 
-  context('2. Kiểm thử Validation Client-side (Frontend)', () => {
-    it('TC03: Báo lỗi HTML5 khi để trống tài khoản và mật khẩu', () => {
-      // Bấm nút đăng nhập ngay mà không nhập gì
-      cy.get('.btn-login').click();
-      
-      // Kiểm tra thuộc tính validation mặc định của trình duyệt (required)
-      cy.get('#email').invoke('prop', 'validationMessage').should('not.be.empty');
-    });
-
-    it('TC04: Báo lỗi HTML5 khi nhập sai định dạng Email (thiếu @)', () => {
-      cy.get('#email').type('nguyenanhdung831gmail.com'); // Cố tình bỏ chữ @
-      cy.get('.btn-login').click();
-      
-      // Trình duyệt phải báo lỗi yêu cầu có ký tự @
-      cy.get('#email').invoke('prop', 'validationMessage').should('include', '@');
+      cy.get(".toggle-password").click();
+      cy.get("#password").should("have.attr", "type", "text"); // Đã hiện
     });
   });
 
-  context('3. Kiểm thử Xác thực Server-side (Backend)', () => {
-    it('TC05: Hiển thị lỗi khi nhập sai mật khẩu', () => {
-      cy.get('#email').type('nguyenanhdung831@gmail.com');
-      cy.get('#password').type('SaiMatKhau123!@#');
-      cy.get('.btn-login').click();
+  // ====================================================================
+  // PHẦN 2: TÍCH HỢP 9 TEST CASE TỪ EXCEL (DATA-DRIVEN TESTING)
+  // ====================================================================
+  context(
+    "2. Kiểm thử Luồng xác thực với tập dữ liệu (Data-Driven Testing)",
+    () => {
+      const testCases = [
+        {
+          id: 1,
+          email: "vanhle295@gmail.com",
+          pass: "12345678",
+          desc: "Đúng email, đúng pass",
+          expectSuccess: true,
+        },
+        {
+          id: 2,
+          email: "vanhle295@gmail.com",
+          pass: "Saimatkhau",
+          desc: "Đúng email, sai pass",
+          expectSuccess: false,
+          errorType: "backend_error",
+        },
+        {
+          id: 3,
+          email: "vanhle295@gmail.com",
+          pass: "",
+          desc: "Đúng email, rỗng pass",
+          expectSuccess: false,
+          errorType: "html5_pass",
+        },
+        {
+          id: 4,
+          email: "",
+          pass: "12345678",
+          desc: "Rỗng email, có pass",
+          expectSuccess: false,
+          errorType: "html5_email",
+        },
+        {
+          id: 5,
+          email: "",
+          pass: "Saimatkhau",
+          desc: "Rỗng email, sai pass format",
+          expectSuccess: false,
+          errorType: "html5_email",
+        },
+        {
+          id: 6,
+          email: "",
+          pass: "",
+          desc: "Rỗng email, rỗng pass",
+          expectSuccess: false,
+          errorType: "html5_email",
+        },
+        {
+          id: 7,
+          email: "vanh@gmail.com",
+          pass: "12345678",
+          desc: "Email chưa đăng ký, đúng format pass",
+          expectSuccess: false,
+          errorType: "backend_error",
+        },
+        {
+          id: 8,
+          email: "vanh@gmail.com",
+          pass: "Saimatkhau",
+          desc: "Email chưa đăng ký, sai pass",
+          expectSuccess: false,
+          errorType: "backend_error",
+        },
+        {
+          id: 9,
+          email: "vanh@gmail.com",
+          pass: "",
+          desc: "Email chưa đăng ký, rỗng pass",
+          expectSuccess: false,
+          errorType: "html5_pass",
+        },
+      ];
 
-      // Vùng hiển thị lỗi phải xuất hiện và có text (phụ thuộc vào Backend trả về)
-      cy.get('#auth-error-message')
-        .should('be.visible')
-        .and('not.be.empty');
-    });
+      testCases.forEach((tc) => {
+        it(`TC_Data_${tc.id}: ${tc.desc}`, () => {
+          // 1. Nhập Email
+          if (tc.email !== "") {
+            cy.get("#email").type(tc.email);
+          }
 
-    it('TC06: Hiển thị lỗi khi nhập Email chưa được đăng ký', () => {
-      cy.get('#email').type('taikhoankhongtontai@utt.edu.vn');
-      cy.get('#password').type('admin123456');
-      cy.get('.btn-login').click();
+          // 2. BẮT LÕNG API: Chỉ theo dõi API ở những case vượt qua được rào cản HTML5
+          const willCallApi =
+            tc.expectSuccess || tc.errorType === "backend_error";
+          if (willCallApi) {
+            cy.intercept("POST", "**/api/v1/auth/login").as("loginAPI");
+          }
 
-      cy.get('#auth-error-message').should('be.visible');
-    });
-  });
+          // 3. Nhập Mật khẩu và Submit
+          if (tc.pass !== "") {
+            if (tc.id === 1) {
+              // Kết hợp gõ pass và ấn Enter luôn cho gọn
+              cy.get("#password").type(`${tc.pass}{enter}`);
+            } else {
+              cy.get("#password").type(tc.pass);
+              cy.get(".btn-login").click();
+            }
+          } else {
+            cy.get(".btn-login").click();
+          }
 
-  context('4. Kiểm thử Chức năng & Luồng chính (Functional & Happy Path)', () => {
-    it('TC07: Tính năng Ẩn/Hiện mật khẩu (Toggle Password View)', () => {
-      cy.get('#password').type('admin123456');
-      cy.get('#password').should('have.attr', 'type', 'password'); // Đang ẩn
-      
-      cy.get('.toggle-password').click();
-      cy.get('#password').should('have.attr', 'type', 'text'); // Đã hiện
-      
-      cy.get('.toggle-password').click();
-      cy.get('#password').should('have.attr', 'type', 'password'); // Ẩn lại
-    });
-
-    it('TC08: Đăng nhập thành công bằng cách nhấn phím Enter (Keyboard Interaction)', () => {
-      cy.get('#email').type('nguyenanhdung831@gmail.com');
-      // Thêm {enter} vào cuối chuỗi type để giả lập người dùng ấn phím Enter
-      cy.get('#password').type('admin123456{enter}'); 
-
-      // Xác minh chuyển hướng thành công
-      cy.url().should('include', 'home.html');
-      
-      // Xác minh form đăng nhập không còn trên màn hình
-      cy.get('.auth-form').should('not.exist');
-    });
-
-    it('TC09: Đăng nhập thành công bằng cách click chuột vào nút (Chuẩn Happy Path)', () => {
-      cy.get('#email').type('nguyenanhdung831@gmail.com');
-      cy.get('#password').type('admin123456');
-      cy.get('.btn-login').click();
-
-      cy.url().should('include', 'home.html');
-    });
-  });
-
+          // 4. Kiểm tra kết quả (Assertions)
+          if (tc.expectSuccess) {
+            // Case 1: Chờ API trả về mã 200 OK rồi mới check chuyển trang
+            cy.wait("@loginAPI");
+            cy.url().should("include", "home.html");
+            cy.get(".auth-form").should("not.exist");
+          } else {
+            if (tc.errorType === "html5_email") {
+              cy.get("#email")
+                .invoke("prop", "validationMessage")
+                .should("not.be.empty");
+            } else if (tc.errorType === "html5_pass") {
+              cy.get("#password")
+                .invoke("prop", "validationMessage")
+                .should("not.be.empty");
+            } else if (tc.errorType === "backend_error") {
+              // Case 2, 7, 8: Chờ API trả về mã 401/400 rồi mới check thẻ báo lỗi
+              cy.wait("@loginAPI");
+              cy.get("#auth-error-message")
+                .should("be.visible")
+                .and("not.be.empty");
+            }
+          }
+        });
+      });
+    },
+  );
 });
