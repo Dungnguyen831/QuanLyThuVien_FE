@@ -1,4 +1,4 @@
-describe('Test Suite: Chức năng Quản lý Sách (Book Management) - Quyền Admin', () => {
+describe('Test Suite: Chức năng Quản lý Sách (Book Management)', () => {
     
     beforeEach(() => {
         // 1. Thiết lập Intercept theo dõi các API danh mục kho sách
@@ -14,7 +14,7 @@ describe('Test Suite: Chức năng Quản lý Sách (Book Management) - Quyền 
         cy.get('input[name="password"]').type('123456789');
         cy.get('button[type="submit"]').click();
 
-        // 3. Kiểm tra điều hướng linh hoạt (chấp nhận cả trang user home hoặc admin dashboard)
+        // 3. Kiểm tra điều hướng
         cy.url().should('satisfy', (url) => {
             return url.includes('/home/home.html') || url.includes('/dashboard/admin.html');
         });
@@ -22,79 +22,128 @@ describe('Test Suite: Chức năng Quản lý Sách (Book Management) - Quyền 
         // 4. Di chuyển thẳng tới phân hệ Quản lý kho sách chi tiết
         cy.visit('/app/admin/views/inventory/inventory.html');
 
-        // 5. Đợi dữ liệu API nạp xong xuôi lên bảng để tránh lỗi bất đồng bộ
+        // 5. Đợi dữ liệu API nạp xong xuôi lên bảng
         cy.wait(['@getAuthors', '@getCategories', '@getPublishers', '@getShelves', '@getBooks']);
         cy.get('#inventory-table-body').should('not.contain', 'Đang tải dữ liệu...');
     });
 
-    it('TC01: Kiểm tra giao diện tổng quan và bảng dữ liệu hiển thị đúng cấu trúc', () => {
+    it('TC01: Kiểm tra thêm mới sách thành công với dữ liệu hợp lệ (Dữ liệu mới)', () => {
         cy.contains('Quản lý kho sách chi tiết').should('be.visible');
-        cy.get('#btnAddNewBook').should('be.visible');
-
-        // Xác minh bảng đã render thành công dữ liệu thật từ Database (Ít nhất 1 dòng)
         cy.get('#inventory-table-body tr').should('have.length.at.least', 1);
 
-    });
-
-    it('TC02: Kiểm tra chức năng kích hoạt và cấu trúc form hiển thị trên Modal Thêm sách', () => {
-        cy.wait(600); // Chờ cấu trúc DOM ổn định
+        // Mở form nhập liệu
         cy.get('#btnAddNewBook').should('be.visible').click({ force: true });
-        cy.wait(600); // Chờ hiệu ứng mở Modal hoàn tất
-
-        // Kiểm tra tính hiển thị của Modal Thêm sách dựa trên đúng ID trong HTML
         cy.get('#addBookModal').should('be.visible').and('have.class', 'show');
 
-        // Đi sâu vào kiểm tra chính xác các ID của ô input trong Form thêm sách
-        cy.get('#addBookModal').within(() => {
-            cy.contains('Thêm sách mới vào kho').should('be.visible');
-            cy.get('#bookTitle').should('be.visible'); // Kiểm tra ô Tên sách
-            cy.get('#bookIsbn').should('be.visible');  // Kiểm tra ô ISBN
-            cy.get('#categoryInput').should('be.visible'); // Kiểm tra ô chọn Thể loại (Datalist)
-            cy.get('#authorInput').should('be.visible');   // Kiểm tra ô chọn Tác giả (Datalist)
-            cy.get('#publisherInput').should('be.visible'); // Kiểm tra ô chọn Nhà xuất bản
-            cy.get('#bookYear').should('be.visible').and('have.value', '2026'); // Kiểm tra năm mặc định
-            cy.get('#bookImageFile').should('be.visible'); // Kiểm tra nút chọn file ảnh
-            cy.get('#bookDescription').should('be.visible'); // Kiểm tra khung nhập mô tả
+        // Nhập thông tin sách hoàn toàn mới
+        cy.get('#bookTitle').type('Công Nghệ 2026');
+        cy.get('#bookIsbn').type('978-604-99-9999-5');
+        cy.get('#bookYear').should('have.value', '2026'); 
+        cy.get('#categoryInput').type('1'); 
+        cy.get('#authorInput').type('1');
+        cy.get('#publisherInput').type('1');
+
+        cy.on('window:alert', (str) => {
+            expect(str).to.equal('Thêm thành công!');
+        });
+
+        // Xác nhận lưu dữ liệu
+        cy.get('#addBookForm button[type="submit"]').click();
+
+        // Kiểm tra modal đã đóng
+        cy.get('#addBookModal').should('not.have.class', 'show');
+    });
+
+    it('TC02: Kiểm tra thêm mới sách thất bại do để trống trường bắt buộc', () => {
+        cy.wait(500); 
+    
+        cy.get('#btnAddNewBook').should('be.visible').click();
+        
+        cy.get('#addBookModal', { timeout: 8000 })
+            .should('have.class', 'show')
+            .and('be.visible');
+    
+        // Gây tác động focus/blur để kích hoạt form validate
+        cy.get('#bookTitle').focus().blur(); 
+        cy.get('#bookIsbn').focus().blur();  
+        
+        cy.get('#categoryInput').type('1');
+        cy.get('#authorInput').type('1');
+        cy.get('#publisherInput').type('1');
+    
+        cy.on('window:alert', (str) => {
+            expect(str).to.contain('- Tên sách không được để trống.');
+            expect(str).to.contain('- Mã ISBN không được để trống.');
+        });
+    
+        cy.get('#addBookForm').invoke('removeAttr', 'novalidate').submit();
+        
+        cy.get('#addBookModal').should('have.class', 'show');
+    });
+
+    it('TC03: Kiểm tra thêm mới sách thất bại do trùng mã ISBN', () => {
+        // 1. Chuẩn bị stub để bắt alert
+        cy.window().then((win) => {
+            cy.stub(win, 'alert').as('alertStub');
+        });
+    
+        cy.get('#btnAddNewBook').click();
+        cy.get('#addBookModal').should('have.class', 'show');
+    
+        // 2. Nhập dữ liệu chắc chắn đã có trong DB
+        cy.get('#bookTitle').type('Tài Liệu kiểm thử');
+        cy.get('#bookIsbn').type('978604000006'); 
+        
+        cy.get('#categoryInput').type('1');
+        cy.get('#authorInput').type('1');
+        cy.get('#publisherInput').type('1');
+    
+        // 3. Thực hiện submit
+        cy.get('#addBookForm button[type="submit"]').click();
+    
+        // 4. Kiểm tra xem stub đã bắt được alert chưa
+        cy.get('@alertStub').should('be.called');
+        
+        // 5. Kiểm tra nội dung cụ thể
+        cy.get('@alertStub').should('be.calledWithMatch', 'đã tồn tại trong hệ thống.');
+    
+        // 6. Modal vẫn phải hiển thị
+        cy.get('#addBookModal').should('have.class', 'show');
+    });
+
+    it('TC04: Kiểm tra cập nhật sách thất bại do vi phạm logic số lượng', () => {
+        cy.get('#inventory-table-body .btn-edit-book').first().click({ force: true });
+        
+        cy.get('#editBookModal').should('be.visible');
+        cy.get('#editBookIsbn').should('have.attr', 'readonly'); 
+        cy.get('#editBookIsbn').should('have.class', 'bg-secondary-subtle');
+
+        // Cập nhật số lượng sai lệch logic toán học (Sẵn có > Tổng số)
+        cy.get('#editTotalQty').clear().type('12');
+        cy.get('#editAvailableQty').clear().type('20');
+
+        cy.on('window:alert', (str) => {
+            expect(str).to.contain('- Số lượng sẵn có không được lớn hơn tổng số lượng.');
+        });
+
+        cy.get('#editBookForm button[type="submit"]').click();
+        cy.get('#editBookModal').should('have.class', 'show');
+    });
+
+    it('TC05: Kiểm tra chức năng bộ lọc và thanh tìm kiếm khi có kết quả trùng khớp (Từ khóa tìm kiếm mới)', () => {
+      
+        cy.get('#searchInput').type('Java');
+        
+        cy.get('#inventory-table-body tr').each(($el) => {
+            const text = $el.text(); // Lấy text bằng jQuery thuần
+            expect(text.toLowerCase()).to.contain('java');
         });
     });
 
-    it('TC03: Kiểm tra luồng tương tác và cấu trúc form hiển thị trên Modal Sửa sách', () => {
-        cy.wait(600);
+    it('TC06: Kiểm tra chức năng bộ lọc khi không tìm thấy kết quả phù hợp', () => {
+        cy.get('#searchInput').clear().type('Blockchain 3000 Abcxyz');
 
-        // 1. Tìm dòng đầu tiên và bấm vào nút Sửa
-        cy.get('#inventory-table-body tr').eq(0).within(() => {
-            cy.get('.fa-edit, .fa-pen, [class*="edit"]').first().click({ force: true });
-        });
-        cy.wait(600); // Chờ render Modal Sửa
-
-        // 2. Kiểm tra tính hiển thị của Modal Sửa dựa trên đúng ID trong HTML
-        cy.get('#editBookModal').should('be.visible');
-
-        // Đi sâu vào kiểm tra các ID đặc thù chỉ có ở Form Sửa sách
-        cy.get('#editBookModal').within(() => {
-            cy.contains('Chỉnh sửa thông tin sách').should('be.visible');
-            cy.get('#editBookId').should('have.attr', 'type', 'hidden'); // Kiểm tra input hidden lưu ID sách
-            cy.get('#editBookTitle').should('be.visible');
-            cy.get('#editBookIsbn').should('be.visible');
-            cy.get('#editTotalQty').should('be.visible');     // Kiểm tra trường Tổng số lượng
-            cy.get('#editAvailableQty').should('be.visible'); // Kiểm tra trường Sẵn có
-            cy.get('#editBookDescription').should('be.visible');
-        });
-
-        // 3. Tắt modal sửa bằng nút đóng (Close) để chuẩn bị cho bước test xóa
-        cy.get('#editBookModal .btn-close, #editBookModal [data-bs-dismiss="modal"]').first().click({ force: true });
-        cy.wait(500);
-
-        // 4. Kích hoạt sự kiện nút Xóa bản ghi cuốn sách ở dòng đầu tiên
-        cy.get('#inventory-table-body tr').eq(0).within(() => {
-            cy.get('.fa-trash, .fa-trash-alt, [class*="trash"]').first().click({ force: true });
-        });
-
-        // 5. Đón bắt kiểm tra nội dung cửa sổ xác nhận hủy (Confirm Dialog) từ trình duyệt
-        cy.on('window:confirm', (str) => {
-            // Thay vì 'Bạn có chắc chắn muốn xóa'
-            expect(str).to.contain('Xác nhận xóa sách ID:'); 
-            return true;
-        });
+        cy.get('#inventory-table-body').should('be.empty');
+        cy.get('#inventory-table-body tr').should('have.length', 0);
     });
 });
