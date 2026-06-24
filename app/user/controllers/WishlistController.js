@@ -149,7 +149,7 @@ class WishlistController {
    * Apply current filter and sort to the books
    */
   applyFilterAndSort() {
-    // Apply filter
+    
     this.state.filteredBooks = this._applyFilter(
       this.state.allBooks,
       this.state.activeFilter,

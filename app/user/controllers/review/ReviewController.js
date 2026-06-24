@@ -77,6 +77,16 @@ class ReviewController {
      * Xử lý gửi form
      */
     async handleSubmitForm(formData) {
+        const submitData = {
+            userId: this.currentUserId,
+            bookId: this.currentBookId,
+            rating: formData.rating,
+            comment: formData.comment
+        };
+
+        if (!this.validateFormData(submitData)) {
+            return;
+        }
         try {
             if (formData.id) {
                 // Update

@@ -204,19 +204,7 @@ class WishlistView {
     return this.sortDropdown.value;
   }
 
-  /**
-   * Bind filter pill click events
-   * @param {Function} callback - Callback function when filter changes
-   */
-  onFilterChange(callback) {
-    this.eventListeners.filterChange = callback;
-    this.filterPills.forEach((pill) => {
-      pill.addEventListener("click", () => {
-        this.setActiveFilter(pill.dataset.filter);
-        callback(pill.dataset.filter);
-      });
-    });
-  }
+
 
 
   /**
