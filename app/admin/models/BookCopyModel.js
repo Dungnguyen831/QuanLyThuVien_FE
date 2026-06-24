@@ -26,9 +26,8 @@ class BookCopyModel {
             if (!response.ok) {
                 if (response.status === 401) throw new Error("Phiên đăng nhập hết hạn");
                 throw new Error("Lỗi tải bản sao");
-            }     console.log(`test xem đã chạy đến đây chưa`);
+            }    
             const data = await response.json();
-            console.log(`Dữ liệu bản sao tải về:`, data); // Log trước khi return
             return data;
         } catch (error) {
             console.error("Lỗi fetchCopiesByBookId:", error);
