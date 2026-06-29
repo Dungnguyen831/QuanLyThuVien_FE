@@ -78,7 +78,10 @@ class PublisherView {
                     email: document.getElementById('pubEmail').value.trim(),
                     address: document.getElementById('pubAddress').value.trim()
                 };
+                // Gọi hàm kiểm tra
+            if (this.validateForm(data)) {
                 handler(id, data);
+            }
             });
         }
     }
@@ -131,4 +134,26 @@ class PublisherView {
         const modal = new bootstrap.Modal(document.getElementById('publisherModal'));
         modal.show();
     }
+    validateForm(data) {
+    // Validate Tên NXB (1-100 ký tự)
+    if (!data.name || data.name.length < 1 || data.name.length > 100) {
+        alert("Tên NXB phải từ 1 đến 100 ký tự.");
+        return false;
+    }
+
+    // Validate Email (Regex chuẩn + Độ dài)
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!data.email || !emailRegex.test(data.email) || data.email.length > 255) {
+        alert("Email không hợp lệ hoặc quá dài.");
+        return false;
+    }
+
+    // Validate Địa chỉ (1-255 ký tự)
+    if (!data.address || data.address.length < 1 || data.address.length > 255) {
+        alert("Địa chỉ phải từ 1 đến 255 ký tự.");
+        return false;
+    }
+
+    return true;
+}
 }
